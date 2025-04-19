@@ -14,6 +14,8 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
     public List<GameObject> listObj;
     public List<GameObject> timeList;
 
+    public GameObject timelineObj;
+
     //int index = 0;
 
     //public void JoinAnjisuan()
@@ -421,5 +423,6 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         {
             item.SetActive(false);
         }
+        timelineObj.SetActive(true);
     }
 }

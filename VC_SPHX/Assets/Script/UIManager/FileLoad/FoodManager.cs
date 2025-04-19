@@ -109,7 +109,7 @@ public class FoodManager : MonoBehaviour
             {
                 // 读取数据为 DataSet
                 var result = reader.AsDataSet();
-                var dataTable = result.Tables[index]; // 假设数据在第一个工作表
+                var dataTable = result.Tables[excelContent]; // 假设数据在第一个工作表
 
                 // 遍历行（跳过表头）
                 for (int row = 1; row < dataTable.Rows.Count; row++)

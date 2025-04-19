@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static UnityEditor.Progress;
 
 public class GameObjMan : MonoSingletonBase<GameObjMan>
 {
@@ -51,10 +52,15 @@ public class GameObjMan : MonoSingletonBase<GameObjMan>
     public void UpObjPosCon()
     {
         SetPosition(0);
-        foreach (var item in objects)
+        for (int i = 2; i < objects.Count; i++)
         {
-            //item.SetActive(false);
+            objects[i].SetActive(false);
+
         }
+        //foreach (var item in objects)
+        //{
+        //    item.SetActive(false);
+        //}
         foreach (var item in objects)
         {
             //item.SetActive(true);

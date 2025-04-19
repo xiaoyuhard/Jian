@@ -8,6 +8,7 @@ public class BodyConUI : UICaoZuoBase
 {
     public GameObject man;
     public GameObject woman;
+    
 
     public Button manBtn;
     public Button womanBtn;
@@ -32,7 +33,7 @@ public class BodyConUI : UICaoZuoBase
         {
             toggle.onValueChanged.AddListener((isOn) =>
             {
-                if (isOn) OnClickShowManBody(toggle, isOn);
+               /* if (isOn) */OnClickShowManBody(toggle, isOn);
 
             });
         }
@@ -40,7 +41,7 @@ public class BodyConUI : UICaoZuoBase
         {
             toggle.onValueChanged.AddListener((isOn) =>
             {
-                if (isOn) OnClickShowWomanBody(toggle, isOn);
+                /*if (isOn)*/ OnClickShowWomanBody(toggle, isOn);
 
             });
         }
@@ -49,12 +50,55 @@ public class BodyConUI : UICaoZuoBase
     private void OnClickShowWomanBody(Toggle toggle, bool isOn)
     {
         if (isOn)
-            RenTiCon.Instance.ShowBodyWomanModel(toggle.transform.GetChild(1).GetComponent<Text>().text);
+        {
+            //RenTiCon.Instance.ShowBodyWomanModel(toggle.transform.GetChild(1).GetComponent<Text>().text);
+            Debug.Log(toggle.transform.parent + "ddsss");
+
+        }
+        //LayoutRebuilder.ForceRebuildLayoutImmediate(toggle.transform.parent as RectTransform);
+        StartCoroutine(RefreshLayout(toggle));
+    }
+    IEnumerator RefreshLayout(Toggle toggle)
+    {
+        yield return null; // µÈ´ýÒ»Ö¡
+        if(toggle.transform.parent.name== "Content")
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(toggle.transform.parent as RectTransform);
+        }
+        if (toggle.transform.parent.parent.name == "Content")
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(toggle.transform.parent.parent as RectTransform);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(toggle.transform.parent as RectTransform);
+        }
+        if (toggle.transform.parent.parent.parent.name == "Content")
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(toggle.transform.parent.parent.parent as RectTransform);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(toggle.transform.parent.parent as RectTransform);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(toggle.transform.parent as RectTransform);
+
+        }
+        if (toggle.transform.parent.parent.parent.parent.name == "Content")
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(toggle.transform.parent.parent.parent.parent as RectTransform);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(toggle.transform.parent.parent.parent as RectTransform);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(toggle.transform.parent.parent as RectTransform);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(toggle.transform.parent as RectTransform);
+
+        }
+
+        Debug.Log(toggle.transform.parent+"sss");
+
     }
     private void OnClickShowManBody(Toggle toggle, bool isOn)
     {
         if (isOn)
-            RenTiCon.Instance.ShowBodyManModel(toggle.transform.GetChild(1).GetComponent<Text>().text);
+        {
+            //RenTiCon.Instance.ShowBodyManModel(toggle.transform.GetChild(1).GetComponent<Text>().text);
+            Debug.Log(toggle.transform.parent + "aasss");
+
+        }
+        StartCoroutine(RefreshLayout(toggle));
+
     }
 
     private void EnterWomanPanel()

@@ -63,6 +63,8 @@ public class LabSystemManager : MonoBehaviour
     // 选择考核模式
     public void SelectAssessmentMode()
     {
+        DoorClickCon.Instance.SetHighlight(0); // 高亮更衣室门
+
         GameObjMan.Instance.UpObjPosCon();
         isAssessmentMode = true;
         //optionPanel.SetActive(false);
