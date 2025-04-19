@@ -1,0 +1,64 @@
+using StarterAssets;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class MealReportUI : UICaoZuoBase
+{
+    public Button exportBtn;
+    public Button reselectBtn1;
+    public Button reselectBtn2;
+    public Button reselectBtn3;
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        exportBtn.onClick.AddListener(ExportClick);
+        reselectBtn1.onClick.AddListener(ReselectClick1);
+        reselectBtn2.onClick.AddListener(ReselectClick2);
+        reselectBtn3.onClick.AddListener(ReselectClick3);
+
+
+    }
+
+    private void ReselectClick3()
+    {
+        ChooseFoodAllInformCon.Instance.DeleteFoodKind("Wan");
+        UIManager.Instance.CloseUICaoZuo("MealReportUI");
+        GameObjMan.Instance.OpenFirst();
+
+    }
+
+    private void ReselectClick2()
+    {
+        ChooseFoodAllInformCon.Instance.DeleteFoodKind("Zhong");
+        UIManager.Instance.CloseUICaoZuo("MealReportUI");
+        GameObjMan.Instance.OpenFirst();
+
+    }
+
+    private void ReselectClick1()
+    {
+        ChooseFoodAllInformCon.Instance.DeleteFoodKind("Zao");
+        UIManager.Instance.CloseUICaoZuo("MealReportUI");
+        GameObjMan.Instance.OpenFirst();
+
+    }
+
+    private void ExportClick()
+    {
+        MessageCenter.Instance.Send("SendHomeReset", ""); //氨基酸工作台
+        ShanShiCon.Instance.CloseObj();
+        UIManager.Instance.CloseAllUICaoZuo();
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+}
