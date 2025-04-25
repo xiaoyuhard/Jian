@@ -29,16 +29,15 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
     private void Start()
     {
 
-        StartCoroutine(ConUp());
 
-        MessageCenter.Instance.Register("SendMouseToAnjisuanPing", MouseAnjisuanPing); //打开氨基酸UI面板
+        //MessageCenter.Instance.Register("SendMouseToAnjisuanPing", MouseAnjisuanPing); //打开氨基酸UI面板
 
-        MessageCenter.Instance.Register("SendMouseToChromatograph", MouseChromatograph); //氨基酸工作台
-        MessageCenter.Instance.Register("SendMouseToDaoChu", MouseDaoChu); //氨基酸工作台
-        MessageCenter.Instance.Register("SendPreToWorkbench", PreToWorkbench); //氨基酸工作台高亮
-        MessageCenter.Instance.Register("SendExamineToAnjisuan", ExamineToAnjisuan); //氨基酸PreparationUI打开
-        MessageCenter.Instance.Register("SendMouseToWorkbench", MouseWorkbench); //氨基酸工作台
-        MessageCenter.Instance.Register("SendMouseToAnjisuanComputer", MouseToAnjisuanComputer); //氨基酸电脑
+        //MessageCenter.Instance.Register("SendMouseToChromatograph", MouseChromatograph); //氨基酸工作台
+        //MessageCenter.Instance.Register("SendMouseToDaoChu", MouseDaoChu); //氨基酸工作台
+        //MessageCenter.Instance.Register("SendPreToWorkbench", PreToWorkbench); //氨基酸工作台高亮
+        //MessageCenter.Instance.Register("SendExamineToAnjisuan", ExamineToAnjisuan); //氨基酸PreparationUI打开
+        //MessageCenter.Instance.Register("SendMouseToWorkbench", MouseWorkbench); //氨基酸工作台
+        //MessageCenter.Instance.Register("SendMouseToAnjisuanComputer", MouseToAnjisuanComputer); //氨基酸电脑
 
         //MessageCenter.Instance.Register("SendDianNaoToAn", DianNaoToAn); //氨基酸工作台
 
@@ -46,64 +45,64 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
 
 
     }
-    private void MouseToAnjisuanComputer(string obj)
-    {
-        UIManager.Instance.OpenUICaoZuo("ChromatographUI");
-
-    }
-    private void MouseWorkbench(string obj)
-    {
-        UIManager.Instance.OpenUICaoZuo("WorkbenchUI");
-        LabSystemManager.Instance.HighlightObject(listObj[4]);
-
-    }
-    private void ExamineToAnjisuan(string obj)
-    {
-        UIManager.Instance.OpenUICaoZuo("PreparationUI");
-        LabSystemManager.Instance.HighlightObject(listObj[1]);
-
-    }
-
-    private void DianNaoToAn(string obj)
-    {
-
-
-    }
-
-
-    private void PreToWorkbench(string obj)
-    {
-        //workbench.GetComponent<Outline>().enabled = true;
-        //LabSystemManager.Instance.HighlightObject(workbench);
-
-    }
-
-    ////接收到操作点的是氨基酸 进入后进行存储 跟练结束后如果点击考核 进行发送 高亮氨基酸的门
-    //private void WearToAnTag(string obj)
+    //private void MouseToAnjisuanComputer(string obj)
     //{
-    //    MessageCenter.Instance.Send("CaozuoName", obj);
+    //    UIManager.Instance.OpenUICaoZuo("ChromatographUI");
 
     //}
-    private void MouseDaoChu(string obj)
-    {
-        UIManager.Instance.OpenUICaoZuo("GenLianUIMan");
+    //private void MouseWorkbench(string obj)
+    //{
+    //    UIManager.Instance.OpenUICaoZuo("WorkbenchUI");
+    //    LabSystemManager.Instance.HighlightObject(listObj[4]);
 
-    }
+    //}
+    //private void ExamineToAnjisuan(string obj)
+    //{
+    //    UIManager.Instance.OpenUICaoZuo("PreparationUI");
+    //    LabSystemManager.Instance.HighlightObject(listObj[1]);
 
-    private void MouseChromatograph(string obj)
-    {
-        //UIManager.Instance.OpenUICaoZuo("ChromatographUI");
-        LabSystemManager.Instance.HighlightObject(listObj[5]);
+    //}
 
-    }
+    //private void DianNaoToAn(string obj)
+    //{
 
 
+    //}
 
-    private void MouseAnjisuanPing(string obj)
-    {
-        UIManager.Instance.OpenUICaoZuo("AnjisuanExamineUI");
 
-    }
+    //private void PreToWorkbench(string obj)
+    //{
+    //    //workbench.GetComponent<Outline>().enabled = true;
+    //    //LabSystemManager.Instance.HighlightObject(workbench);
+
+    //}
+
+    //////接收到操作点的是氨基酸 进入后进行存储 跟练结束后如果点击考核 进行发送 高亮氨基酸的门
+    ////private void WearToAnTag(string obj)
+    ////{
+    ////    MessageCenter.Instance.Send("CaozuoName", obj);
+
+    ////}
+    //private void MouseDaoChu(string obj)
+    //{
+    //    UIManager.Instance.OpenUICaoZuo("GenLianUIMan");
+
+    //}
+
+    //private void MouseChromatograph(string obj)
+    //{
+    //    //UIManager.Instance.OpenUICaoZuo("ChromatographUI");
+    //    LabSystemManager.Instance.HighlightObject(listObj[5]);
+
+    //}
+
+
+
+    //private void MouseAnjisuanPing(string obj)
+    //{
+    //    UIManager.Instance.OpenUICaoZuo("AnjisuanExamineUI");
+
+    //}
 
 
 
@@ -360,7 +359,8 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
     {
         timeList[index].GetComponent<PlayableDirector>().Play();
 
-        return (float)timeList[index].GetComponent<PlayableDirector>().duration;
+        //return (float)timeList[index].GetComponent<PlayableDirector>().duration;
+        return 3;
     }
 
     // Update is called once per frame
@@ -385,7 +385,7 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
     {
         foreach (var item in modelList)
         {
-            item.SetActive(false);
+            //item.SetActive(true);
         }
         foreach (var item in timeList)
         {
@@ -424,5 +424,13 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
             item.SetActive(false);
         }
         timelineObj.SetActive(true);
+        isTriOnce = true;
+
+        StartCoroutine(ConUp());
+
+    }
+    private void OnDisable()
+    {
+        timelineObj.SetActive(false);
     }
 }

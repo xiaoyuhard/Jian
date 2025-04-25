@@ -21,15 +21,15 @@ public class GenLianUIMan : UICaoZuoBase
     {
         //MessageCenter.Instance.Send("OpenDoor", "WearPos");
         //CaozuoSceneCon.Instance.EnterLab(0);
-        UIManager.Instance.CloseUICaoZuo("GenLianUIMan");
+        UIManager.Instance.CloseUICaoZuo(UINameType.UI_GenLianUIMan);
         LabSystemManager.Instance.SelectAssessmentMode();
     }
 
     //返回实验操作界面
     private void QuXiao()
     {
-        UIManager.Instance.OpenUI("CaozuoManager");
-        UIManager.Instance.OpenUI("BackMan");
+        UIManager.Instance.OpenUI(UINameType.UI_CaozuoManager);
+        UIManager.Instance.OpenUI(UINameType.UI_BackMan);
         //GameManager.Instance.SetGameObj(false);
         UIManager.Instance.CloseAllUICaoZuo();
         GameManager.Instance.SetGameObj(false);

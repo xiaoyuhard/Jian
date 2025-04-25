@@ -18,9 +18,9 @@ public class AmendUI : MonoSingletonBase<AmendUI>
 
     public void SetIconInf(FoodKindItemData foodKindItemData)
     {
-        icon.sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + foodKindItemData.code);
-        itemName.text = foodKindItemData.iconName;
-        code.text = foodKindItemData.code;
+        icon.sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + foodKindItemData.foodCode);
+        itemName.text = foodKindItemData.foodName;
+        code.text = foodKindItemData.foodCode;
         amount.text = foodKindItemData.count.ToString();
         foodKind = foodKindItemData;
     }
@@ -37,7 +37,7 @@ public class AmendUI : MonoSingletonBase<AmendUI>
     private void AmendClick()
     {
         string count = inputField.text;
-        foodKind.count = float.Parse(count);
+        foodKind.count = int.Parse(count);
         ChooseFoodAllInformCon.Instance.EditBackFood(foodKind);
         gameObject.SetActive(false);
     }

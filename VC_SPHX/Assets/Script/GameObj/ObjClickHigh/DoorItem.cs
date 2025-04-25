@@ -73,27 +73,7 @@ public class DoorItem : MonoBehaviour
     public void ResDoor()
     {
         doorCollider.SetActive(true);
-        //doorAniL.GetComponent<Animation>().enabled = false;
-        //doorAniR.GetComponent<Animation>().enabled = false;
-        //doorAniL.GetComponent<Animation>()["双开门右"].time = 0;
 
-        //doorAniL.GetComponent<Animation>().Play();
-
-        //doorAniR.GetComponent<Animation>().Rewind();
-        ////doorAniL.GetComponent<Animation>().Stop();
-        //Animation legacyAnimation = doorAniR.GetComponent<Animation>();
-        ////doorAniR.GetComponent<Animation>().Stop(); // 停止所有动画
-        ////AnimationState animState = doorAniR.GetComponent<Animation>()["双开门左"];
-        ////animState.time = 0f; // 时间设为0
-        ////animState.enabled = true; // 启用状态以进行采样
-        ////doorAniR.GetComponent<Animation>().Sample(); // 应用当前状态
-        ////animState.enabled = false; // 禁用防止自动播放
-
-        //legacyAnimation["双开门左"].time = 0.01f;
-        ////legacyAnimation.Sample(); // 强制更新到第 0 帧
-        ////legacyAnimation.Play();
-        ////legacyAnimation.Stop();
-        //legacyAnimation.Stop();
         if (_hasPlayed )
         {
             StartCoroutine(ConUp());

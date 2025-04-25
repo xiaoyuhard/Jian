@@ -37,14 +37,14 @@ public class AlterUI : MonoSingletonBase<AlterUI>
 
     public void UpFoodItem(FoodKindItemData data, string foodSort)
     {
-        icon.sprite = Resources.Load<Sprite>("Icons" + "/" + data.code);
-        foodName.text = data.iconName;
-        code.text = data.code;
-        unit.text = data.unit;
-        heat.text = data.heat;
+        icon.sprite = Resources.Load<Sprite>("Icons" + "/" + data.foodCode);
+        foodName.text = data.foodName;
+        code.text = data.foodCode;
+        unit.text = data.water;
+        heat.text = data.energyKcal;
         protein.text = data.protein;
         fat.text = data.fat;
-        carbohydrate.text = data.carbohydrate;
+        carbohydrate.text = data.cho;
     }
 
     private void DeletFoodItem()

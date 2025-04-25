@@ -31,6 +31,9 @@ public class GameObjMan : MonoSingletonBase<GameObjMan>
 
     }
 
+    /// <summary>
+    /// 关闭玩家控制
+    /// </summary>
     public void CLoseFirst()
     {
         objPlayer.GetComponent<FirstPersonController>().enabled = false;
@@ -38,6 +41,9 @@ public class GameObjMan : MonoSingletonBase<GameObjMan>
         Cursor.lockState = CursorLockMode.None;
     }
 
+    /// <summary>
+    /// 打开玩家控制
+    /// </summary>
     public void OpenFirst()
     {
         objPlayer.GetComponent<FirstPersonController>().enabled = true;

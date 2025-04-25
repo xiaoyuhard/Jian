@@ -2,7 +2,9 @@ using RTS;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 
 public class UIManager : MonoBehaviour
@@ -17,6 +19,7 @@ public class UIManager : MonoBehaviour
     public List<UIBase> uIBaseList;
 
     private Canvas mainCanvas;
+    List<string> mNotCloseList = new List<string>();
 
     private void Awake()
     {
@@ -32,6 +35,7 @@ public class UIManager : MonoBehaviour
         }
         AutoRegisterAllUI();
     }
+
     private void Start()
     {
         //Debug.Log(GetComponentInChildren<HomeManager>());
@@ -90,8 +94,12 @@ public class UIManager : MonoBehaviour
     {
         if (uiPanels.TryGetValue(uiName, out UIBase panel))
         {
-            panel.gameObject.SetActive(true);
-            panel.OnOpen();
+            if (!panel.gameObject.activeInHierarchy)
+            {
+                panel.gameObject.SetActive(true);
+                panel.OnOpen();
+                print("OpenUI:" + panel);
+            }
         }
         else
         {
@@ -103,8 +111,12 @@ public class UIManager : MonoBehaviour
     {
         if (uiCaoZuoPanels.TryGetValue(uiName, out UICaoZuoBase panel))
         {
-            panel.gameObject.SetActive(true);
-            panel.OnOpen();
+            if (!panel.gameObject.activeInHierarchy)
+            {
+                panel.gameObject.SetActive(true);
+                panel.OnOpen();
+                print("OpenUICaoZuo:" + panel);
+            }
         }
         else
         {
@@ -117,24 +129,55 @@ public class UIManager : MonoBehaviour
     {
         if (uiPanels.TryGetValue(uiName, out UIBase panel))
         {
-            panel.OnClose();
-            panel.gameObject.SetActive(false);
+            CloseUI(panel);
+        }
+    }
+
+    void CloseUI(UIBase ui)
+    {
+        if (ui != null)
+        {
+            if (mNotCloseList.Contains(ui.name))
+                return;
+
+            if (ui.gameObject.activeInHierarchy)
+            {
+                ui.OnClose();
+                ui.gameObject.SetActive(false);
+                print("CloseUI:" + ui);
+            }
         }
         else
         {
-            Debug.LogError($"未找到 UI 名称: {uiName}");
+            Debug.LogError($"未找到 UI 名称: {ui.name}");
         }
     }
+
     public void CloseUICaoZuo(string uiName)
     {
         if (uiCaoZuoPanels.TryGetValue(uiName, out UICaoZuoBase panel))
         {
-            panel.OnClose();
-            panel.gameObject.SetActive(false);
+            CloseUICaoZuo(panel);
+        }
+    }
+
+    void CloseUICaoZuo(UICaoZuoBase ui)
+    {
+        if (ui != null)
+        {
+            if (mNotCloseList.Contains(ui.name))
+                return;
+
+            if (ui.gameObject.activeInHierarchy)
+            {
+                ui.OnClose();
+                ui.gameObject.SetActive(false);
+                print("CloseUICaoZuo:" + ui);
+            }
         }
         else
         {
-            Debug.LogError($"未找到 UI 名称: {uiName}");
+            Debug.LogError($"未找到 UI 名称: {ui.name}");
         }
     }
 
@@ -143,8 +186,7 @@ public class UIManager : MonoBehaviour
     {
         foreach (var panel in uiPanels.Values)
         {
-            panel.OnClose();
-            panel.gameObject.SetActive(false);
+            CloseUI(panel);
         }
     }
 
@@ -152,8 +194,7 @@ public class UIManager : MonoBehaviour
     {
         foreach (var panel in uiCaoZuoPanels.Values)
         {
-            panel.OnClose();
-            panel.gameObject.SetActive(false);
+            CloseUICaoZuo(panel);
         }
     }
     //public void BackHome()
@@ -168,7 +209,30 @@ public class UIManager : MonoBehaviour
     //    CloseUI("ChromatographUI");
     //    CloseUI("ChromatographUI");
     //}
+
+    /// <summary>
+    /// 设定不要关闭UI（任何时候）
+    /// </summary>
+    /// <param name="name"></param>
+    public void DonotCloseUI(string name)
+    {
+        if (!mNotCloseList.Contains(name))
+            mNotCloseList.Add(name);
+    }
 }
 
+public class UINameType
+{
+    public const string UI_HomeManager = "UI_HomeManager";
+    public const string UI_ZhishiManager = "UI_ZhishiManager";
+    public const string UI_MoxingManager = "UI_MoxingManager";
+    public const string UI_CaozuoManager = "UI_CaozuoManager";
+    public const string UI_BaogaoManager = "UI_BaogaoManager";
+    public const string UI_BackMan = "UI_BackMan";
+    public const string UI_GenLianUIMan = "UI_GenLianUIMan";
+    public const string UI_GenyishiMan = "UI_GenyishiMan";
+    public const string UI_ProTipsMan = "UI_ProTipsMan";
 
 
+
+}

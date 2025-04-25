@@ -20,7 +20,7 @@ public class WearCon : MonoSingletonBase<WearCon>
     public void MouseCabinet(string str)
     {
         if (isTriggerCabint)
-            UIManager.Instance.OpenUICaoZuo("GenyishiMan");
+            UIManager.Instance.OpenUICaoZuo(UINameType.UI_GenyishiMan);
         //通过传回来的tag来判断 点击进入的是哪个操作
         //switch (dorCaozuoTag)
         //{
@@ -103,7 +103,7 @@ public class WearCon : MonoSingletonBase<WearCon>
     public void OnCabinetClicked(int index)
     {
         //GameManager.Instance.hasDressed = true;
-        UIManager.Instance.OpenUI("GenyishiMan");
+        UIManager.Instance.OpenUI(UINameType.UI_GenyishiMan);
 
     }
 

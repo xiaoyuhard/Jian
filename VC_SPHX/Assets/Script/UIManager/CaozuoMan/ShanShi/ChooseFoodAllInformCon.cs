@@ -10,16 +10,20 @@ using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.EventSystems.EventTrigger;
 
+/// <summary>
+/// 食物选择控制 并且显示食物最后选择完的报告
+/// </summary>
 public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
 {
-    //private Dictionary<string, List<FoodKindItemData>> foodBreakfastDic = new Dictionary<string, List<FoodKindItemData>>();
-    //private Dictionary<string, List<FoodKindItemData>> foodLunchDic = new Dictionary<string, List<FoodKindItemData>>();
-    //private Dictionary<string, List<FoodKindItemData>> foodDinnerDic = new Dictionary<string, List<FoodKindItemData>>();
+    //private Dictionary<string, List<FoodKindItemData>> foodBreakfastList = new Dictionary<string, List<FoodKindItemData>>();
+    //private Dictionary<string, List<FoodKindItemData>> foodLunchList = new Dictionary<string, List<FoodKindItemData>>();
+    //private Dictionary<string, List<FoodKindItemData>> foodDinnerList = new Dictionary<string, List<FoodKindItemData>>();
     //private Dictionary<string, List<FoodKindItemData>> foodChooseBlDic = new Dictionary<string, List<FoodKindItemData>>();
 
-    private List<FoodKindItemData> foodBreakfastDic = new List<FoodKindItemData>();
-    private List<FoodKindItemData> foodLunchDic = new List<FoodKindItemData>();
-    private List<FoodKindItemData> foodDinnerDic = new List<FoodKindItemData>();
+    private List<FoodKindItemData> foodBreakfastList = new List<FoodKindItemData>();
+    private List<FoodKindItemData> foodLunchList = new List<FoodKindItemData>();
+    private List<FoodKindItemData> foodDinnerList = new List<FoodKindItemData>();
+
 
     public Transform foodBreakfastParent;
     public Transform foodLunchParent;
@@ -44,22 +48,36 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
     public GameObject editUI;
 
     private FoodKindItemData editFoodItem;
+    public bool againBl = false;
+
+    public UserInfo userInfo;
+
+    public Transform allFoodPartent;
+    public GameObject allFoodItemprefab;
+
+    public List<GameObject> tipEnergyList;
 
     private void OnEnable()
     {
-        foodBreakfastDic.Clear();
-        foodLunchDic.Clear();
-        foodDinnerDic.Clear();
+        foodBreakfastList.Clear();
+        foodLunchList.Clear();
+        foodDinnerList.Clear();
         totalFoodAllLists.Clear();
         dropdown.value = 0;
         editUI.SetActive(false);
+        totalFoodAll = null;
+        againBl = true;
+        foreach (var item in tipEnergyList)
+        {
+            item.SetActive(false);
+        }
     }
 
     // Start is called before the first frame update
     void Start()
     {
         //MessageCenter.Instance.Register()
-        choossFoodAllBtn.onClick.AddListener(SelectEnd);
+        //choossFoodAllBtn.onClick.AddListener(SelectEnd);
         lastValue = dropdown.value;
         selectEndBtn.onClick.AddListener(SelectEndUI);
 
@@ -68,7 +86,10 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
 
         amendTgl.onValueChanged.AddListener(AmendTglClick);//修改按钮
         deltgl.onValueChanged.AddListener(DelTglClick);//删除按钮
-
+        GameObject toggleObj = Instantiate(foodPrefab, foodBreakfastParent);
+        toggleObj.SetActive(true);
+        GameObject toggleObj2 = Instantiate(foodPrefab, foodBreakfastParent);
+        toggleObj2.SetActive(true);
     }
 
     private void AmendTglClick(bool arg0)
@@ -85,13 +106,13 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
         switch (foodKind.mealPeriod)
         {
             case "0":
-                EditFoodItem(foodBreakfastDic, foodKind);
+                EditFoodItem(foodBreakfastList, foodKind);
                 break;
             case "1":
-                EditFoodItem(foodLunchDic, foodKind);
+                EditFoodItem(foodLunchList, foodKind);
                 break;
             case "2":
-                EditFoodItem(foodDinnerDic, foodKind);
+                EditFoodItem(foodDinnerList, foodKind);
                 break;
             default:
                 break;
@@ -113,7 +134,7 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
         // 3. 遍历列表查找匹配项
         foreach (FoodKindItemData food in targetList)
         {
-            if (food.code == foodKind.code)
+            if (food.foodCode == foodKind.foodCode)
             {
                 food.count = foodKind.count;
                 // 如果只需修改第一个匹配项，可在此处break
@@ -131,13 +152,13 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
             switch (editFoodItem.mealPeriod)
             {
                 case "0":
-                    DelFoodItem(foodBreakfastDic, editFoodItem);
+                    DelFoodItem(foodBreakfastList, editFoodItem);
                     break;
                 case "1":
-                    DelFoodItem(foodLunchDic, editFoodItem);
+                    DelFoodItem(foodLunchList, editFoodItem);
                     break;
                 case "2":
-                    DelFoodItem(foodDinnerDic, editFoodItem);
+                    DelFoodItem(foodDinnerList, editFoodItem);
                     break;
                 default:
                     break;
@@ -162,9 +183,9 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
 
     public void RefreshMealUI()
     {
-        SumTotalBreakfastFood(foodBreakfastDic, foodBreakfastParent, "Zao");
-        SumTotalBreakfastFood(foodLunchDic, foodLunchParent, "Zhong");
-        SumTotalBreakfastFood(foodDinnerDic, foodDinnerParent, "Wan");
+        SumTotalBreakfastFood(foodBreakfastList, foodBreakfastParent, "Zao");
+        SumTotalBreakfastFood(foodLunchList, foodLunchParent, "Zhong");
+        SumTotalBreakfastFood(foodDinnerList, foodDinnerParent, "Wan");
         SumTotalEveryMeal();
 
     }
@@ -174,12 +195,17 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
 
     private void SelectEndUI()
     {
-        if (FoodChooseKind() && lastValue==2)
+        //if (FoodChooseKind() && lastValue == 2)
         {
             UIManager.Instance.CloseUICaoZuo("ChooseShanShiUI");
             //ShanShiCon.Instance.conditionMet = true;
-            EnableInform();
-
+            GameManager.Instance.SetStepDetection(true);  //打开营养师的提示位置
+            FoodSendConverDay foodSendConverDay = new FoodSendConverDay();
+            foodSendConverDay.breakfast = AddFoodSendConverList(foodBreakfastList);
+            foodSendConverDay.lunch = AddFoodSendConverList(foodLunchList);
+            foodSendConverDay.dinner = AddFoodSendConverList(foodDinnerList);
+            foodSendConverDay.userInfo = userInfo;
+            ServerCon.Instance.ConverToJson(foodSendConverDay);
             return;
         }
         selectEndTipText.gameObject.SetActive(true);
@@ -191,6 +217,21 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
         selectEndTipText.gameObject.SetActive(false);
 
     }
+
+    public List<FoodEveryMealItem> AddFoodSendConverList(List<FoodKindItemData> foodKinds)
+    {
+        List<FoodEveryMealItem> foodSendConvers = new List<FoodEveryMealItem>();
+        foreach (var item in foodKinds)
+        {
+            FoodEveryMealItem converItem = new FoodEveryMealItem();
+            converItem.foodCode = item.foodCode;
+            converItem.quantity = item.count;
+
+            foodSendConvers.Add(converItem);
+        }
+        return foodSendConvers;
+    }
+
 
     private int lastValue; // 记录上一次的值
 
@@ -205,10 +246,12 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
             Debug.Log("333");
             //foodChooseBlDic.Clear();
             foodChooseCount = 0;
+            FoodManager.Instance.LoadFoodData();
+
             return;
         }
 
-        Debug.Log(foodBreakfastDic.Count + "  zao" + foodLunchDic.Count + "  zhong" + foodDinnerDic.Count + "  wan");
+        Debug.Log(foodBreakfastList.Count + "  zao" + foodLunchList.Count + "  zhong" + foodDinnerList.Count + "  wan");
         dropdown.value = lastValue;
         textTip.SetActive(true);
         StartCoroutine(WaitCloseText());
@@ -231,34 +274,35 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
     public void AddFoodDic(List<FoodKindItemData> foodLsit, string kindName, int count)
     {
         foodChooseCount = count;
-
+        // 创建新列表并复制数据（浅拷贝）
+        List<FoodKindItemData> copiedList = new List<FoodKindItemData>(foodLsit);
         switch (dropdown.value)
         {
             case 0:
-                //foodBreakfastDic.Remove(kindName);
-                //foodBreakfastDic.Add(kindName, foodLsit);
-                foodBreakfastDic = foodLsit;
-                //Debug.Log(foodBreakfastDic.Count());
+                //foodBreakfastList.Remove(kindName);
+                //foodBreakfastList.Add(kindName, foodLsit);
+                foodBreakfastList = copiedList;
+                //Debug.Log(foodBreakfastList.Count());
                 totalFoodAllLists.RemoveAll(item => item.foodName == "Zao");
 
 
                 break;
             case 1:
-                //foodLunchDic.Remove(kindName);
-                //foodLunchDic.Add(kindName, foodLsit);
-                foodLunchDic = foodLsit;
+                //foodLunchList.Remove(kindName);
+                //foodLunchList.Add(kindName, foodLsit);
+                foodLunchList = copiedList;
 
-                //Debug.Log(foodLunchDic.Count());
+                //Debug.Log(foodLunchList.Count());
                 totalFoodAllLists.RemoveAll(item => item.foodName == "Zhong");
 
 
                 break;
             case 2:
-                //foodDinnerDic.Remove(kindName);
-                //foodDinnerDic.Add(kindName, foodLsit);
-                foodDinnerDic = foodLsit;
+                //foodDinnerList.Remove(kindName);
+                //foodDinnerList.Add(kindName, foodLsit);
+                foodDinnerList = copiedList;
 
-                //Debug.Log(foodDinnerDic.Count());
+                //Debug.Log(foodDinnerList.Count());
                 totalFoodAllLists.RemoveAll(item => item.foodName == "Wan");
 
                 break;
@@ -271,41 +315,43 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
         switch (foodKindNmae)
         {
             case "Zao":
-                foodBreakfastDic.Clear();
+                foodBreakfastList.Clear();
                 totalFoodAllLists.RemoveAll(item => item.foodName == foodKindNmae);
                 break;
             case "Zhong":
-                foodLunchDic.Clear();
+                foodLunchList.Clear();
                 totalFoodAllLists.RemoveAll(item => item.foodName == foodKindNmae);
                 break;
             case "Wan":
-                foodDinnerDic.Clear();
+                foodDinnerList.Clear();
                 totalFoodAllLists.RemoveAll(item => item.foodName == foodKindNmae);
                 break;
         }
     }
 
+    //判断是否3餐都选择完了
     public bool TotalFoodShow()
     {
         //Debug.Log(totalFoodAllLists.Count+" totalfoodall");
-        if (totalFoodAllLists.Count < 3) return false;
+        //if (totalFoodAllLists.Count < 3) return false;
 
         return true;
     }
 
+    //进行食物选择的判断 如果本餐的食物选择数量大于6 就可以切换哪餐
     public bool FoodChooseKind()
     {
         //switch (lastValue)
         //{
         //    case 0:
-        //        if (foodBreakfastDic.Count < 6) return false;
+        //        if (foodBreakfastList.Count < 6) return false;
         //        return true;
         //    case 1:
-        //        if (foodLunchDic.Count < 6) return false;
+        //        if (foodLunchList.Count < 6) return false;
         //        return true;
 
         //    case 2:
-        //        if (foodDinnerDic.Count < 6) return false;
+        //        if (foodDinnerList.Count < 6) return false;
         //        return true;
 
         //    default:
@@ -314,10 +360,12 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
 
 
         Debug.Log(foodChooseCount);
-        if (foodChooseCount < 6) return false;
+        //if (foodChooseCount < 6) return false;
         return true;
 
     }
+
+
 
     //出报告显示
     //public void SumTotalBreakfastFood(Dictionary<string, List<FoodKindItemData>> foodDic, Transform foodParent, string mealName)
@@ -341,18 +389,26 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
         {
             GameObject toggleObj = Instantiate(foodPrefab, foodParent);
             toggleObj.SetActive(true);
-            toggleObj.transform.Find("Name").GetComponent<Text>().text = foodItem.iconName;
-            toggleObj.transform.Find("Amount").GetComponent<Text>().text = foodItem.count.ToString();
-            toggleObj.transform.Find("Unit").GetComponent<Text>().text = foodItem.unit;
-            toggleObj.transform.Find("Heat").GetComponent<Text>().text = foodItem.heat;
-            toggleObj.transform.Find("Protein").GetComponent<Text>().text = foodItem.protein;
-            toggleObj.transform.Find("Fat").GetComponent<Text>().text = foodItem.fat;
-            toggleObj.transform.Find("Carbohydrate").GetComponent<Text>().text = foodItem.carbohydrate;
+            SetFoodItemText(toggleObj, "Name", foodItem.foodName);
+            SetFoodItemText(toggleObj, "Amount", foodItem.count.ToString());
+            SetFoodItemText(toggleObj, "Unit", BackMultiplyuantity(foodItem.count, float.Parse(foodItem.water)));
+            SetFoodItemText(toggleObj, "EnergyKcal", BackMultiplyuantity(foodItem.count, float.Parse(foodItem.energyKcal)));
+            //SetFoodItemText(toggleObj, "energyKj", BackMultiplyuantity(foodItem.count, float.Parse(foodItem.energyKj)));
+            SetFoodItemText(toggleObj, "Protein", BackMultiplyuantity(foodItem.count, float.Parse(foodItem.protein)));
+            SetFoodItemText(toggleObj, "Fat", BackMultiplyuantity(foodItem.count, float.Parse(foodItem.fat)));
+            SetFoodItemText(toggleObj, "Cho", BackMultiplyuantity(foodItem.count, float.Parse(foodItem.cho)));
+            //toggleObj.transform.Find("Name").GetComponent<Text>().text = foodItem.foodName;
+            //toggleObj.transform.Find("Amount").GetComponent<Text>().text = foodItem.count.ToString();
+            //toggleObj.transform.Find("Unit").GetComponent<Text>().text = BackMultiplyuantity(foodItem.count, float.Parse(foodItem.water));
+            //toggleObj.transform.Find("EnergyKcal").GetComponent<Text>().text = foodItem.energyKcal;
+            //toggleObj.transform.Find("Protein").GetComponent<Text>().text = foodItem.protein;
+            //toggleObj.transform.Find("Fat").GetComponent<Text>().text = foodItem.fat;
+            //toggleObj.transform.Find("Cho").GetComponent<Text>().text = foodItem.cho;
 
-            totalFood.heat += float.Parse(foodItem.heat);
-            totalFood.protein += float.Parse(foodItem.protein);
-            totalFood.fat += float.Parse(foodItem.fat);
-            totalFood.carbohydrate += float.Parse(foodItem.carbohydrate);
+            //totalFood.totalEnergyKca += float.Parse(foodItem.energyKcal);
+            //totalFood.protein += float.Parse(foodItem.protein);
+            //totalFood.fat += float.Parse(foodItem.fat);
+            //totalFood.cho += float.Parse(foodItem.cho);
             Toggle toggle = toggleObj.GetComponent<Toggle>();
 
             toggle.onValueChanged.AddListener((isOn) =>
@@ -361,10 +417,22 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
             });
             //}
         }
-        totalFood.foodName = mealName;
-        totalFood.heatStandard = Compare(totalFood.heat, 5);
-        totalFoodAllLists.Add(totalFood);
+        //totalFood.foodName = mealName;
+        //totalFood.totalEnergyKcaStandard = Compare(totalFood.totalEnergyKca, 5);
+        //totalFoodAllLists.Add(totalFood);
         //Debug.Log(totalFoodAllLists.Count + "zongshu ");
+    }
+    //传入text名字 设置text文本
+    public void SetFoodItemText(GameObject tgl, string textName, string foodInfor)
+    {
+        //if (tgl.transform.Find(textName) == null) return;
+        tgl.transform.Find(textName).GetComponent<Text>().text = foodInfor;
+
+    }
+
+    public string BackMultiplyuantity(int quantity, float parameters)
+    {
+        return (quantity * parameters).ToString();
     }
 
     void OnAlterFoodSelected(FoodKindItemData food, Toggle tglItem, bool isOn)
@@ -386,6 +454,19 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
         return 2;
     }
 
+    //储存收回来的数据 
+    public void ReceiveServerInform(FoodRecriveConverDay response)
+    {
+        everyMealEnergies.Clear();
+        everyMealEnergies.Add(response.data.breakfastEnergy);
+        everyMealEnergies.Add(response.data.lunchEnergy);
+        everyMealEnergies.Add(response.data.dinnerEnergy);
+        elementResult = response.data.elementResult;
+        compareResult = response.data.compareResult;
+    }
+    CompareResult compareResult = new CompareResult();
+    private List<EveryMealEnergy> everyMealEnergies = new List<EveryMealEnergy>();
+    private List<ElementResult> elementResult = new List<ElementResult>();
     //一天总量
     public void SumTotalEveryMeal()
     {
@@ -393,36 +474,88 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
         {
             Destroy(child.gameObject);
         }
-        SumTotalBreakfastFood(foodBreakfastDic, foodBreakfastParent, "Zao");
+        SumTotalBreakfastFood(foodBreakfastList, foodBreakfastParent, "Zao");
 
-        SumTotalBreakfastFood(foodLunchDic, foodLunchParent, "Zhong");
-        SumTotalBreakfastFood(foodDinnerDic, foodDinnerParent, "Wan");
-        foreach (TotalFoodAll foodItem in totalFoodAllLists)
+        SumTotalBreakfastFood(foodLunchList, foodLunchParent, "Zhong");
+        SumTotalBreakfastFood(foodDinnerList, foodDinnerParent, "Wan");
+        foreach (EveryMealEnergy foodItem in everyMealEnergies)
         {
-            GameObject toggleObj = Instantiate(everyMealUIPrefab, everyMealParent);
+            GameObject toggleObj = Instantiate(everyMealObj, everyMealParent);
             toggleObj.SetActive(true);
-            toggleObj.transform.GetChild(3).GetComponent<Text>().text = foodItem.heat.ToString();
-            toggleObj.transform.GetChild(3).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + foodItem.heatStandard);
-            toggleObj.transform.GetChild(4).GetComponent<Text>().text = foodItem.protein.ToString();
-            toggleObj.transform.GetChild(4).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + foodItem.proteinStandard);
-            toggleObj.transform.GetChild(5).GetComponent<Text>().text = foodItem.fat.ToString();
-            toggleObj.transform.GetChild(5).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + foodItem.fatStandard);
-            toggleObj.transform.GetChild(6).GetComponent<Text>().text = foodItem.carbohydrate.ToString();
-            toggleObj.transform.GetChild(6).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + foodItem.carbohydrateStandard);
+            toggleObj.transform.GetChild(2).GetComponent<Text>().text = foodItem.totalEnergyKcal.ToString();
+            //toggleObj.transform.GetChild(3).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + foodItem.totalEnergyKcaStandard);
+            toggleObj.transform.GetChild(5).GetComponent<Text>().text = foodItem.protein.ToString();
+            //toggleObj.transform.GetChild(4).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + foodItem.proteinStandard);
+            toggleObj.transform.GetChild(8).GetComponent<Text>().text = foodItem.fat.ToString();
+            //toggleObj.transform.GetChild(5).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + foodItem.fatStandard);
+            toggleObj.transform.GetChild(11).GetComponent<Text>().text = foodItem.cho.ToString();
+            //toggleObj.transform.GetChild(6).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + foodItem.choStandard);
             // 显示食物名称
-            totalFoodAll.heat += foodItem.heat;
-            totalFoodAll.heat += foodItem.protein;
-            totalFoodAll.heat += foodItem.fat;
-            totalFoodAll.heat += foodItem.carbohydrate;
+            //totalFoodAll.heat += foodItem.heat;
+            //totalFoodAll.heat += foodItem.protein;
+            //totalFoodAll.heat += foodItem.fat;
+            //totalFoodAll.heat += foodItem.carbohydrate;
         }
-        everyMealObj.transform.GetChild(3).GetComponent<Text>().text = totalFoodAll.heat.ToString();
-        everyMealObj.transform.GetChild(3).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + totalFoodAll.heatStandard);
-        everyMealObj.transform.GetChild(4).GetComponent<Text>().text = totalFoodAll.protein.ToString();
-        everyMealObj.transform.GetChild(4).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + totalFoodAll.proteinStandard);
-        everyMealObj.transform.GetChild(5).GetComponent<Text>().text = totalFoodAll.fat.ToString();
-        everyMealObj.transform.GetChild(5).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + totalFoodAll.fatStandard);
-        everyMealObj.transform.GetChild(6).GetComponent<Text>().text = totalFoodAll.carbohydrate.ToString();
-        everyMealObj.transform.GetChild(6).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + totalFoodAll.carbohydrateStandard);
+
+        foreach (var item in elementResult)
+        {
+            GameObject elementItem = Instantiate(allFoodItemprefab, allFoodPartent);
+            elementItem.SetActive(true);
+            elementItem.transform.GetChild(0).GetComponent<Text>().text = item.zhName;
+            elementItem.transform.GetChild(1).GetComponent<Text>().text = item.totalContent;
+        }
+        bool fl = true;
+        if (compareResult.choDiff<0)
+        {
+            tipEnergyList[0].SetActive(true);
+            fl = false;
+        }
+        else if(compareResult.choDiff > 0)
+        {
+            tipEnergyList[1].SetActive(true);
+            fl = false;
+
+        }
+        if (compareResult.fatDiff < 0)
+        {
+            tipEnergyList[2].SetActive(true);
+            fl = false;
+
+        }
+        else if (compareResult.fatDiff > 0)
+        {
+            tipEnergyList[3].SetActive(true);
+            fl = false;
+
+        }
+        if (compareResult.energyDiff < 0)
+        {
+            tipEnergyList[4].SetActive(true);
+            fl = false;
+
+        }
+        else if (compareResult.energyDiff > 0)
+        {
+            tipEnergyList[5].SetActive(true);
+            fl = false;
+
+        }
+        if (compareResult.proteinDiff < 0)
+        {
+            tipEnergyList[6].SetActive(true);
+            fl = false;
+        }
+        else if (compareResult.proteinDiff > 0)
+        {
+            tipEnergyList[7].SetActive(true);
+            fl = false;
+        }
+        if (fl)
+        {
+            tipEnergyList[8].SetActive(true);
+
+        }
+
     }
 
 
@@ -438,7 +571,7 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
         {
             totalFoodAllLists.Clear();
 
-            UIManager.Instance.OpenUICaoZuo("MealReportUI");
+            //UIManager.Instance.OpenUICaoZuo("MealReportUI");
             GameObjMan.Instance.CLoseFirst();
             SumTotalEveryMeal();
             //ShanShiCon.Instance.conditionMet = true;
@@ -466,16 +599,16 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
 public class TotalFoodAll
 {
     public string foodName;
-    public float heat;//热量
-    public float heatStandard = 0;//热量标准 0为达到 1为超过 2为低于
+    public float totalEnergyKca;//热量
+    public float totalEnergyKcaStandard = 0;//热量标准 0为达到 1为超过 2为低于
     public float protein;//蛋白质
     public float proteinStandard = 0;//蛋白质标准 0为达到 1为超过 2为低于
 
     public float fat;//脂肪
     public float fatStandard = 0;//脂肪标准 0为达到 1为超过 2为低于
 
-    public float carbohydrate;//碳水化合物
-    public float carbohydrateStandard = 0;//碳水化合物标准 0为达到 1为超过 2为低于
+    public float cho;//碳水化合物
+    public float choStandard = 0;//碳水化合物标准 0为达到 1为超过 2为低于
 
 
 }

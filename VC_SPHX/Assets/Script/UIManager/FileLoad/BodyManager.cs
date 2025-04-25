@@ -10,12 +10,12 @@ public class BodyManager : MonoBehaviour
     public static BodyManager Instance { get; private set; }
 
     // 存储所有 ItemData 的列表
-    public List<FoodKindItemData> itemList = new List<FoodKindItemData>();
     //private Dictionary<string, EquipmentItemData> itemDictionary = new Dictionary<string, EquipmentItemData>();
+    public Dictionary<string, List<BodyItem>> itemBodyExplic = new Dictionary<string, List<BodyItem>>();
     public Dictionary<string, List<EndocrineSystemData>> itemEndocrDic = new Dictionary<string, List<EndocrineSystemData>>();
     public Dictionary<string, List<BoneHierarchy>> itemBoneDic = new Dictionary<string, List<BoneHierarchy>>();
     //private Dictionary<DataCategory, List<FoodKindItemData>> itemDictionary = new Dictionary<DataCategory, List<FoodKindItemData>>();
-    public string excelFolderPath = Application.streamingAssetsPath;
+    public string excelFolderPath = Application.dataPath;
     public string jsonName;
     private string jsonFilePath => Path.Combine(Application.streamingAssetsPath, jsonName + ".xlsx");
 
@@ -54,7 +54,8 @@ public class BodyManager : MonoBehaviour
         //itemDictionary.Clear();
 
         // 获取完整路径
-        string fullPath = Path.Combine(Application.dataPath, excelFolderPath);
+        //string fullPath = Path.Combine(Application.dataPath, excelFolderPath);
+        string fullPath = Path.Combine(Application.dataPath);
 
         if (Directory.Exists(fullPath))
         {
@@ -65,18 +66,18 @@ public class BodyManager : MonoBehaviour
             //    //ParseExcel(fileName, File.ReadAllText(filePath));
             //    ParseExcel(fileName, filePath, File.ReadAllText(filePath));
             //}
-            string path = "/人体/人体解剖.xlsx";
+            string path = "/StreamingAssets/人体/人体解剖.xlsx";
 
             // 解析内分泌系统
-            var endocrineData = ParseSheet<EndocrineSystemData>(excelFolderPath + path, "内分泌系统");
-            var breatheData = ParseSheet<EndocrineSystemData>(excelFolderPath + path, "呼吸系统");
-            var loopData = ParseSheet<EndocrineSystemData>(excelFolderPath + path, "循环系统");
-            var urinaryData = ParseSheet<EndocrineSystemData>(excelFolderPath + path, "泌尿系统");
-            var digestionData = ParseSheet<EndocrineSystemData>(excelFolderPath + path, "消化系统");
-            var lymphData = ParseSheet<EndocrineSystemData>(excelFolderPath + path, "淋巴系统");
-            var procreationData = ParseSheet<EndocrineSystemData>(excelFolderPath + path, "生殖系统");
-            var nerveData = ParseSheet<EndocrineSystemData>(excelFolderPath + path, "神经系统");
-            var epitheliumData = ParseSheet<EndocrineSystemData>(excelFolderPath + path, "上皮组织");
+            var endocrineData = ParseSheet<EndocrineSystemData>(fullPath + path, "内分泌系统");
+            var breatheData = ParseSheet<EndocrineSystemData>(fullPath + path, "呼吸系统");
+            var loopData = ParseSheet<EndocrineSystemData>(fullPath + path, "循环系统");
+            var urinaryData = ParseSheet<EndocrineSystemData>(fullPath + path, "泌尿系统");
+            var digestionData = ParseSheet<EndocrineSystemData>(fullPath + path, "消化系统");
+            var lymphData = ParseSheet<EndocrineSystemData>(fullPath + path, "淋巴系统");
+            var procreationData = ParseSheet<EndocrineSystemData>(fullPath + path, "生殖系统");
+            var nerveData = ParseSheet<EndocrineSystemData>(fullPath + path, "神经系统");
+            var epitheliumData = ParseSheet<EndocrineSystemData>(fullPath + path, "上皮组织");
 
             itemEndocrDic.Add("内分泌系统", endocrineData);
             itemEndocrDic.Add("呼吸系统", breatheData);
@@ -89,13 +90,19 @@ public class BodyManager : MonoBehaviour
             itemEndocrDic.Add("上皮组织", epitheliumData);
 
             // 解析骨骼系统
-            var skeletalData = ParseSheet<BoneHierarchy>(excelFolderPath + path, "运动系统_骨骼");
-            var feelData = ParseSheet<BoneHierarchy>(excelFolderPath + path, "感觉系统");
-            var muscleData = ParseSheet<BoneHierarchy>(excelFolderPath + path, "肌肉组织");
+            var skeletalData = ParseSheet<BoneHierarchy>(fullPath + path, "运动系统_骨骼");
+            var feelData = ParseSheet<BoneHierarchy>(fullPath + path, "感觉系统");
+            var muscleData = ParseSheet<BoneHierarchy>( fullPath + path, "肌肉组织");
             itemBoneDic.Add("运动系统_骨骼", skeletalData);
             itemBoneDic.Add("感觉系统", feelData);
             itemBoneDic.Add("肌肉组织", muscleData);
 
+            string pathBodyExpl = "/StreamingAssets/人体/BodyExpl.xlsx";
+
+            var man = ParseSheet<BodyItem>(fullPath + pathBodyExpl, "Man");
+            var woman= ParseSheet<BodyItem>(fullPath + pathBodyExpl, "Woman");
+            itemBodyExplic.Add("Man", man);
+            itemBodyExplic.Add("Woman", woman);
         }
     }
 
@@ -130,6 +137,11 @@ public class BodyManager : MonoBehaviour
                                 ((BoneHierarchy)(object)data).Level3 = reader.GetString(2);
                                 ((BoneHierarchy)(object)data).Level4 = reader.GetString(3);
                             }
+                            if (typeof(T) == typeof(BodyItem))
+                            {
+                                ((BodyItem)(object)data).bodyId = reader.GetString(0);
+                                ((BodyItem)(object)data).bodyExplanation = reader.GetString(1);
+                            }
                             dataList.Add(data);
                         }
                     }
@@ -156,21 +168,21 @@ public class BodyManager : MonoBehaviour
                 for (int row = 1; row < dataTable.Rows.Count; row++)
                 {
                     var rowData = dataTable.Rows[row];
-                    // 将 Excel 行数据映射到 FoodKindItemData
-                    FoodKindItemData item = new FoodKindItemData
-                    {
-                        id = rowData[0].ToString(),
-                        code = rowData[1].ToString(),
-                        iconName = rowData[2].ToString(),
-                        Edible = rowData[3].ToString(),
-                        unit = rowData[4].ToString(),
-                        heat = rowData[5].ToString(),
-                        protein = rowData[6].ToString(),
-                        fat = rowData[7].ToString(),
-                        carbohydrate = rowData[8].ToString()
-                        // 根据实际列顺序调整
-                    };
-                    dataList.Add(item);
+                    //// 将 Excel 行数据映射到 FoodKindItemData
+                    //FoodKindItemData item = new FoodKindItemData
+                    //{
+                    //    id = rowData[0].ToString(),
+                    //    code = rowData[1].ToString(),
+                    //    iconName = rowData[2].ToString(),
+                    //    Edible = rowData[3].ToString(),
+                    //    unit = rowData[4].ToString(),
+                    //    heat = rowData[5].ToString(),
+                    //    protein = rowData[6].ToString(),
+                    //    fat = rowData[7].ToString(),
+                    //    carbohydrate = rowData[8].ToString()
+                    //    // 根据实际列顺序调整
+                    //};
+                    //dataList.Add(item);
                 }
             }
 
@@ -200,6 +212,18 @@ public class BodyManager : MonoBehaviour
         Debug.Log($"未找到 ID 为 {id} 的数据");
         return null;
     }
+
+    //按 ID 查询数据
+    public List<BodyItem> GetBodyExplItemById(string id)
+    {
+        if (itemBodyExplic.TryGetValue(id, out List<BodyItem> data))
+        {
+            return data;
+        }
+        Debug.Log($"未找到 ID 为 {id} 的数据");
+        return null;
+    }
+
 
 
 }

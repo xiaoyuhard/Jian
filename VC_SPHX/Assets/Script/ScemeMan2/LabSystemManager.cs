@@ -44,7 +44,9 @@ public class LabSystemManager : MonoBehaviour
         return currentLabIndex;
     }
 
-    // 选择跟练模式
+    /// <summary>
+    /// 选择跟练模式
+    /// </summary>
     public void SelectPracticeMode()
     {
         GameObjMan.Instance.UpObjPosCon();
@@ -54,17 +56,21 @@ public class LabSystemManager : MonoBehaviour
         // 跟练模式允许进入更衣室并高亮
         canEnterDressingRoom = true;
         DoorClickCon.Instance.SetHighlight(0); // 高亮更衣室门
-        UIManager.Instance.OpenUICaoZuo("ProTipsMan");
+        UIManager.Instance.OpenUICaoZuo(UINameType.UI_ProTipsMan);
         EnterCorridorGen();
         GameManager.Instance.tipStalkBl = true;
 
     }
 
-    // 选择考核模式
+    /// <summary>
+    /// 选择考核模式
+    /// </summary>
     public void SelectAssessmentMode()
     {
-        DoorClickCon.Instance.SetHighlight(0); // 高亮更衣室门
-
+        if (currentLabIndex != 10)
+        {
+            DoorClickCon.Instance.SetHighlight(0); // 高亮更衣室门
+        }
         GameObjMan.Instance.UpObjPosCon();
         isAssessmentMode = true;
         //optionPanel.SetActive(false);

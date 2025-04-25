@@ -2,13 +2,22 @@ using Excel;
 using OfficeOpenXml.DataValidation;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Logical;
 using RTS;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
+using UnityEngine.Networking;
+using static UnityEditor.Progress;
 using static UnityEngine.Rendering.DebugUI;
+using Newtonsoft.Json;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 
+/// <summary>
+/// 食物管理 接收保存所有食物数据
+/// </summary>
 public class FoodManager : MonoBehaviour
 {
     public static FoodManager Instance { get; private set; }
@@ -22,6 +31,10 @@ public class FoodManager : MonoBehaviour
     public string jsonName;
     private string jsonFilePath => Path.Combine(Application.streamingAssetsPath, jsonName + ".xlsx");
 
+    // 服务器API地址（示例）
+    //private const string API_URL = "https://your-api-domain.com/food/items";
+
+
     void Awake()
     {
         InitializeManager();
@@ -33,8 +46,8 @@ public class FoodManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            LoadAllExcelData();
-
+            //LoadAllExcelData();
+            LoadFoodData();
             // 确保编辑器退出时清理实例
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
@@ -51,6 +64,114 @@ public class FoodManager : MonoBehaviour
         }
     }
 #endif
+
+
+
+    public static string ReadServerAddress()
+    {
+
+        string path = Path.Combine(Application.streamingAssetsPath, "Netaddress.txt");
+
+        try
+        {
+            if (File.Exists(path))
+            {
+                return File.ReadAllText(path).Trim();
+            }
+            Debug.LogError("配置文件不存在: " + path);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("读取配置失败: " + e.Message);
+        }
+
+        return null; // 或返回默认地址
+    }
+
+    // 加载数据的公共方法
+    public void LoadFoodData()
+    {
+        itemDictionary.Clear();
+        StartCoroutine(LoadFoodPageQueryCoroutine("谷薯类", 138));
+        StartCoroutine(LoadFoodPageQueryCoroutine("蔬菜水果类", 561));
+        StartCoroutine(LoadFoodPageQueryCoroutine("畜禽鱼蛋类", 786));
+        StartCoroutine(LoadFoodPageQueryCoroutine("大豆坚果奶类", 145));
+        StartCoroutine(LoadFoodPageQueryCoroutine("油脂类", 26));
+        StartCoroutine(LoadFoodPageQueryCoroutine("水", 22));
+    }
+
+    private IEnumerator LoadFoodPageQueryCoroutine(string categoryName, int pageSize)
+    {
+        // 获取基础地址
+        string baseUrl = ReadServerAddress();
+        if (string.IsNullOrEmpty(baseUrl))
+        {
+            Debug.LogError("服务器地址配置错误");
+            yield break;
+        }
+        // 拼接完整地址
+        string fullUrl = $"{CombineUrl(baseUrl, "/food/pageQuery")}?CategoryName={categoryName}&pageSize={pageSize}";
+        using (UnityWebRequest request = UnityWebRequest.Get(fullUrl))
+        {
+            // 设置请求头（如果需要）
+            //request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 3; // 设置超时时间
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                try
+                {
+                    // 解析JSON数据
+                    string jsonResponse = request.downloadHandler.text;
+                    FoodResponse response = JsonConvert.DeserializeObject<FoodResponse>(jsonResponse);
+
+                    //FoodResponse response = JsonUtility.FromJson<FoodResponse>(jsonResponse);
+                    //itemDictionary.Add(categoryName, response.rows);
+                    // 检查键是否存在
+                    if (!itemDictionary.ContainsKey(categoryName))
+                    {
+                        // 创建新键并初始化列表
+                        itemDictionary.Add(categoryName, new List<FoodKindItemData>());
+                    }
+
+                    // 向列表中添加数据
+                    itemDictionary[categoryName] = (response.rows);
+
+                    //foreach (var item in response.rows)
+                    //{
+                    //    if (itemDictionary.ContainsKey(item.categoryName))
+                    //    {
+                    //        itemDictionary[item.categoryName].Add(item);
+                    //    }
+                    //    else
+                    //    {
+                    //        itemDictionary[item.categoryName] = new List<FoodKindItemData> { item };
+                    //    }
+                    //}
+                    //onSuccess?.Invoke(itemDictionary);
+                }
+                catch (Exception e)
+                {
+                    //onError?.Invoke($"JSON解析失败: {e.Message}");
+                    Debug.LogError($"JSON解析失败: {e.Message}");
+                }
+            }
+            else
+            {
+                //onError?.Invoke($"网络请求失败: {request.error}");
+                Debug.LogError($"网络请求失败: {request.error}");
+
+            }
+        }
+    }
+
+
+    private string CombineUrl(string baseUrl, string path)
+    {
+        return $"{baseUrl.TrimEnd('/')}/{path.TrimStart('/')}";
+    }
+
 
     public void LoadAllExcelData()
     {
@@ -81,7 +202,7 @@ public class FoodManager : MonoBehaviour
             itemDictionary.Add("oil", ParseExcel(excelFolderPath + path, "oil", 2));
             itemDictionary.Add("meat", ParseExcel(excelFolderPath + path, "meat", 3));
             itemDictionary.Add("bean", ParseExcel(excelFolderPath + path, "bean", 4));
-            itemDictionary.Add("water", ParseExcel(excelFolderPath + path, "water",5));
+            itemDictionary.Add("water", ParseExcel(excelFolderPath + path, "water", 5));
         }
     }
 
@@ -98,7 +219,7 @@ public class FoodManager : MonoBehaviour
     }
 
     //public List<FoodKindItemData> ParseExcel(string tableName, string tablePath, string excelContent)
-    public List<FoodKindItemData> ParseExcel(string tableName, string excelContent,int index)
+    public List<FoodKindItemData> ParseExcel(string tableName, string excelContent, int index)
     {
         List<FoodKindItemData> dataList = new List<FoodKindItemData>();
         //using (var stream = File.Open(tablePath, FileMode.Open, FileAccess.Read))
@@ -118,15 +239,15 @@ public class FoodManager : MonoBehaviour
                     // 将 Excel 行数据映射到 FoodKindItemData
                     FoodKindItemData item = new FoodKindItemData
                     {
-                        id = rowData[0].ToString(),
-                        code = rowData[1].ToString(),
-                        iconName = rowData[2].ToString(),
-                        Edible = rowData[3].ToString(),
-                        unit = rowData[4].ToString(),
-                        heat = rowData[5].ToString(),
+                        //id = rowData[0],
+                        foodCode = rowData[1].ToString(),
+                        foodName = rowData[2].ToString(),
+                        edible = rowData[3].ToString(),
+                        water = rowData[4].ToString(),
+                        energyKcal = rowData[5].ToString(),
                         protein = rowData[6].ToString(),
                         fat = rowData[7].ToString(),
-                        carbohydrate = rowData[8].ToString()
+                        cho = rowData[8].ToString()
                         // 根据实际列顺序调整
                     };
                     dataList.Add(item);
@@ -151,20 +272,20 @@ public class FoodManager : MonoBehaviour
     {
         List<SerializableItemData> serializableList = new List<SerializableItemData>();
         // 创建可序列化的数据类
-        foreach (FoodKindItemData item in itemList)
-        {
-            serializableList.Add(new SerializableItemData
-            {
-                id = data.id,
-                code = data.code,
-                iconName = data.iconName,
-                unit = data.unit,
-                heat = data.heat,
-                protein = data.protein,
-                fat = data.fat,
-                carbohydrate = data.carbohydrate
-            });
-        }
+        //foreach (FoodKindItemData item in itemList)
+        //{
+        //    serializableList.Add(new SerializableItemData
+        //    {
+        //        id = data.id,
+        //        code = data.code,
+        //        iconName = data.iconName,
+        //        unit = data.unit,
+        //        heat = data.heat,
+        //        protein = data.protein,
+        //        fat = data.fat,
+        //        carbohydrate = data.carbohydrate
+        //    });
+        //}
 
 
         // 转换为 JSON 字符串
@@ -207,22 +328,22 @@ public class FoodManager : MonoBehaviour
 
         foreach (SerializableItemData sData in list)
         {
-            FoodKindItemData item = ScriptableObject.CreateInstance<FoodKindItemData>();
-            item.id = sData.id;
-            item.code = sData.code;
-            item.iconName = sData.iconName;
-            item.unit = sData.unit;
-            item.heat = sData.heat;
-            item.protein = sData.protein;
-            item.fat = sData.fat;
-            item.carbohydrate = sData.carbohydrate;
+            //FoodKindItemData item = ScriptableObject.CreateInstance<FoodKindItemData>();
+            //item.id = sData.id;
+            //item.code = sData.code;
+            //item.iconName = sData.iconName;
+            //item.unit = sData.unit;
+            //item.heat = sData.heat;
+            //item.protein = sData.protein;
+            //item.fat = sData.fat;
+            //item.carbohydrate = sData.carbohydrate;
 
-            // 加载 Sprite（假设图标在 Resources/Icons 下）
-            if (!string.IsNullOrEmpty(sData.iconName))
-            {
-                item.iconName = sData.iconName;
-            }
-            foodKindList.Add(item);
+            //// 加载 Sprite（假设图标在 Resources/Icons 下）
+            //if (!string.IsNullOrEmpty(sData.iconName))
+            //{
+            //    item.iconName = sData.iconName;
+            //}
+            //foodKindList.Add(item);
         }
         //itemDictionary.Add(id, foodKindList);
 

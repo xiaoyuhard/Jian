@@ -30,13 +30,13 @@ public class GameManager : MonoSingletonBase<GameManager>
     {
         btn.onClick.AddListener(OnOpen);
         GameObjMan.Instance.CLoseFirst();
-
+        UIManager.Instance.DonotCloseUI(UINameType.UI_HomeManager);
     }
 
     void OnOpen()
     {
-        UIManager.Instance.OpenUI("BackMan");
-        UIManager.Instance.OpenUI("HomeManager");
+        UIManager.Instance.OpenUI(UINameType.UI_BackMan);
+        UIManager.Instance.OpenUI(UINameType.UI_HomeManager);
         btn.gameObject.SetActive(false);
     }
 
@@ -48,7 +48,7 @@ public class GameManager : MonoSingletonBase<GameManager>
     public void CloseAllCon()
     {
         LabSystemManager.Instance.HighlightObject(null);
-        CaozuoSceneCon.Instance.CloseObj();
+        //CaozuoSceneCon.Instance.CloseObj();
     }
 
     // Update is called once per frame

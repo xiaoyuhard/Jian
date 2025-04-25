@@ -1,24 +1,27 @@
+using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.UI;
 
 public class BodyConUI : UICaoZuoBase
 {
     public GameObject man;
     public GameObject woman;
-    
+
 
     public Button manBtn;
     public Button womanBtn;
     public List<Toggle> tglManList;
     public List<Toggle> tglWomanList;
-    // Start is called before the first frame update
-    void Start()
+
+    public GameObject explanationObj;
+    public Text explanationText;
+
+    private void OnEnable()
     {
-        manBtn.onClick.AddListener(EnterManPanel);
-        womanBtn.onClick.AddListener(EnterWomanPanel);
         // 正确获取所有 Toggle 组件（包含子物体）
         Toggle[] togglesMan = man.GetComponentsInChildren<Toggle>(true); // true 包含未激活的物体
 
@@ -33,35 +36,73 @@ public class BodyConUI : UICaoZuoBase
         {
             toggle.onValueChanged.AddListener((isOn) =>
             {
-               /* if (isOn) */OnClickShowManBody(toggle, isOn);
+                /* if (isOn) */
+                OnClickShowManBody(toggle, isOn);
 
             });
+            toggle.isOn = false;
         }
         foreach (Toggle toggle in tglWomanList)
         {
             toggle.onValueChanged.AddListener((isOn) =>
             {
-                /*if (isOn)*/ OnClickShowWomanBody(toggle, isOn);
+                /*if (isOn)*/
+                OnClickShowWomanBody(toggle, isOn);
 
             });
+            toggle.isOn = false;
+
         }
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
+        manBtn.onClick.AddListener(EnterManPanel);
+        womanBtn.onClick.AddListener(EnterWomanPanel);
+     
     }
 
     private void OnClickShowWomanBody(Toggle toggle, bool isOn)
     {
+        bool bl = false;
         if (isOn)
         {
-            //RenTiCon.Instance.ShowBodyWomanModel(toggle.transform.GetChild(1).GetComponent<Text>().text);
-            Debug.Log(toggle.transform.parent + "ddsss");
+            string bodyName = RenTiCon.Instance.ShowBodyWomanModel(toggle.transform.GetChild(1).GetComponent<Text>().text);
+            if (GetBodyExplText("Man", bodyName) != "")
+            {
+                bl = true;
+                explanationText.text = GetBodyExplText("Man", bodyName);
+
+            }
+            else
+            {
+                bl = false;
+                explanationText.text = "";
+
+            }
+        }
+        else
+        {
+            RenTiCon.Instance.ShowBodyWomanModel("");
 
         }
-        //LayoutRebuilder.ForceRebuildLayoutImmediate(toggle.transform.parent as RectTransform);
+        if (bl && isOn)
+        {
+            explanationObj.SetActive(isOn);
+        }
+        else
+        {
+            explanationObj.SetActive(false);
+
+        }
+
         StartCoroutine(RefreshLayout(toggle));
+
     }
     IEnumerator RefreshLayout(Toggle toggle)
     {
         yield return null; // 等待一帧
-        if(toggle.transform.parent.name== "Content")
+        if (toggle.transform.parent.name == "Content")
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate(toggle.transform.parent as RectTransform);
         }
@@ -86,46 +127,109 @@ public class BodyConUI : UICaoZuoBase
 
         }
 
-        Debug.Log(toggle.transform.parent+"sss");
+        Debug.Log(toggle.transform.parent + "sss");
 
     }
     private void OnClickShowManBody(Toggle toggle, bool isOn)
     {
+        bool bl = false;
         if (isOn)
         {
-            //RenTiCon.Instance.ShowBodyManModel(toggle.transform.GetChild(1).GetComponent<Text>().text);
-            Debug.Log(toggle.transform.parent + "aasss");
+            string bodyName = RenTiCon.Instance.ShowBodyManModel(toggle.transform.GetChild(1).GetComponent<Text>().text);
+            if (GetBodyExplText("Man", bodyName) != "")
+            {
+                bl = true;
+                explanationText.text = GetBodyExplText("Man", bodyName);
+
+            }
+            else
+            {
+                bl = false;
+                explanationText.text = "";
+
+            }
+        }
+        else
+        {
+             RenTiCon.Instance.ShowBodyManModel("");
 
         }
+        if (bl && isOn)
+        {
+            explanationObj.SetActive(isOn);
+        }
+        else
+        {
+            explanationObj.SetActive(false);
+
+        }
+
         StartCoroutine(RefreshLayout(toggle));
 
     }
 
+    public string GetBodyExplText(string sex, string bodyName)
+    {
+        List<BodyItem> bodyItems = BodyManager.Instance.GetBodyExplItemById(sex);
+        foreach (BodyItem item in bodyItems)
+        {
+            if (item.bodyId == bodyName)
+            {
+                return item.bodyExplanation;
+            }
+        }
+        return "";
+    }
+
     private void EnterWomanPanel()
     {
-        woman.SetActive(true);
         womanBtn.gameObject.SetActive(false);
-        
+        manBtn.gameObject.SetActive(false);
+        RenTiCon.Instance.ClickBtnShowBody(1);
+        StartCoroutine(OpenWomanUIPanel());
+
+    }
+    //打开女模型面板
+    IEnumerator OpenWomanUIPanel()
+    {
+        yield return new WaitForSeconds(5);//播放动画  18
+        woman.SetActive(true);
+
     }
 
     private void EnterManPanel()
     {
-        man.SetActive(true);
+        womanBtn.gameObject.SetActive(false);
+
         manBtn.gameObject.SetActive(false);
+        RenTiCon.Instance.ClickBtnShowBody(0);
+
+        StartCoroutine(OpenManUIPanel());
 
     }
+    //打开男模型面板
+    IEnumerator OpenManUIPanel()
+    {
+        yield return new WaitForSeconds(5);//播放动画  18
+        man.SetActive(true);
+
+    }
+
 
     // Update is called once per frame
     void Update()
     {
+       
 
     }
+
     private void OnDisable()
     {
-        //man.SetActive(true);
-        //woman.SetActive(true);
+        man.SetActive(false);
+        woman.SetActive(false);
         womanBtn.gameObject.SetActive(true);
         manBtn.gameObject.SetActive(true);
+        explanationObj.SetActive(false);
 
     }
 }

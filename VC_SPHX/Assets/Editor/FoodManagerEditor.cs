@@ -25,7 +25,7 @@ public class FoodManagerEditor : Editor
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("立即加载数据"))
         {
-            dm.LoadAllExcelData();
+            //dm.LoadAllExcelData();
             Debug.Log("数据已强制刷新");
         }
 
@@ -48,16 +48,16 @@ public class FoodManagerEditor : Editor
             foreach (var item in kvp.Value)
             {
                 if (!string.IsNullOrEmpty(searchFilter) &&
-                    !item.code.Contains(searchFilter) &&
-                    !item.iconName.Contains(searchFilter))
+                    !item.foodCode.Contains(searchFilter) &&
+                    !item.foodName.Contains(searchFilter))
                 {
                     continue;
                 }
 
                 EditorGUILayout.BeginVertical("Box");
-                EditorGUILayout.LabelField($"编号: {item.code}");
-                EditorGUILayout.LabelField($"名称: {item.iconName}");
-                EditorGUILayout.LabelField($"单位: {item.unit}");
+                EditorGUILayout.LabelField($"编号: {item.foodCode}");
+                EditorGUILayout.LabelField($"名称: {item.foodName}");
+                EditorGUILayout.LabelField($"单位: {item.water}");
                 EditorGUILayout.EndVertical();
                 count++;
 

@@ -211,7 +211,7 @@ public class GenyishiMan : UICaoZuoBase
             //image.SetActive(false);
             GameManager.Instance.SetStepDetection(true);  //穿了衣服点击了退出更衣室 就传到下一个实验室Con 高亮对应实验室的门
             LabSystemManager.Instance.OnExitLockerClicked();
-            UIManager.Instance.CloseUICaoZuo("GenyishiMan");
+            UIManager.Instance.CloseUICaoZuo(UINameType.UI_GenyishiMan);
         }
 
         else

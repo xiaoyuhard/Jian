@@ -47,12 +47,13 @@ public class StalkProcedureManager : UICaoZuoBase
         _instance = this;
         DontDestroyOnLoad(this.gameObject); // 确保持久化
         MessageCenter.Instance.Register("SendTiShiUIName", TiShiUIName);
+        //UIManager.Instance.CloseUICaoZuo(UINameType.UI_ProTipsMan);
     }
+
     void Start()
     {
         //StartCoroutine(LoadAndSplitText());
         //MessageCenter.Instance.Register("SendTiShiUIName", TiShiUIName);
-        
     }
     List<EquipmentItemData> list = new List<EquipmentItemData>();
     public void AddIndex()
