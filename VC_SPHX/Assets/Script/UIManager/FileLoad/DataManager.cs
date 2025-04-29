@@ -1,11 +1,16 @@
 using Excel;
 using RTS;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices.ComTypes;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
-//读表，提示数据
+/// <summary>
+/// 读取操作提示excel 和模型展示excel
+/// </summary>
 public class DataManager : MonoSingletonBase<DataManager>
 {
     // 存储所有 ItemData 的列表
@@ -47,69 +52,244 @@ public class DataManager : MonoSingletonBase<DataManager>
         }
     }
 #endif
-
     public void LoadAllExcelData()
     {
+        Debug.Log("=========LoadAllExcelData============");
+        
+        List<string> tipPathName = new List<string>() { "1氨基酸", "2香气", "3重金属测定", "6脂肪含量测定", "7蛋白质测定" };
+        List<string> moxingPathName = new List<string>() { "Anjisuan", "Xiangqi", "Zhongjinshu", "Shachongji", "Huanyuantang", "Zhifang", "Danbaizhi" };
         itemDictionary.Clear();
-
-        string streamingAssetsPath = Application.streamingAssetsPath;
-        string tishi_path = "/ExperimentalHint/实验提示.xlsx";
-        tishi_path = streamingAssetsPath + tishi_path;
-        string pathMoxing = "/ExperimentalHint/模型展示.xlsx";
-        pathMoxing = streamingAssetsPath + pathMoxing;
-
-        if (File.Exists(tishi_path))
+        
+        foreach (var item in tipPathName)
         {
-            itemDictionary.Add("氨基酸提示", ParseSheet(tishi_path, "氨基酸提示"));
-            itemDictionary.Add("香气提示", ParseSheet(tishi_path, "香气提示"));
-            itemDictionary.Add("重金属提示", ParseSheet(tishi_path, "重金属提示"));
+            List<EquipmentItemData> allData = LoadCSVData<EquipmentItemData>("Data/Exp/" + item);
+            itemDictionary.Add(item, allData);
+        }
+        foreach (var item in moxingPathName)
+        {
+            List<EquipmentItemData> allData = LoadCSVData<EquipmentItemData>("Data/MoXingPanelCsv/" + item);
+            itemDictionary.Add(item, allData);
         }
 
-        if (File.Exists(pathMoxing))
-        {
-            itemDictionary.Add("Anjisuan", ParseSheet(pathMoxing, "氨基酸"));
-            itemDictionary.Add("Xiangqi", ParseSheet(pathMoxing, "香气"));
-            itemDictionary.Add("Zhongjinshu", ParseSheet(pathMoxing, "重金属"));
-            itemDictionary.Add("Shachongji", ParseSheet(pathMoxing, "杀虫剂"));
-            itemDictionary.Add("Huanyuantang", ParseSheet(pathMoxing, "还原糖"));
-            itemDictionary.Add("Zhifang", ParseSheet(pathMoxing, "脂肪"));
-            itemDictionary.Add("Danbaizhi", ParseSheet(pathMoxing, "蛋白质"));
-        }
+        //string streamingAssetsPath = Application.streamingAssetsPath;
+      
+        //string streamingAssetsPath = Application.streamingAssetsPath;
+      
+        //string streamingAssetsPath = Application.streamingAssetsPath;
+        //foreach (var filePath in Directory.GetFiles(streamingAssetsPath + "/ExperimentalHint", "*.xlsx"))
+        //{
+        //    string fileName = Path.GetFileNameWithoutExtension(filePath);
+        //    //ParseExcel(fileName, File.ReadAllText(filePath));
+        //    ParseExcel(fileName, filePath, File.ReadAllText(filePath));
+        //}
+
+        //string tishi_path = "/ExperimentalHint/实验提示.xlsx";
+        //tishi_path = streamingAssetsPath + tishi_path;
+        //string pathMoxing = "/ExperimentalHint/模型展示.xlsx";
+        //pathMoxing = streamingAssetsPath + pathMoxing;
+
+
+
+        //if (File.Exists(tishi_path))
+        //{
+        //itemDictionary.Add("氨基酸提示", ParseSheet(tishi_path, "氨基酸提示"));
+        //itemDictionary.Add("香气提示", ParseSheet(tishi_path, "香气提示"));
+        //itemDictionary.Add("重金属提示", ParseSheet(tishi_path, "重金属提示"));
+        //}
+
+        //if (File.Exists(pathMoxing))
+        //{
+        //itemDictionary.Add("Anjisuan", ParseSheet(pathMoxing, "氨基酸"));
+        //itemDictionary.Add("Xiangqi", ParseSheet(pathMoxing, "香气"));
+        //itemDictionary.Add("Zhongjinshu", ParseSheet(pathMoxing, "重金属"));
+        //itemDictionary.Add("Shachongji", ParseSheet(pathMoxing, "杀虫剂"));
+        //itemDictionary.Add("Huanyuantang", ParseSheet(pathMoxing, "还原糖"));
+        //itemDictionary.Add("Zhifang", ParseSheet(pathMoxing, "脂肪"));
+        //itemDictionary.Add("Danbaizhi", ParseSheet(pathMoxing, "蛋白质"));
+        //}
     }
+
+
+    /// <summary>
+    /// 通用CSV加载方法
+    /// </summary>
+    /// <param name="filePath">文件路径（不需要扩展名，相对于Resources文件夹）</param>
+    /// <param name="skipHeader">是否跳过标题行（默认跳过）</param>
+    public static List<T> LoadCSVData<T>(string filePath, bool skipHeader = true) where T : new()
+    {
+        List<T> dataList = new List<T>();
+
+        try
+        {
+
+            // 加载CSV文本文件 ---------------------------------------------------
+            TextAsset csvFile = Resources.Load<TextAsset>(filePath);
+
+            if (csvFile == null)
+            {
+                Debug.LogError($"CSV文件未找到: {filePath}");
+                return dataList;
+            }
+
+            // 使用正则表达式拆分复杂CSV格式 ----------------------------------------
+            // 正则说明：处理包含逗号、换行符的字段（例如："aaa,bbb"）
+            Regex csvSplit = new Regex("(?:^|,)(\"(?:[^\"]+|\"\")*\"|[^,]*)");
+
+            // 逐行解析 ----------------------------------------------------------
+            using (StringReader reader = new StringReader(csvFile.text))
+            {
+                string line;
+                bool isFirstLine = true;
+
+                while ((line = reader.ReadLine()) != null)
+                {
+                    // 跳过空行和注释行（以#开头）
+                    if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#")) continue;
+
+                    // 跳过标题行
+                    if (isFirstLine && skipHeader)
+                    {
+                        isFirstLine = false;
+                        continue;
+                    }
+
+                    // 使用正则匹配拆分字段 ----------------------------------------
+                    List<string> fields = new List<string>();
+                    MatchCollection matches = csvSplit.Matches(line);
+
+                    foreach (Match match in matches)
+                    {
+                        string field = match.Value;
+
+                        // 处理开头逗号的情况
+                        if (field.StartsWith(","))
+                            field = field.Substring(1);
+
+                        // 去除字段两端的引号（如果存在）
+                        if (field.StartsWith("\"") && field.EndsWith("\""))
+                            field = field.Substring(1, field.Length - 2);
+
+                        fields.Add(field);
+                    }
+
+                    // 将字段映射到数据类 ------------------------------------------
+                    T dataItem = new T();
+                    System.Type type = typeof(T);
+
+                    // 通过反射自动映射字段（要求字段顺序与CSV列顺序一致）
+                    System.Reflection.FieldInfo[] fieldsInfo = type.GetFields();
+
+                    for (int i = 0; i < Mathf.Min(fields.Count, fieldsInfo.Length); i++)
+                    {
+                        try
+                        {
+                            // 类型转换处理
+                            object value = ConvertValue(fields[i], fieldsInfo[i].FieldType);
+                            fieldsInfo[i].SetValue(dataItem, value);
+                        }
+                        catch (System.Exception e)
+                        {
+                            Debug.LogError($"字段解析错误 行: {line}\n错误: {e.Message}");
+                        }
+                    }
+
+                    dataList.Add(dataItem);
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"CSV加载失败: {e.Message}");
+        }
+
+        return dataList;
+    }
+    /// <summary>
+    /// 类型转换辅助方法
+    /// </summary>
+    private static object ConvertValue(string valueString, System.Type targetType)
+    {
+        if (string.IsNullOrEmpty(valueString)) return null;
+
+        try
+        {
+            // 处理特殊类型
+            if (targetType == typeof(string))
+                return valueString;
+
+            if (targetType == typeof(int))
+                return int.Parse(valueString);
+
+            if (targetType == typeof(float))
+                return float.Parse(valueString);
+
+            if (targetType == typeof(bool))
+                return valueString.ToLower() == "true";
+
+            // 添加更多类型转换规则...
+        }
+        catch
+        {
+            Debug.LogError($"无法转换值: {valueString} 到类型 {targetType.Name}");
+            return null;
+        }
+
+        return null;
+
+        Debug.Log("=========LoadAllExcelData over============");
+    }
+
 
     public List<EquipmentItemData> ParseSheet(string tableName, string sheetName)
     {
         List<EquipmentItemData> dataList = new List<EquipmentItemData>();
 
-        using (var stream = File.Open(tableName, FileMode.Open, FileAccess.Read))
+        try
         {
-            using (var reader = ExcelReaderFactory.CreateOpenXmlReader(stream))
+            using (var stream = File.Open(tableName, FileMode.Open, FileAccess.Read))
             {
-                do
+                using (var reader = ExcelReaderFactory.CreateOpenXmlReader(stream))
                 {
-                    if (reader.Name == sheetName)
+                    do
                     {
-                        // 跳过表头（根据实际情况调整）
-                        reader.Read(); // 跳过第一行（列名）
-
-                        while (reader.Read())
+                        if (reader.Name == sheetName)
                         {
-                            // 反射或手动映射字段
-                            EquipmentItemData data = new EquipmentItemData
+                            // 跳过表头（根据实际情况调整）
+                            reader.Read(); // 跳过第一行（列名）
+
+                            while (reader.Read())
                             {
-                                id = reader.GetString(0),
-                                parent = reader.GetString(1),
-                                introduce = reader.GetString(2),
-                                iconName = reader.GetString(3)
-                            };
-                            dataList.Add(data);
+                                // 反射或手动映射字段
+                                EquipmentItemData data = new EquipmentItemData
+                                {
+                                    id = reader.GetString(0),
+                                    parent = reader.GetString(1),
+                                    introduce = reader.GetString(2),
+                                    iconName = reader.GetString(3)
+                                };
+                                dataList.Add(data);
+                            }
                         }
-                    }
-                } while (reader.NextResult());
+                    } while (reader.NextResult());
+                }
             }
+
+            Debug.Log($"=========ParseSheet tableName:{tableName} sheetName:{sheetName} Count:{dataList.Count}");
         }
+        catch (IOException ex)
+        {
+            Debug.LogError("程序运行时，不能打开Excel文件!!!");
+            throw ex;
+        }
+        catch (Exception ex)
+        {
+            print(ex.Message);
+        }
+
         return dataList;
     }
+
+
 
 
     void ParseExcel(string tableName, string tablePath, string excelContent)
@@ -242,7 +422,7 @@ public class DataManager : MonoSingletonBase<DataManager>
         {
             return data;
         }
-        Debug.Log($"未找到 ID 为 {id} 的数据");
+        Debug.LogError($"未找到 ID 为 {id} 的数据");
         return null;
     }
 

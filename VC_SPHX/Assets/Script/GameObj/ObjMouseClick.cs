@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+//点击柜子，打开更衣室界面 UI
 public class ObjMouseClick : MonoSingletonBase<ObjMouseClick>
 {
     [SerializeField] private LayerMask doorLayer; // 指定门的层级
-
 
     // Update is called once per frame
     void Update()
@@ -17,8 +17,9 @@ public class ObjMouseClick : MonoSingletonBase<ObjMouseClick>
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit, 100/*, doorLayer*/))
             {
+                Debug.Log(hit.transform, hit.transform);
 
                 switch (hit.transform.name)
                 {

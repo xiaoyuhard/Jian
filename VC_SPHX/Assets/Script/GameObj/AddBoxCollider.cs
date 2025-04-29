@@ -28,8 +28,16 @@ public class AddBoxCollider : MonoBehaviour
             }
 
             // 设置 Collider 的中心和尺寸
-            boxCollider.center = combinedBounds.center - transform.position;
+            boxCollider.center = combinedBounds.center - transform.position;    
             boxCollider.size = combinedBounds.size;
+
+            //fix 有些模型旋转导致collider位置不对
+            if (boxCollider.center.y < 0)
+            {
+                var newCenter = boxCollider.center;
+                newCenter.y *= -1;
+                boxCollider.center = newCenter;
+            }
 
             // 考虑物体缩放（可选）
             boxCollider.size = new Vector3(

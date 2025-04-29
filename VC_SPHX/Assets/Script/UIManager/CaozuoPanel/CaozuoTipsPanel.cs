@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 //选择实验模式界面 考核 跟练
@@ -10,6 +11,7 @@ public class CaozuoTipsPanel : MonoSingletonBase<CaozuoTipsPanel>
 {
     public Button btnKaohe;
     public Button btnGensui;
+    public Button btnClose;
     public GameObject obj;
 
     public string joinIdtag;
@@ -21,6 +23,10 @@ public class CaozuoTipsPanel : MonoSingletonBase<CaozuoTipsPanel>
     {
         btnKaohe.onClick.AddListener(PassStalking);
         btnGensui.onClick.AddListener(PassExamine);
+        btnClose.onClick.AddListener(() =>
+        {
+            ClosePanel();
+        });
         //MessageCenter.Instance.Register("CaozuoName", GetCaozuoName);//应该不需要
         //MessageCenter.Instance.Register("JoinKaoHe", JoinKaoHe);//应该不需要
         ClosePanel();
@@ -28,16 +34,9 @@ public class CaozuoTipsPanel : MonoSingletonBase<CaozuoTipsPanel>
 
     private void JoinKaoHe(string obj)
     {
-        //UIManager.Instance.CloseUI(UINameType.UI_ZhishiManager);
-        //UIManager.Instance.CloseUI(UINameType.UI_MoxingManager);
-        //UIManager.Instance.CloseUI(UINameType.UI_CaozuoManager);
-        //UIManager.Instance.CloseUI(UINameType.UI_BaogaoManager);
-        //UIManager.Instance.CloseUI(UINameType.UI_BackMan);
         UIManager.Instance.CloseAllUI();
-        //UIManager.Instance.OpenUI(UINameType.UI_HomeManager);
         GameManager.Instance.SetGameObj(true);
         GameObjMan.Instance.OpenFirst();
-
     }
 
     //考核
@@ -46,11 +45,27 @@ public class CaozuoTipsPanel : MonoSingletonBase<CaozuoTipsPanel>
         JoinKaoHe("");
         //MessageCenter.Instance.Send("SendGengToDoorKaoHe", "WearPos");//应该不需要
         //GameManager.Instance.SetTrainingMode(false);
-        LabSystemManager.Instance.SelectAssessmentMode();  //进入考核
 
         ClosePanel();
-        //SceneMgr.LoadScene(GameScene.Demo3);
 
+        var curExp = (Experiment)CaozuoManager.ClickIndex;
+        var curScene = SceneMgr.CurSceneName;
+
+        GameData.Instance.IsTestMode = false;
+        GameData.Instance.CurrentExperiment = curExp;
+
+        if (curExp == Experiment.AnJiSuan || curExp == Experiment.XiangQi)
+        {
+            if (curScene != GameScene.Exp_HuaXue)
+                SceneMgr.LoadScene(GameScene.Exp_HuaXue);
+        }
+        else if (curExp == Experiment.ZhongJinShu)
+        {
+            if (curScene != GameScene.Exp3_ZhongJinShu)
+                SceneMgr.LoadScene(GameScene.Exp3_ZhongJinShu);
+        }
+
+        LabSystemManager.Instance.SelectAssessmentMode();  //进入考核
     }
 
     //跟练
@@ -61,12 +76,39 @@ public class CaozuoTipsPanel : MonoSingletonBase<CaozuoTipsPanel>
 
         JoinKaoHe("");
         //MessageCenter.Instance.Send("SendGengToDoor", "WearPos");//应该不需要
-        LabSystemManager.Instance.SelectPracticeMode();//进入跟练
         //GameObjMan.Instance.SetPosition(0);
         ClosePanel();
 
-        //SceneMgr.LoadScene(GameScene.Demo3);
+        var curExp = (Experiment)CaozuoManager.ClickIndex;
+        var curScene = SceneMgr.CurSceneName;
 
+        GameData.Instance.IsTestMode = false;
+        GameData.Instance.CurrentExperiment = curExp;
+
+        if (curExp == Experiment.AnJiSuan || curExp == Experiment.XiangQi)
+        {
+            if (curScene != GameScene.Exp_HuaXue)
+                SceneMgr.LoadScene(GameScene.Exp_HuaXue);
+        }
+        else if (curExp == Experiment.ZhongJinShu)
+        {
+            if (curScene != GameScene.Exp3_ZhongJinShu)
+                SceneMgr.LoadScene(GameScene.Exp3_ZhongJinShu);
+        }
+        else if (curExp == Experiment.ZhiFang)
+        {
+            //if (curScene != GameScene.Exp3_ZhongJinShu)
+            //    SceneMgr.LoadScene(GameScene.Exp3_ZhongJinShu);
+            UIManager.Instance.OpenUI(UINameType.UI_ExpMethod);
+        }
+        else if (curExp == Experiment.DanBaiZhi)
+        {
+            //if (curScene != GameScene.Exp3_ZhongJinShu)
+            //    SceneMgr.LoadScene(GameScene.Exp3_ZhongJinShu);
+            UIManager.Instance.OpenUI(UINameType.UI_ExpMethod);
+        }
+
+        LabSystemManager.Instance.SelectPracticeMode();//进入跟练
     }
 
     public void ClosePanel()
@@ -74,8 +116,8 @@ public class CaozuoTipsPanel : MonoSingletonBase<CaozuoTipsPanel>
         obj.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
+    //进入实验
+    void EnterExperiment()
     {
 
     }

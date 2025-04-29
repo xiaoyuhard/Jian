@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LabSystemManager : MonoBehaviour
 {
@@ -35,6 +37,7 @@ public class LabSystemManager : MonoBehaviour
     {
         currentLabIndex = labIndex;
         currentLabName = labName;
+        GameObjMan.Instance.OpenObjCon(1);
         //labsPanel.SetActive(false);
         //optionPanel.SetActive(true); // 显示考核/跟练选择
     }
@@ -67,7 +70,7 @@ public class LabSystemManager : MonoBehaviour
     /// </summary>
     public void SelectAssessmentMode()
     {
-        if (currentLabIndex != 10)
+        if (currentLabIndex != 10 || currentLabIndex != 8 || currentLabIndex != 9)
         {
             DoorClickCon.Instance.SetHighlight(0); // 高亮更衣室门
         }
@@ -98,13 +101,18 @@ public class LabSystemManager : MonoBehaviour
         //PlayerController.Instance.TeleportTo(corridorPosition.position);
         if (currentLabIndex == 8 || currentLabIndex == 9)
         {
+
             DoorClickCon.Instance.SetHighlight(8);
+            DoorClickCon.Instance.CloseDoorHigh(0);
             GameObjMan.Instance.SetPosition(10);
             GameObjMan.Instance.OpenObjCon(9);
             return;
         }
         if (currentLabIndex == 10)
         {
+            GameObjMan.Instance.CloseObjCon(1);
+            DoorClickCon.Instance.CloseDoorHigh(0);
+
             DoorClickCon.Instance.SetHighlight(9);
             GameObjMan.Instance.SetPosition(0);
             GameObjMan.Instance.OpenObjCon(11);
@@ -210,9 +218,11 @@ public class LabSystemManager : MonoBehaviour
                 currentHighlight = null;
             }
             return;
-
         }
-
+        if (currentHighlight != null && currentHighlight.transform.Find("Canvas(Clone)") != null)
+        {
+            currentHighlight.transform.Find("Canvas(Clone)").gameObject.SetActive(false);
+        }
         if (currentHighlight != null)
         {
             // 取消之前的高亮
@@ -223,6 +233,11 @@ public class LabSystemManager : MonoBehaviour
         }
         //obj.SetActive(true);    
         var outline = obj.GetComponent<Outline>();
+        if (obj.transform.Find("Canvas(Clone)") != null)
+        {
+            obj.transform.Find("Canvas(Clone)").gameObject.SetActive(true);
+            //obj.transform.Find("IconWhiteExclamation").gameObject.SetActive(true);
+        }
 
         //if (outline == null) outline = obj.AddComponent<Outline>();
         if (obj.GetComponent<InteractableObject>() != null)

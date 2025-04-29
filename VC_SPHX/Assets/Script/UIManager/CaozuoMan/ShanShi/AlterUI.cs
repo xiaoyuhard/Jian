@@ -6,6 +6,9 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 膳食选择食物输入数量界面
+/// </summary>
 public class AlterUI : MonoSingletonBase<AlterUI>
 {
     public Image icon;
@@ -15,7 +18,7 @@ public class AlterUI : MonoSingletonBase<AlterUI>
     public Text unit;
     public Button confirm;
     public Button delet;
-    public Text tipText;
+    public GameObject tipText;
     public Text heat;//热量
     public Text protein;//蛋白质
     public Text fat;//脂肪
@@ -40,8 +43,8 @@ public class AlterUI : MonoSingletonBase<AlterUI>
         icon.sprite = Resources.Load<Sprite>("Icons" + "/" + data.foodCode);
         foodName.text = data.foodName;
         code.text = data.foodCode;
-        unit.text = data.water;
-        heat.text = data.energyKcal;
+        //unit.text = data.water;
+        heat.text = data.heat;
         protein.text = data.protein;
         fat.text = data.fat;
         carbohydrate.text = data.cho;

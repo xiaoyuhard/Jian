@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 控制实验最后电脑上显示的UI
+/// </summary>
 public class ComputerUI :UICaoZuoBase
 {
 

@@ -50,8 +50,8 @@ public class TogIntroduceItem : MonoSingletonBase<TogIntroduceItem>
                 UpdateButtonAppearance(tButton, isOn));
 
             // ³õÊ¼»¯×´Ì¬
-            UpdateButtonAppearance(tButton, tButton.toggle.isOn);
         }
+        UpdateButtonAppearance(toggleButtons[0],true);
 
     }
 

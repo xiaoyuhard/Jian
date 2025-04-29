@@ -21,51 +21,12 @@ public class WearCon : MonoSingletonBase<WearCon>
     {
         if (isTriggerCabint)
             UIManager.Instance.OpenUICaoZuo(UINameType.UI_GenyishiMan);
-        //通过传回来的tag来判断 点击进入的是哪个操作
-        //switch (dorCaozuoTag)
-        //{
-        //    case "AnjisuanPos":
-        //        MessageCenter.Instance.Send("SendWearToAn", dorCaozuoTag);
-        //        break;
-        //    case "Xiangqi":
-        //        MessageCenter.Instance.Send("SendWearToAn", dorCaozuoTag);
 
-        //        break;
-        //    case "Zhongjinshu":
-        //        MessageCenter.Instance.Send("SendWearToAn", dorCaozuoTag);
+    }
+    private void OnEnable()
+    {
+        isTriggerCabint = false;
 
-        //        break;
-        //    case "Shachongji":
-        //        MessageCenter.Instance.Send("SendWearToAn", dorCaozuoTag);
-
-        //        break;
-        //    case "Didingfa":
-        //        MessageCenter.Instance.Send("SendWearToAn", dorCaozuoTag);
-
-        //        break;
-        //    case "Suoshi":
-        //        MessageCenter.Instance.Send("SendWearToAn", dorCaozuoTag);
-
-        //        break;
-        //    case "Danbaizhi":
-        //        MessageCenter.Instance.Send("SendWearToAn", dorCaozuoTag);
-
-        //        break;
-        //    case "Shanshi":
-        //        MessageCenter.Instance.Send("SendWearToAn", dorCaozuoTag);
-
-        //        break;
-        //    case "Yingyang":
-        //        MessageCenter.Instance.Send("SendWearToAn", dorCaozuoTag);
-
-        //        break;
-        //    case "Shuzi":
-        //        MessageCenter.Instance.Send("SendWearToAn", dorCaozuoTag);
-
-        //        break;
-        //    default:
-        //        break;
-        //}
     }
 
 

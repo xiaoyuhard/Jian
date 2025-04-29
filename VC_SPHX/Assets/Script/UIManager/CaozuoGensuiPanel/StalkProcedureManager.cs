@@ -63,7 +63,17 @@ public class StalkProcedureManager : UICaoZuoBase
 
     public void UpdateUIInf(int index)
     {
-        displayText.text = list[index].parent;
+        if (list != null)
+        {
+            if (index < list.Count)
+                displayText.text = list[index].parent;
+            else
+                Debug.LogError($"indexԽ�磡index:{index} list.Count:{list.Count}");
+        }
+        else
+        {
+            Debug.LogError($"list Ϊ null...");
+        }
     }
 
     public void TiShiUIName(string labName)

@@ -19,11 +19,15 @@ public class InteractableObject : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
+            Debug.Log(hit.transform, hit.transform);
+
             if (hit.transform.name == transform.name)
             {
                 //ClickOrderManager.Instance.ReportObjectClicked(this);
                 GameManager.Instance.SetStepDetection(true);
-                transform.GetComponent<Collider>().enabled = false; 
+                transform.GetComponent<Collider>().enabled = false;
+                //transform.Find("IconWhiteExclamation").gameObject.SetActive(false);
+                //MessageCenter.Instance.Send(EventName.Exp_NextStep);
             }
         }
     }

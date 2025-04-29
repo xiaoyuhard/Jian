@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-//UI 实验操作界面
+/// <summary>
+/// UI 选择实验界面
+/// </summary>
 public class CaozuoManager : UIBase
 {
     [System.Serializable]
@@ -20,42 +22,69 @@ public class CaozuoManager : UIBase
     //选择操作模式（跟随 考核）
     public GameObject panelCaozuoObj;
 
+    /// <summary>
+    /// 点击的哪个实验菜单
+    /// </summary>
+    public static int ClickIndex = -1;
+
+    private void OnEnable()
+    {
+        foreach (var tButton in toggleButtons)
+        {
+            tButton.toggle.isOn = false;
+        }
+    }
+
+    void OnDestroy()
+    {
+        foreach (var tButton in toggleButtons)
+        {
+            tButton.toggle.onValueChanged.RemoveAllListeners();
+        }
+    }
+
     void Awake()
     {
         toggleGroup = GetComponent<ToggleGroup>();
         int index = 0;
+
         foreach (var tButton in toggleButtons)
         {
-            tButton.toggle = transform.GetChild(index).GetComponent<Toggle>();
-            tButton.label = transform.GetChild(index).transform.GetChild(1).GetComponent<Text>();
-            tButton.name = transform.GetChild(index).transform.GetChild(2).name;
+            var trf = transform.GetChild(index + 1);
+            tButton.toggle = trf.GetComponent<Toggle>();
+            tButton.label = trf.GetChild(1).GetComponent<Text>();
+            tButton.name = trf.GetChild(2).name;
             tButton.index = index;
 
+            int cIndex = index;
             index++;
 
             //tButton.toggle.group = toggleGroup;
 
             tButton.toggle.onValueChanged.AddListener((isOn) =>
-                UpdateButtonAppearance(tButton, isOn));
+                UpdateButtonAppearance(cIndex, tButton, isOn));
 
             // 初始化状态
-            UpdateButtonAppearance(tButton, tButton.toggle.isOn);
+            UpdateButtonAppearance(cIndex, tButton, tButton.toggle.isOn);
         }
 
     }
 
     //点击操作 出现提示 并传点击的是哪个面板
-    void UpdateButtonAppearance(ToggleButton tButton, bool isOn)
+    void UpdateButtonAppearance(int index, ToggleButton tButton, bool isOn)
     {
         if (isOn)
         {
+            GameObjMan.Instance.CloseObjCon(1);
+
             LabSystemManager.Instance.OnLabButtonClicked(tButton.index + 1, tButton.name);
+
+            ClickIndex = index;
+            print("UpdateButtonAppearance: " + index);
 
             //膳食分析与营养配餐实习项目 个人营养配餐 人体数字解剖
             if (tButton.label.name == "ShanshiFenxi" || tButton.label.name == "GerenYinyang" || tButton.label.name == "RentiShuzi")
             {
-                //LabSystemManager.Instance.OnLabButtonClicked(tButton.index + 1, tButton.name);
-
                 UIManager.Instance.CloseUI(UINameType.UI_ZhishiManager);
                 UIManager.Instance.CloseUI(UINameType.UI_MoxingManager);
                 UIManager.Instance.CloseUI(UINameType.UI_CaozuoManager);
@@ -66,19 +95,14 @@ public class CaozuoManager : UIBase
 
                 LabSystemManager.Instance.SelectAssessmentMode();
                 //tButton.toggle.isOn = false;
+                tButton.toggle.isOn = false;
 
-                //return;
+                return;
             }
             else if (tButton.index == 2)
             {
                 //重金属检测
-                UIManager.Instance.CloseUI("ZhishiManager");
-                UIManager.Instance.CloseUI("MoxingManager");
-                UIManager.Instance.CloseUI("CaozuoManager");
-                UIManager.Instance.CloseUI("BaogaoManager");
-                UIManager.Instance.CloseUI("BackMan");
-                GameObjMan.Instance.OpenFirst();
-                LabSystemManager.Instance.SelectAssessmentMode();
+                
             }
 
             //if (isOn)
@@ -91,24 +115,11 @@ public class CaozuoManager : UIBase
 
             tButton.toggle.isOn = false;
         }
+
+        //显示选择模式面板
         panelCaozuoObj.SetActive(isOn);
 
         //UIManager.Instance.CloseUI("CaozuoManager");
 
-    }
-
-    void OnDestroy()
-    {
-        foreach (var tButton in toggleButtons)
-        {
-            tButton.toggle.onValueChanged.RemoveAllListeners();
-        }
-    }
-    private void OnEnable()
-    {
-        foreach (var tButton in toggleButtons)
-        {
-            tButton.toggle.isOn = false;
-        }
     }
 }

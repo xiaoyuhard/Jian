@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
+//using static UnityEditor.Progress;
 //using static UnityEngine.Rendering.DebugUI;
 
 
@@ -225,10 +225,6 @@ public class FoodChooseUI : UICaoZuoBase
         }
     }
 
-
-
-
-
     // 食物被选中时
     void OnFoodSelected(FoodKindItemData food, Toggle tglItem, bool isOn)
     {
@@ -255,7 +251,7 @@ public class FoodChooseUI : UICaoZuoBase
     // 确认修改
     public void OnConfirm(string obj)
     {
-        currentSelectedFood.count = int.Parse(obj);
+        currentSelectedFood.count = float.Parse(obj);
         currentSelectedFood.isOnClick = true;
         currentSelectedFood.mealPeriod = ChooseFoodAllInformCon.Instance.BackDropValue().ToString();
         addFoodList.Add(currentSelectedFood);
@@ -286,8 +282,8 @@ public class FoodChooseUI : UICaoZuoBase
             toggle.isOn = food.isOnClick;
             toggleObj.transform.Find("id").GetComponent<Text>().text = food.foodName;
             toggleObj.transform.Find("Count").GetComponent<Text>().text = food.count.ToString();
-            toggleObj.transform.Find("Unit").GetComponent<Text>().text = food.water;
-            toggleObj.transform.Find("Heat").GetComponent<Text>().text = food.energyKcal;
+            //toggleObj.transform.Find("Unit").GetComponent<Text>().text = food.water;
+            toggleObj.transform.Find("Heat").GetComponent<Text>().text = food.heat;
             toggleObj.transform.Find("Protein").GetComponent<Text>().text = food.protein;
             toggleObj.transform.Find("Fat").GetComponent<Text>().text = food.fat;
             toggleObj.transform.Find("carbohydrate").GetComponent<Text>().text = food.cho;

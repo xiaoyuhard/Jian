@@ -4,31 +4,27 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using static UnityEditor.Progress;
 
 public class GameObjMan : MonoSingletonBase<GameObjMan>
 {
-
     public List<GameObject> objects;
     public GameObject objPlayer;
-    public GameObject ObjModel;
 
+    private void OnEnable()
+    {
+        //UpObjPosCon();
+    }
 
     public void Start()
     {
         objPlayer.transform.position = objects[0].transform.position;
-
+        UpObjPosCon();
     }
-
 
     public void SetPosition(int index)
     {
-
         objPlayer.transform.eulerAngles = Vector3.zero;
-
         objPlayer.transform.position = objects[index].transform.position;
-
     }
 
     /// <summary>
@@ -37,6 +33,7 @@ public class GameObjMan : MonoSingletonBase<GameObjMan>
     public void CLoseFirst()
     {
         objPlayer.GetComponent<FirstPersonController>().enabled = false;
+        FirstPersonController.Instance.Close_isRightMouseDown();
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
@@ -47,14 +44,27 @@ public class GameObjMan : MonoSingletonBase<GameObjMan>
     public void OpenFirst()
     {
         objPlayer.GetComponent<FirstPersonController>().enabled = true;
-
     }
 
+    /// <summary>
+    /// 打开某个实验的控制器
+    /// </summary>
+    /// <param name="index"></param>
     public void OpenObjCon(int index)
     {
+        Debug.Log(index);
+
         objects[index].SetActive(true);
+        objIndex = index;
     }
 
+    public void CloseObjCon(int index)
+    {
+        objects[index].SetActive(false);
+        objects[objIndex].SetActive(false);
+        Debug.Log(objIndex);
+    }
+    int objIndex = 1;
     public void UpObjPosCon()
     {
         SetPosition(0);
@@ -73,11 +83,6 @@ public class GameObjMan : MonoSingletonBase<GameObjMan>
         }
 
 
-    }
-
-    private void OnEnable()
-    {
-        UpObjPosCon();
     }
 
 }

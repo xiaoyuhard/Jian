@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 
+/// <summary>
+/// ÈËÌå¿ØÖÆ
+/// </summary>
 public class RenTiCon : MonoSingletonBase<RenTiCon>
 {
     public List<Transform> bodyManModelList;
@@ -20,8 +23,15 @@ public class RenTiCon : MonoSingletonBase<RenTiCon>
     private void OnEnable()
     {
         StartCoroutine(ConUp());
-        posObj.SetActive(true);
-        bodyModel.SetActive(true);
+        if (posObj != null)
+            posObj.SetActive(true);
+        if (bodyModel != null)
+            bodyModel.SetActive(true);
+        ResetTimeline();
+    }
+
+    public void ResetTimeline()
+    {
         foreach (var item in timeList)
         {
             //item.GetComponent<PlayableDirector>().enabled = false;
@@ -162,7 +172,7 @@ public class RenTiCon : MonoSingletonBase<RenTiCon>
 
     private void OnDisable()
     {
-       
+
         if (obj != null)
         {
             obj.gameObject.layer = LayerMask.NameToLayer("Default");
@@ -174,7 +184,8 @@ public class RenTiCon : MonoSingletonBase<RenTiCon>
         }
         obj = null;
         isTriOnce = true;
-        bodyModel.SetActive(false);
+        if (bodyModel != null)
+            bodyModel.SetActive(false);
 
     }
 

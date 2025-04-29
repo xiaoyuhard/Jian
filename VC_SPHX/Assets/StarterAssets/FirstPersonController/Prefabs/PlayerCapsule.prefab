@@ -1,15 +1,16 @@
 %YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
+%TAG !u! tag:yousandi.cn,2023:
 --- !u!1 &4135013735270702863
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 7
   m_Component:
   - component: {fileID: 4135013735270702856}
   m_Layer: 0
+  m_HasEditorInfo: 1
   m_Name: PlayerCameraRoot
   m_TagString: CinemachineTarget
   m_Icon: {fileID: 0}
@@ -23,12 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4135013735270702863}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1.375, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8997996947095583982}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5393215578589016642
 GameObject:
@@ -36,13 +38,14 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 7
   m_Component:
   - component: {fileID: 5393215578589016641}
   - component: {fileID: 5393215578589016654}
   - component: {fileID: 5393215578589016655}
   - component: {fileID: 5393215578589016640}
   m_Layer: 8
+  m_HasEditorInfo: 1
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -56,12 +59,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5393215578589016642}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8997996947095583982}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5393215578589016654
 MeshFilter:
@@ -82,11 +86,14 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_virtualGeometry: 0
+  m_virtualGeometryShadow: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -120,8 +127,17 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5393215578589016642}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 2
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
@@ -132,7 +148,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 7
   m_Component:
   - component: {fileID: 8997996947095583982}
   - component: {fileID: 8616685848737228382}
@@ -141,6 +157,7 @@ GameObject:
   - component: {fileID: 5420857361349278248}
   - component: {fileID: 8616685848737228376}
   m_Layer: 8
+  m_HasEditorInfo: 1
   m_Name: PlayerCapsule
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -154,14 +171,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8616685848737228372}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4135013735270702856}
   - {fileID: 5393215578589016641}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &8616685848737228382
 CharacterController:
@@ -171,16 +189,24 @@ CharacterController:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8616685848737228372}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
+  serializedVersion: 3
+  m_Height: 1.7
+  m_Radius: 0.3
   m_SlopeLimit: 45
   m_StepOffset: 0.25
   m_SkinWidth: 0.02
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 0.93, z: 0}
+  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!114 &8616685848737228371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,7 +220,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MoveSpeed: 4
-  SprintSpeed: 6
+  SprintSpeed: 10
   RotationSpeed: 1
   SpeedChangeRate: 10
   JumpHeight: 1.2
@@ -210,6 +236,9 @@ MonoBehaviour:
   CinemachineCameraTarget: {fileID: 4135013735270702863}
   TopClamp: 89
   BottomClamp: -89
+  mouseSensitivity: 80
+  minVerticalAngle: -80
+  maxVerticalAngle: 80
 --- !u!114 &1978471637655604388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,7 +270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   move: {x: 0, y: 0}
   look: {x: 0, y: 0}
-  jump: 0
+  jump: 1
   sprint: 0
   analogMovement: 0
   cursorLocked: 1

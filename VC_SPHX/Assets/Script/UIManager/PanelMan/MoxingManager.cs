@@ -34,7 +34,7 @@ public class MoxingManager : UIBase
     void Awake()
     {
         toggleGroup = GetComponent<ToggleGroup>();
-        int index = 1;
+        int index = 2;
         foreach (var tButton in toggleButtons)
         {
 

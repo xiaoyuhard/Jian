@@ -12,10 +12,10 @@ public class ShowModelTextCon : MonoBehaviour
         foreach (var model in modelList)
         {
             GameObject obj = Instantiate(canText, model.transform);
-            obj.SetActive(true);
+            //obj.SetActive(true);
             obj.transform.localPosition = Vector3.zero;
 
-            model.AddComponent<HoverUIHandler>();
+            //model.AddComponent<HoverUIHandler>();
 
         }
     }

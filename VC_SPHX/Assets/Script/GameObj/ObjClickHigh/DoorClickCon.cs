@@ -5,10 +5,9 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+//控制门开关
 public class DoorClickCon : MonoSingletonBase<DoorClickCon>
 {
-    public GameObject joinIdName;
-
     void Start()
     {
         //MessageCenter.Instance.Register("SendDoorClick", CloseDoorHigh);
@@ -16,9 +15,7 @@ public class DoorClickCon : MonoSingletonBase<DoorClickCon>
         //MessageCenter.Instance.Register("OpenDoorKaoHe", OpenDoorHighKaoHe);
         //MessageCenter.Instance.Register("SendGengToDoor", GengToDoor);
         //MessageCenter.Instance.Register("SendGengToDoorKaoHe", GengToDoorKaoHe);
-
     }
-
 
     public void SetHighlight(int index)
     {
@@ -32,6 +29,9 @@ public class DoorClickCon : MonoSingletonBase<DoorClickCon>
                 break;
             case 2:
                 Doors[10].SetActive(true);
+                break;
+            case 3:
+                Doors[index].SetActive(true);
                 break;
             case 8:
                 Doors[index].SetActive(true);
@@ -61,6 +61,11 @@ public class DoorClickCon : MonoSingletonBase<DoorClickCon>
 
             //item.GetComponent<Outline>().enabled = false;
         }
+    }
+    public void CloseDoorHigh(int index)
+    {
+        Doors[index].SetActive(false);
+
     }
 
 
@@ -165,7 +170,7 @@ public class DoorClickCon : MonoSingletonBase<DoorClickCon>
 
     public void ResDoorItem()
     {
-        foreach(GameObject item in Doors)
+        foreach (GameObject item in Doors)
         {
             if (item.activeSelf)
             {

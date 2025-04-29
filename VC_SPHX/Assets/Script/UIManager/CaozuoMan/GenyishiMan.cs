@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+//UI 更衣室界面
 public class GenyishiMan : UICaoZuoBase
 {
     public List<Toggle> toggles = new List<Toggle>();
@@ -52,6 +53,7 @@ public class GenyishiMan : UICaoZuoBase
         //OnToggleSelected += HandleSelection;
     }
 
+    //根据实验，选择服装（目前都是一样的）
     public void GetLabIndex()
     {
         int labIndex = LabSystemManager.Instance.ReutrnCurrIndex();
@@ -93,6 +95,9 @@ public class GenyishiMan : UICaoZuoBase
                 kouIndex = 2;
                 break;
             default:
+                fuIndex = 1;
+                shouIndex = 2;
+                kouIndex = 2;
                 break;
         }
     }
@@ -207,13 +212,28 @@ public class GenyishiMan : UICaoZuoBase
     {
         if (fuBl && shouBl && kouBl)
         {
-            WearCon.Instance.ResetObj();
-            //image.SetActive(false);
-            GameManager.Instance.SetStepDetection(true);  //穿了衣服点击了退出更衣室 就传到下一个实验室Con 高亮对应实验室的门
-            LabSystemManager.Instance.OnExitLockerClicked();
-            UIManager.Instance.CloseUICaoZuo(UINameType.UI_GenyishiMan);
-        }
+            //关闭界面，进入下一步
+            if (SceneMgr.CurSceneName == GameScene.Exp_HuaXue)
+            {
+                //取消更衣室柜子高亮
+                WearCon.Instance.ResetObj();
+                UIManager.Instance.CloseUICaoZuo(UINameType.UI_GenyishiMan);
 
+                //image.SetActive(false);
+                GameManager.Instance.SetStepDetection(true);  //穿了衣服点击了退出更衣室 就传到下一个实验室Con 高亮对应实验室的门
+                GameObjMan.Instance.CloseObjCon(1);
+
+                LabSystemManager.Instance.OnExitLockerClicked();
+
+            }
+            else
+            {
+                UIManager.Instance.CloseUICaoZuo(UINameType.UI_GenyishiMan);
+                MessageCenter.Instance.Send(EventName.Exp_NextStep);
+            }
+            GameObjMan.Instance.OpenFirst();
+
+        }
         else
         {
             tipUI.SetActive(true);
@@ -299,6 +319,7 @@ public class GenyishiMan : UICaoZuoBase
 
         }
         GetLabIndex();
+        GameObjMan.Instance.CLoseFirst();
 
     }
 

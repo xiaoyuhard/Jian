@@ -8,6 +8,10 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+
+/// <summary>
+/// 膳食实验-一体机身体信息输入界面
+/// </summary>
 public class YiTiJiUI : UICaoZuoBase
 {
     public Button randomBtn;
@@ -20,7 +24,7 @@ public class YiTiJiUI : UICaoZuoBase
     public Dropdown diseaseDrop;
 
     public InputField inFName;
-    public InputField inFBirthday;
+    //public InputField inFBirthday;
     public Dropdown inFGender;
     public InputField inFHeight;
     public InputField inFWeight;
@@ -39,7 +43,7 @@ public class YiTiJiUI : UICaoZuoBase
         informUIObj.SetActive(false);
         normalDrop.value = 0;
         inFName.text = "";
-        inFBirthday.text = "";
+        //inFBirthday.text = "";
         inFHeight.text = "";
         inFWeight.text = "";
         workDrop.value = 0;
@@ -54,8 +58,8 @@ public class YiTiJiUI : UICaoZuoBase
         oneselfBtn.onClick.AddListener(OneselfInform);
         verifyBtn.onClick.AddListener(VerifylfInform);
 
-        inFBirthday.onValueChanged.AddListener(OnDateValueChanged);
-        inFBirthday.onEndEdit.AddListener(ValidateDate);
+        //inFBirthday.onValueChanged.AddListener(OnDateValueChanged);
+        //inFBirthday.onEndEdit.AddListener(ValidateDate);
     }
 
 
@@ -68,10 +72,12 @@ public class YiTiJiUI : UICaoZuoBase
             StartCoroutine(WaitCloseTip());
             return;
         }
+        userInfo.birthday =DatePicker.Instance.GetSelectedDate().ToString("yyyy-MM-dd");
         informUIObj.SetActive(false);
         GameManager.Instance.stepDetection = true;
         UIManager.Instance.CloseUICaoZuo("YiTiJiUI");
         ChooseFoodAllInformCon.Instance.userInfo = userInfo;
+        GameObjMan.Instance.OpenFirst();
 
     }
 
@@ -87,10 +93,10 @@ public class YiTiJiUI : UICaoZuoBase
     {
         bool isValid = true;
 
-        if (string.IsNullOrEmpty(userInfo.birthday))
-        {
-            isValid = false;
-        }
+        //if (string.IsNullOrEmpty(userInfo.birthday))
+        //{
+        //    isValid = false;
+        //}
         if (string.IsNullOrEmpty(userInfo.height))
         {
             isValid = false;
@@ -126,6 +132,7 @@ public class YiTiJiUI : UICaoZuoBase
     {
         GenerateRandomData();
         ChooseFoodAllInformCon.Instance.userInfo = userInfo;
+        GameObjMan.Instance.OpenFirst();
 
         selectUIObj.SetActive(false);
         GameManager.Instance.stepDetection = true;
@@ -140,6 +147,10 @@ public class YiTiJiUI : UICaoZuoBase
         if (normalDrop.gameObject.activeSelf)
         {
             userInfo.physique = normalDrop.options[normalDrop.value].text;
+            if (normalDrop.options[normalDrop.value].text == "孕妇")
+            {
+                inFGender.value = 1;
+            }
         }
         if (diseaseDrop.gameObject.activeSelf)
         {
@@ -149,10 +160,12 @@ public class YiTiJiUI : UICaoZuoBase
     }
     private void LateUpdate()
     {
-        if (inFBirthday.text != ""&& birInpBl)
-        {
-            userInfo.birthday = inFBirthday.text;
-        }
+        //if (inFBirthday.text != "" && birInpBl)
+        //{
+        //    userInfo.birthday = inFBirthday.text;
+        //}
+        //userInfo.birthday = inFBirthday.text;
+
         if (inFHeight.text != "")
         {
             userInfo.height = inFHeight.text;
@@ -165,7 +178,7 @@ public class YiTiJiUI : UICaoZuoBase
         userInfo.level = workDrop.options[workDrop.value].text;
     }
 
-    public Text errorText;      // 错误提示文本
+    //public Text errorText;      // 错误提示文本
     private bool isFormatting = false;     // 防止递归触发事件
 
     bool birInpBl = false;
@@ -188,8 +201,8 @@ public class YiTiJiUI : UICaoZuoBase
         }
 
         // 3. 更新输入框文本
-        inFBirthday.text = formatted;
-        inFBirthday.caretPosition = formatted.Length; // 调整光标位置
+        //inFBirthday.text = formatted;
+        //inFBirthday.caretPosition = formatted.Length; // 调整光标位置
 
         isFormatting = false;
     }
@@ -197,19 +210,19 @@ public class YiTiJiUI : UICaoZuoBase
     // 结束编辑时验证日期
     private void ValidateDate(string date)
     {
-        if (IsValidDate(date))
-        {
-            errorText.text = "";
-            inFBirthday.image.color = Color.white;
-            birInpBl = true;
-        }
-        else
-        {
-            errorText.text = "日期格式错误，正确示例：2000-01-01";
-            inFBirthday.image.color = Color.red;
-            birInpBl = false;
+        //    if (IsValidDate(date))
+        //    {
+        //        errorText.text = "";
+        //        inFBirthday.image.color = Color.white;
+        //        birInpBl = true;
+        //    }
+        //    else
+        //    {
+        //        errorText.text = "日期格式错误，正确示例：2000-01-01";
+        //        inFBirthday.image.color = Color.red;
+        //        birInpBl = false;
 
-        }
+        //    }
     }
 
     // 验证日期合法性
@@ -242,19 +255,25 @@ public class YiTiJiUI : UICaoZuoBase
 
     // 预定义选项
     private string[] genders = { "男", "女" };
-    private string[] levelTypes = { "轻体力", "中体力", "重体力" };
-    private string[] physiqueTypes = { "正常", "肥胖", "消瘦", "特殊", "代谢性疾病患者", "消化道疾病患者", "心脑血管疾病患者", "肝胆胰疾病患者", "呼吸系统疾病患者", "肾脏疾病患者", "血液系统疾病患者" };
+    private string[] levelTypes = { "轻", "中", "重" };
+    private string[] physiqueTypes = { "正常", "孕妇", "代谢性疾病患者", "消化道疾病患者", "心脑血管疾病患者", "肝胆胰疾病患者", "呼吸系统疾病患者", "肾脏疾病患者", "血液系统疾病患者" };
 
 
     // 生成随机数据并更新UI
     public void GenerateRandomData()
     {
+        maxYear = DateTime.Now.Year; // 获取当前年份
+        minYear = maxYear - 100; // 设置最小年份为当前年份的前100年
         string date = GenerateRandomDate();
         int height = UnityEngine.Random.Range(minHeight, maxHeight + 1);
         int weight = UnityEngine.Random.Range(minWeight, maxWeight + 1);
         string sex = genders[UnityEngine.Random.Range(0, genders.Length)];
         string levelType = levelTypes[UnityEngine.Random.Range(0, levelTypes.Length)];
         string physique = physiqueTypes[UnityEngine.Random.Range(0, physiqueTypes.Length)];
+        if (physique == "孕妇")
+        {
+            sex = "女";
+        }
 
         userInfo.birthday = date;
         userInfo.height = height.ToString();

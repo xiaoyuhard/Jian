@@ -20,6 +20,7 @@ public class BodyConUI : UICaoZuoBase
     public GameObject explanationObj;
     public Text explanationText;
 
+    public Button backBtn;
     private void OnEnable()
     {
         // 正确获取所有 Toggle 组件（包含子物体）
@@ -53,13 +54,26 @@ public class BodyConUI : UICaoZuoBase
             toggle.isOn = false;
 
         }
+        backBtn.gameObject.SetActive(false);
     }
     // Start is called before the first frame update
     void Start()
     {
         manBtn.onClick.AddListener(EnterManPanel);
         womanBtn.onClick.AddListener(EnterWomanPanel);
+        backBtn.onClick.AddListener(BackChoosePanel);
      
+    }
+
+    private void BackChoosePanel()
+    {
+        womanBtn.gameObject.SetActive(true);
+        manBtn.gameObject.SetActive(true);
+        backBtn.gameObject.SetActive(false);
+        RenTiCon.Instance.ResetTimeline();
+        man.SetActive(false);
+        woman.SetActive(false);
+
     }
 
     private void OnClickShowWomanBody(Toggle toggle, bool isOn)
@@ -187,6 +201,7 @@ public class BodyConUI : UICaoZuoBase
         manBtn.gameObject.SetActive(false);
         RenTiCon.Instance.ClickBtnShowBody(1);
         StartCoroutine(OpenWomanUIPanel());
+        backBtn.gameObject.SetActive(true);
 
     }
     //打开女模型面板
@@ -205,6 +220,7 @@ public class BodyConUI : UICaoZuoBase
         RenTiCon.Instance.ClickBtnShowBody(0);
 
         StartCoroutine(OpenManUIPanel());
+        backBtn.gameObject.SetActive(true);
 
     }
     //打开男模型面板

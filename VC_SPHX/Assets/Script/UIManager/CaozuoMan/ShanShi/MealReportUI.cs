@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 膳食报告界面 控制可以重新选择哪餐
+/// </summary>
 public class MealReportUI : UICaoZuoBase
 {
-    public Button exportBtn;
     public Button reselectBtn1;
     public Button reselectBtn2;
     public Button reselectBtn3;
@@ -16,7 +18,6 @@ public class MealReportUI : UICaoZuoBase
     // Start is called before the first frame update
     void Start()
     {
-        exportBtn.onClick.AddListener(ExportClick);
         reselectBtn1.onClick.AddListener(ReselectClick1);
         reselectBtn2.onClick.AddListener(ReselectClick2);
         reselectBtn3.onClick.AddListener(ReselectClick3);
@@ -48,13 +49,6 @@ public class MealReportUI : UICaoZuoBase
 
     }
 
-    private void ExportClick()
-    {
-        MessageCenter.Instance.Send("SendHomeReset", ""); //氨基酸工作台
-        ShanShiCon.Instance.CloseObj();
-        UIManager.Instance.CloseAllUICaoZuo();
-
-    }
 
     // Update is called once per frame
     void Update()

@@ -140,6 +140,12 @@ namespace StarterAssets
             Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
             Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
         }
+        public void Close_isRightMouseDown()
+        {
+            _isRightMouseDown = false;
+            //Cursor.visible = true;       // 显示光标
+            //Cursor.lockState = CursorLockMode.None; // 解除锁定
+        }
 
         private void CameraRotation()
         {

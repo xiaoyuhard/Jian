@@ -2,12 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//碰撞触发 开门动画
 public class DoorItem : MonoBehaviour
 {
     public GameObject doorCollider;
     public GameObject doorAniL;
     public GameObject doorAniR;
     private bool _hasPlayed = false;     // 标记是否已播放
+    public bool triggerNext = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,10 +32,15 @@ public class DoorItem : MonoBehaviour
         doorAniR.GetComponent<Animation>().Play();
         _hasPlayed = true;
 
+        //开门后触发下一步
+        if (triggerNext)
+            MessageCenter.Instance.Send(EventName.Exp_NextStep);
+
         switch (transform.name)
         {
             case "Shanshi":
                 GameManager.Instance.SetStepDetection(true);
+                gameObject.SetActive(false);
                 break;
             case "营养室进口":
                 GameManager.Instance.SetStepDetection(true);

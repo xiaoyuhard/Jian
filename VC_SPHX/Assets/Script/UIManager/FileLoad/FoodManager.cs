@@ -7,13 +7,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using UnityEditor.PackageManager.Requests;
+//using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
-using static UnityEditor.Progress;
+//using static UnityEditor.Progress;
 using static UnityEngine.Rendering.DebugUI;
 using Newtonsoft.Json;
-using UnityEditorInternal.Profiling.Memory.Experimental;
+//using UnityEditorInternal.Profiling.Memory.Experimental;
 
 /// <summary>
 /// 食物管理 接收保存所有食物数据
@@ -109,8 +109,10 @@ public class FoodManager : MonoBehaviour
             Debug.LogError("服务器地址配置错误");
             yield break;
         }
+    
         // 拼接完整地址
-        string fullUrl = $"{CombineUrl(baseUrl, "/food/pageQuery")}?CategoryName={categoryName}&pageSize={pageSize}";
+        //string fullUrl = $"{CombineUrl(baseUrl, "/food/pageQuery")}?CategoryName={categoryName}&pageSize={pageSize}";
+        string fullUrl = $"{CombineUrl("http://172.28.67.73:9090", "/food/pageQuery")}?CategoryName={categoryName}&pageSize={pageSize}";
         using (UnityWebRequest request = UnityWebRequest.Get(fullUrl))
         {
             // 设置请求头（如果需要）
@@ -244,7 +246,7 @@ public class FoodManager : MonoBehaviour
                         foodName = rowData[2].ToString(),
                         edible = rowData[3].ToString(),
                         water = rowData[4].ToString(),
-                        energyKcal = rowData[5].ToString(),
+                        heat = rowData[5].ToString(),
                         protein = rowData[6].ToString(),
                         fat = rowData[7].ToString(),
                         cho = rowData[8].ToString()

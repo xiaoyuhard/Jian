@@ -22,8 +22,13 @@ public class HomeManager : UIBase
     }
 
     public List<ToggleButton> toggleButtons;
-    private ToggleGroup toggleGroup;
+    public ToggleGroup toggleGroup;
     //public Color colorBack;
+
+    /// <summary>
+    /// 当前点击的哪个菜单(顶部)
+    /// </summary>
+    public static int ClickIndex = -1;
 
     void Awake()
     {
@@ -40,16 +45,16 @@ public class HomeManager : UIBase
 
     private void Start()
     {
-        toggleGroup = GetComponent<ToggleGroup>();
         int index = 1;
-        int clickIndex = 0;
+        int cIndex = 0;
 
         foreach (var tButton in toggleButtons)
         {
-            int idx = clickIndex;
-            tButton.toggle = transform.GetChild(index).GetComponent<Toggle>();
-            tButton.label = transform.GetChild(index).transform.GetChild(1).GetComponent<Text>();
-            tButton.background = transform.GetChild(index).transform.GetChild(0).GetComponent<Image>();
+            int idx = cIndex;
+            var trf = toggleGroup.transform.GetChild(index - 1);
+            tButton.toggle = trf.GetComponent<Toggle>();
+            tButton.background = trf.GetChild(0).GetComponent<Image>();
+            tButton.label = trf.GetChild(1).GetComponent<Text>();
             //tButton.uiPanel = transform.GetChild(index).transform.GetChild(2).transform.GetComponent<GameObject>();
             index++;
             //tButton.normalColor = Color.white;
@@ -60,7 +65,7 @@ public class HomeManager : UIBase
             tButton.toggle.isOn = false;
             tButton.toggle.onValueChanged.AddListener((isOn) =>
                 UpdateButtonAppearance(idx, tButton, isOn));
-            clickIndex++;
+            cIndex++;
             // 初始化状态
             //UpdateButtonAppearance(tButton, tButton.toggle.isOn);
         }
@@ -73,23 +78,31 @@ public class HomeManager : UIBase
 
         MessageCenter.Instance.Register("SendHomeReset", HomeReset); //氨基酸工作台
 
-        UIManager.Instance.OpenUI(UINameType.UI_ZhishiManager);
-        toggleButtons[0].toggle.isOn = true;
+        if (SceneMgr.CurSceneName == GameScene.Exp_HuaXue)
+        {
+            UIManager.Instance.OpenUI(UINameType.UI_ZhishiManager);
+            toggleButtons[0].toggle.isOn = true;
+        }
+        else
+        {
+            //toggleButtons[2].toggle.isOn = true;
+            toggleButtons[2].toggle.SetIsOnWithoutNotify(true);
+        }
     }
 
     void UpdateButtonAppearance(int index,ToggleButton tButton, bool isOn)
     {
         if (isOn)
         {
-            print("click index:" + index);
-
+            ClickIndex = index;
             UIManager.Instance.OpenUI(tButton.uiPanel.name);
             UIManager.Instance.OpenUI(UINameType.UI_BackMan);
             UIManager.Instance.CloseAllUICaoZuo();
             GameManager.Instance.CloseAllCon();
             //GameManager.Instance.SetGameObj(false);
-            GameObjMan.Instance.CLoseFirst();
             GameObjMan.Instance.UpObjPosCon();
+
+            GameObjMan.Instance.CLoseFirst();
             DoorClickCon.Instance.ResDoorItem();
 
         }

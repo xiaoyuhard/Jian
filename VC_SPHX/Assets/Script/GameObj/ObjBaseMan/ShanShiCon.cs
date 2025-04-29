@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+/// <summary>
+/// 膳食实验
+/// </summary>
 public class ShanShiCon : MonoSingletonBase<ShanShiCon>
 {
     public List<GameObject> posList;
@@ -75,6 +78,7 @@ public class ShanShiCon : MonoSingletonBase<ShanShiCon>
         yield return new WaitUntil(() => GameManager.Instance.stepDetection); // 当 conditionMet == true 时继续 体检室
         posList[3].SetActive(false);
         GameManager.Instance.SetStepDetection(false);
+        ChooseFoodAllInformCon.Instance.SetChooseMealActive(true);
 
         posList[4].SetActive(true);
 
@@ -84,8 +88,9 @@ public class ShanShiCon : MonoSingletonBase<ShanShiCon>
         posList[5].SetActive(true);
         yield return new WaitUntil(() => GameManager.Instance.stepDetection); // 当 conditionMet == true 时继续 体检室
         GameManager.Instance.SetStepDetection(false);
-           
-        ChooseFoodAllInformCon.Instance.EnableInform();
+     
+
+        //ChooseFoodAllInformCon.Instance.EnableInform();
     }
 
     public void OnDisable()

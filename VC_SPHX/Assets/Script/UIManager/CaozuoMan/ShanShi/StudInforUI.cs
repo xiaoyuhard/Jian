@@ -27,6 +27,8 @@ public class StudInforUI : UICaoZuoBase
         //studInfUIObj.SetActive(false);
         GameManager.Instance.stepDetection = true;
         UIManager.Instance.CloseUICaoZuo("StudInforUI");
+        GameObjMan.Instance.OpenFirst();
+
     }
 
     // Update is called once per frame

@@ -6,15 +6,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 
+/// <summary>
+/// 氨基酸实验
+/// </summary>
 public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
 {
-    public GameObject anObj;
+    //public GameObject anObj;
     public GameObject workbench;
     public List<GameObject> modelList;
     public List<GameObject> listObj;
     public List<GameObject> timeList;
 
     public GameObject timelineObj;
+    public GameObject sepuObj;
 
     //int index = 0;
 
@@ -115,7 +119,7 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
 
         LabSystemManager.Instance.OnExitLockerClicked();
         IsAssessmentMode(1); //显示提示操作
-        //LabSystemManager.Instance.HighlightObject(listObj[8]);
+                             //LabSystemManager.Instance.HighlightObject(listObj[8]);
 
         //for (int i = 0; i < 10; i++)
         //{
@@ -133,7 +137,7 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         LabSystemManager.Instance.HighlightObject(listObj[0]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 把高亮的物体点击 点了后 空白样品的制备 高亮 换提示
         Debug.Log($"等待时间: {OpenTimePlay(0)}"); // 查看控制台输出
-        yield return new WaitForSeconds(OpenTimePlay(0));//点击后播放动画  1
+        yield return SkipableWait(OpenTimePlay(0));//点击后播放动画  1
         //index++;//1
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(3);
@@ -141,7 +145,7 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         LabSystemManager.Instance.HighlightObject(listObj[1]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 氨基酸标准品的制备
 
-        yield return new WaitForSeconds(OpenTimePlay(1));//播放动画  2
+        yield return SkipableWait(OpenTimePlay(1));//播放动画  2
         //index++;//2
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(4);
@@ -149,7 +153,7 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         LabSystemManager.Instance.HighlightObject(listObj[2]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 标准品的衍生加溶剂
 
-        yield return new WaitForSeconds(OpenTimePlay(2));//播放动画  3
+        yield return SkipableWait(OpenTimePlay(2));//播放动画  3
         //index++;//3
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(5);
@@ -157,48 +161,49 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         LabSystemManager.Instance.HighlightObject(listObj[3]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 标准品的衍生水浴加热
 
-        yield return new WaitForSeconds(OpenTimePlay(3));//播放动画  4
+        yield return SkipableWait(OpenTimePlay(3));//播放动画  4
         //index++;//4
         GameManager.Instance.SetStepDetection(false);
+
         IsAssessmentMode(6);
         ShowObj(4);//按顺序显示 第5个动画
         LabSystemManager.Instance.HighlightObject(listObj[4]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 试样制备
 
-        yield return new WaitForSeconds(OpenTimePlay(4));//播放动画  5
-        //index++;//5
+        yield return SkipableWait(OpenTimePlay(4));//播放动画  5
+                                                   //index++;//5
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(7);
         ShowObj(5);//按顺序显示 第6个动画
         LabSystemManager.Instance.HighlightObject(listObj[5]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 试剂称量
 
-        yield return new WaitForSeconds(OpenTimePlay(5));//播放动画  6
-        //index++;//6
+        yield return SkipableWait(OpenTimePlay(5));//播放动画  6
+                                                   //index++;//6
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(8);
         ShowObj(6);//按顺序显示 第7个动画
         LabSystemManager.Instance.HighlightObject(listObj[5]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 水解管加盐酸和苯酚
 
-        yield return new WaitForSeconds(OpenTimePlay(6));//播放动画  7
-        //index++;//7
+        yield return SkipableWait(OpenTimePlay(6));//播放动画  7
+                                                   //index++;//7
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(9);
         ShowObj(7);//按顺序显示 第8个动画
         LabSystemManager.Instance.HighlightObject(listObj[6]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 水解管冷冻抽气
 
-        yield return new WaitForSeconds(OpenTimePlay(7));//播放动画  8
-        //index++;//8
+        yield return SkipableWait(OpenTimePlay(7));//播放动画  8
+                                                   //index++;//8
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(10);
         ShowObj(8);//按顺序显示 第9个动画
         LabSystemManager.Instance.HighlightObject(listObj[7]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 水解管恒温箱加热
 
-        yield return new WaitForSeconds(OpenTimePlay(7));//播放动画  9
-        //index++;//9
+        yield return SkipableWait(OpenTimePlay(7));//播放动画  9
+                                                   //index++;//9
         DoorClickCon.Instance.SetHighlight(11);
 
         GameManager.Instance.SetStepDetection(false);
@@ -207,7 +212,9 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         LabSystemManager.Instance.HighlightObject(listObj[8]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 水解液过滤定容
 
-        yield return new WaitForSeconds(OpenTimePlay(9));//播放动画  10
+        yield return SkipableWait(OpenTimePlay(9));//播放动画  10
+        DoorClickCon.Instance.CloseDoorHigh(11);
+
         //index++;//10
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(12);
@@ -215,47 +222,47 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         LabSystemManager.Instance.HighlightObject(listObj[9]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 水解液过滤转移
 
-        yield return new WaitForSeconds(OpenTimePlay(10));//播放动画  11
-        //index++;//11
+        yield return SkipableWait(OpenTimePlay(10));//播放动画  11
+                                                    //index++;//11
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(13);
         ShowObj(11);//按顺序显示 第12个动画
         LabSystemManager.Instance.HighlightObject(listObj[10]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 试管浓缩仪加压
 
-        yield return new WaitForSeconds(OpenTimePlay(11));//播放动画  12
-        //index++;//12
+        yield return SkipableWait(OpenTimePlay(11));//播放动画  12
+                                                    //index++;//12
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(14);
         ShowObj(12);//按顺序显示 第13个动画
         LabSystemManager.Instance.HighlightObject(listObj[11]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 柠檬酸钠溶解滤膜过滤
 
-        yield return new WaitForSeconds(OpenTimePlay(12));//播放动画  13
-        //index++;//13
+        yield return SkipableWait(OpenTimePlay(12));//播放动画  13
+                                                    //index++;//13
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(15);
         ShowObj(13);//按顺序显示 第14个动画
         LabSystemManager.Instance.HighlightObject(listObj[12]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 样品的衍生添加试剂
 
-        yield return new WaitForSeconds(OpenTimePlay(13));//播放动画  14
-        //index++;//14
+        yield return SkipableWait(OpenTimePlay(13));//播放动画  14
+                                                    //index++;//14
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(16);
         ShowObj(14);//按顺序显示 第15个动画
         LabSystemManager.Instance.HighlightObject(listObj[13]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 样品的衍生水浴加热
 
-        yield return new WaitForSeconds(OpenTimePlay(14));//播放动画  15
-        //index++;//15
+        yield return SkipableWait(OpenTimePlay(14));//播放动画  15
+                                                    //index++;//15
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(17);
         ShowObj(15);//按顺序显示 第16个动画
         LabSystemManager.Instance.HighlightObject(listObj[14]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 样品溶液进瓶
 
-        yield return new WaitForSeconds(OpenTimePlay(15));//播放动画  16
+        yield return SkipableWait(OpenTimePlay(15));//播放动画  16
         GameManager.Instance.SetStepDetection(false);
         //index++;//16
         IsAssessmentMode(18);
@@ -263,12 +270,12 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         LabSystemManager.Instance.HighlightObject(listObj[15]);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 样品溶液进瓶
 
-        yield return new WaitForSeconds(OpenTimePlay(16));//播放动画  17
+        yield return SkipableWait(OpenTimePlay(16));//播放动画  17
 
         GameManager.Instance.SetStepDetection(false);
         //index++;//17
         IsAssessmentMode(19);
-        ShowObj(17);//按顺序显示 第18个动画
+        sepuObj.SetActive(true);
 
         LabSystemManager.Instance.HighlightObject(listObj[16]);
 
@@ -301,7 +308,7 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         ShowObj(18);//按顺序显示 第19个动画
 
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 电脑开关
-        yield return new WaitForSeconds(OpenTimePlay(18));//播放动画  19
+        yield return SkipableWait(OpenTimePlay(18));//播放动画  19
 
         LabSystemManager.Instance.HighlightObject(listObj[24]);
         GameManager.Instance.SetStepDetection(false);
@@ -310,17 +317,33 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 点击电脑上图标软件后
 
         UIManager.Instance.OpenUICaoZuo("ComputerUI");
-        ComputerUI.Instance.ShowComUI(0);
+        //ComputerUI.Instance.ShowComUI(0);
         GameManager.Instance.SetStepDetection(false);
         yield return new WaitForSeconds(3);//提示上面排气阀高亮
+
         LabSystemManager.Instance.HighlightObject(listObj[21]);
         ComputerUI.Instance.CloseUI();
+        UIManager.Instance.CloseUICaoZuo("ComputerUI");
+        ShowObj(17);//按顺序显示 第18个动画
 
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 电脑屏幕显示UI 然后排气阀高亮
 
         GameManager.Instance.SetStepDetection(false);
         IsAssessmentMode(21);
-        yield return new WaitForSeconds(OpenTimePlay(17));//播放动画  18
+        yield return SkipableWait(OpenTimePlay(17));//播放动画  18
+
+        UIManager.Instance.OpenUICaoZuo("ComputerUI");
+        ComputerUI.Instance.ShowComUI(0);
+        GameManager.Instance.SetStepDetection(false);
+
+        yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 点了排气阀 进行放动画 出UI进行操作 
+        //yield return new WaitForSeconds(3);//提示上面排气阀高亮
+        LabSystemManager.Instance.HighlightObject(listObj[21]);
+        ComputerUI.Instance.CloseUI();
+        UIManager.Instance.CloseUICaoZuo("ComputerUI");
+
+        yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 电脑屏幕显示UI 然后排气阀高亮
+        UIManager.Instance.OpenUICaoZuo("ComputerUI");
 
         ComputerUI.Instance.ShowComUI(1);
         GameManager.Instance.SetStepDetection(false);
@@ -328,22 +351,46 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
 
         ComputerUI.Instance.ShowComUI(2);
         GameManager.Instance.SetStepDetection(false);
-        yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 点了排气阀 进行放动画 出UI进行操作 
-
-        ComputerUI.Instance.ShowComUI(3);
-        GameManager.Instance.SetStepDetection(false);
         yield return new WaitForSeconds(3);//提示上面排气阀高亮
-        LabSystemManager.Instance.HighlightObject(listObj[21]);
+        //LabSystemManager.Instance.HighlightObject(listObj[21]);
         ComputerUI.Instance.CloseUI();
 
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 电脑屏幕显示UI 然后排气阀高亮
 
+        ComputerUI.Instance.ShowComUI(3);
+        GameManager.Instance.SetStepDetection(false);
+        yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 
+
+        ComputerUI.Instance.ShowComUI(4);
+        GameManager.Instance.SetStepDetection(false);
+        yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续
+
+        ComputerUI.Instance.ShowComUI(5);
+        GameManager.Instance.SetStepDetection(false);
+        yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 
+
+        ComputerUI.Instance.ShowComUI(6);
+        GameManager.Instance.SetStepDetection(false);
+        yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 
+
+        ComputerUI.Instance.ShowComUI(7);
+        GameManager.Instance.SetStepDetection(false);
+        yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 
+
+        ComputerUI.Instance.ShowComUI(8);
+        GameManager.Instance.SetStepDetection(false);
+        yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 
+
+        ComputerUI.Instance.ShowComUI(9);
+        GameManager.Instance.SetStepDetection(false);
+        yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 
+        //UIManager.Instance.CloseUICaoZuo("ComputerUI");
+        ComputerUI.Instance.ShowComUI(10);
+        GameManager.Instance.SetStepDetection(false);
+        yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 
+                                                                                    //UIManager.Instance.OpenUICaoZuo("ChromatographUI");
 
 
-
-        UIManager.Instance.OpenUICaoZuo("ChromatographUI");
-
-        //}
     }
 
     public void IsAssessmentMode(int index)
@@ -354,19 +401,57 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         }
     }
 
-
+    bool isSkip = false;
     public float OpenTimePlay(int index)
     {
         timeList[index].GetComponent<PlayableDirector>().Play();
 
-        //return (float)timeList[index].GetComponent<PlayableDirector>().duration;
-        return 3;
+        return (float)timeList[index].GetComponent<PlayableDirector>().duration;
+        //return 3;
+    }
+
+    /// <summary>
+    /// 可跳过的等待协程
+    /// </summary>
+    /// <param name="waitTime">最大等待时间（秒）</param>
+    /// <param name="skipCondition">跳过条件（返回true时立即结束等待）</param>
+    /// <returns></returns>
+    public static IEnumerator SkipableWait(float waitTime)
+    {
+        if (waitTime <= 0)
+        {
+            yield break; // 时间无效直接跳过
+        }
+
+        float timer = 0f;
+        while (timer < waitTime)
+        {
+            timer += Time.deltaTime;
+
+            // 检测是否满足跳过条件
+            if (Input.GetKeyDown(KeyCode.Y))
+            {
+                Debug.Log("等待被主动跳过");
+                yield break; // 提前退出
+            }
+
+            yield return null; // 挂起至下一帧
+        }
+
+        Debug.Log("等待自然结束");
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            isSkip = true;
+        }
+        else
+        {
+            isSkip = false;
+        }
     }
 
     bool isTriOnce = true;
@@ -376,6 +461,8 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         //if (other.tag != "Player") return;
         //LabSystemManager.Instance.HighlightObject(anObj);
         //anObj.SetActive(true);
+        DoorClickCon.Instance.CloseHighlightAll();
+
         LabSystemManager.Instance.HighlightObject(listObj[0]);
         IsAssessmentMode(2);
         GameManager.Instance.SetStepDetection(true);
@@ -421,7 +508,7 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         }
         foreach (var item in modelList)
         {
-            item.SetActive(false);
+            //item.SetActive(false);
         }
         timelineObj.SetActive(true);
         isTriOnce = true;

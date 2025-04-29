@@ -1,6 +1,7 @@
 using OfficeOpenXml.Packaging;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +10,7 @@ public class FloatingText : MonoBehaviour
     [Header("绑定设置")]
     public Transform targetModel;  // 需要跟随的3D模型
     public Text uiText;           // UI文字组件
+    public GameObject uiObj; //UI文字和背景
 
     [Header("位置设置")]
     public float verticalOffset = 0.05f; // 基础垂直偏移
@@ -19,7 +21,7 @@ public class FloatingText : MonoBehaviour
 
     void Start()
     {
-        targetModel = transform.parent.parent;
+        targetModel = transform.parent.parent.parent;
         mainCamera = Camera.main;
         modelRenderer = targetModel.GetComponent<Renderer>();
         //Debug.Log(transform.parent.transform.eulerAngles.y + "   "+ transform.parent.transform .name+ "   " + transform.parent.parent.transform.eulerAngles.y);
@@ -28,12 +30,16 @@ public class FloatingText : MonoBehaviour
         //transform.parent.eulerAngles = new Vector3(0, -(transform.parent.parent.transform.eulerAngles.y), 0);
         UpdateWorldSpacePosition();
         uiText.text = GetMiddleChars(targetModel.gameObject);
-        transform.parent.parent.GetComponent<ChildFacingController>().enabled = true;
+        if (transform.parent.parent.parent.GetComponent<ChildFacingController>() != null)
+        {
+            transform.parent.parent.parent.GetComponent<ChildFacingController>().enabled = true;
+
+        }
 
 
         // 实例化 Text 并挂载到当前物体
         //textInstance = Instantiate(textPrefab, transform);
-        uiText.transform.localPosition = Vector3.zero;
+        uiObj.transform.localPosition = Vector3.zero;
 
         // 计算物体尺寸（无 MeshRenderer 时使用 Collider 或手动尺寸）
         Vector3 objectSize = CalculateObjectSize();
@@ -44,7 +50,7 @@ public class FloatingText : MonoBehaviour
             offsetRatio.y * objectSize.y,
             offsetRatio.z * objectSize.z
         );
-        uiText.transform.localPosition = finalOffset;
+        uiObj.transform.localPosition = finalOffset;
 
         // 可选：根据物体大小调整 Text 字体
         Text textComponent = uiText.GetComponent<Text>();
@@ -111,7 +117,7 @@ public class FloatingText : MonoBehaviour
     void LateUpdate()
     {
         // 使Text的正面始终朝向相机
-        transform.rotation = Quaternion.LookRotation(transform.position - mainCamera.transform.position);
+        uiObj.transform.rotation = Quaternion.LookRotation(transform.position - mainCamera.transform.position);
         // 可选：锁定X和Z轴旋转，保持水平
         // transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
     }

@@ -28,13 +28,19 @@ public class GameManager : MonoSingletonBase<GameManager>
     //Start is called before the first frame update
     void Start()
     {
-        btn.onClick.AddListener(OnOpen);
-        GameObjMan.Instance.CLoseFirst();
-        UIManager.Instance.DonotCloseUI(UINameType.UI_HomeManager);
+        if (SceneMgr.CurSceneName == GameScene.Exp_HuaXue)
+        {
+            GameObjMan.Instance.CLoseFirst();
+            UIManager.Instance.DonotCloseUI(UINameType.UI_HomeManager);
+
+            btn.gameObject.SetActive(true);
+            btn.onClick.AddListener(OnOpen);
+        }
     }
 
     void OnOpen()
     {
+        UIManager.Instance.CloseWholeUI();
         UIManager.Instance.OpenUI(UINameType.UI_BackMan);
         UIManager.Instance.OpenUI(UINameType.UI_HomeManager);
         btn.gameObject.SetActive(false);

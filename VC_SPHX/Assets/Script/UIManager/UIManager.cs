@@ -4,8 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
-
 
 public class UIManager : MonoBehaviour
 {
@@ -181,7 +179,9 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // 关闭所有 UI
+    /// <summary>
+    /// 关闭所有 uiPanels UI
+    /// </summary>
     public void CloseAllUI()
     {
         foreach (var panel in uiPanels.Values)
@@ -190,6 +190,9 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 关闭所有 uiCaoZuoPanels UI
+    /// </summary>
     public void CloseAllUICaoZuo()
     {
         foreach (var panel in uiCaoZuoPanels.Values)
@@ -219,6 +222,15 @@ public class UIManager : MonoBehaviour
         if (!mNotCloseList.Contains(name))
             mNotCloseList.Add(name);
     }
+
+    /// <summary>
+    /// 关闭所有UI（包括uiPanels、uiCaoZuoPanels）
+    /// </summary>
+    public void CloseWholeUI()
+    {
+        CloseAllUI();
+        CloseAllUICaoZuo();
+    }
 }
 
 public class UINameType
@@ -231,8 +243,11 @@ public class UINameType
     public const string UI_BackMan = "UI_BackMan";
     public const string UI_GenLianUIMan = "UI_GenLianUIMan";
     public const string UI_GenyishiMan = "UI_GenyishiMan";
+    /// <summary>
+    /// 操作提示面板
+    /// </summary>
     public const string UI_ProTipsMan = "UI_ProTipsMan";
-
-
-
+    //展示图片
+    public const string UI_ShowPicture = "UI_ShowPicture";
+    public const string UI_ExpMethod = "UI_ExpMethod";
 }

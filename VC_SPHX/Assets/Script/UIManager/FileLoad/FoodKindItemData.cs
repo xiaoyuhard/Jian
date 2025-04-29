@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-
+/// <summary>
+/// 食物数据类 发送及接收数据
+/// </summary>
 [CreateAssetMenu(fileName = "FoodKindItemData", menuName = "Data/FoodKindItemData")]
 [System.Serializable]
 public class FoodKindItemData : ScriptableObject
@@ -22,8 +24,9 @@ public class FoodKindItemData : ScriptableObject
     public string categoryName; //大类
     public int categoryId;
     public bool isOnClick = false;
-    public int count;
+    public float count;
     public string mealPeriod; //用餐时间段
+    public string heat;//热量
 
 }
 
@@ -49,7 +52,7 @@ public class FoodSendConverDay
 public class FoodEveryMealItem
 {
     public string foodCode;
-    public int quantity;
+    public float quantity;
 }
 
 [System.Serializable]
