@@ -32,7 +32,7 @@ public class GenLianUIMan : UICaoZuoBase
         UIManager.Instance.OpenUI(UINameType.UI_BackMan);
         //GameManager.Instance.SetGameObj(false);
         UIManager.Instance.CloseAllUICaoZuo();
-        GameManager.Instance.SetGameObj(false);
+        //GameManager.Instance.SetGameObj(false);
         GameObjMan.Instance.CLoseFirst();
 
     }

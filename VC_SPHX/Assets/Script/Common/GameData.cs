@@ -17,6 +17,7 @@ public class GameData : Singleton<GameData>
     /// 当前进行的实验
     /// </summary>
     public Experiment CurrentExperiment = Experiment.Unknown;
+    public int CurExpSubIndex = -1;
 }
 
 public class Singleton<T> where T : new()

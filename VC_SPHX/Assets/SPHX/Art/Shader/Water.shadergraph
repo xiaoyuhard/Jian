@@ -4,9 +4,6 @@
     "m_ObjectId": "c00c563ce7764a61a2f8c309b2c00561",
     "m_Properties": [
         {
-            "m_Id": "58ee99df1be5483192482b4467e255ba"
-        },
-        {
             "m_Id": "f69f0cad1d1e4aceb89a3c3886707381"
         },
         {
@@ -27,9 +24,6 @@
         },
         {
             "m_Id": "4eb04f15ae6c40c6b435c5de265cc540"
-        },
-        {
-            "m_Id": "75677daa924f4c15ba6044e185e09667"
         }
     ],
     "m_Nodes": [
@@ -981,35 +975,6 @@
 
 {
     "m_SGVersion": 1,
-    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector2ShaderProperty",
-    "m_ObjectId": "58ee99df1be5483192482b4467e255ba",
-    "m_Guid": {
-        "m_GuidSerialized": "b228d81e-7dce-4454-a64a-d3c9dd3b5b3d"
-    },
-    "m_Name": "Amplitude",
-    "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "Amplitude",
-    "m_DefaultReferenceName": "_Amplitude",
-    "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": true,
-    "m_UseCustomSlotLabel": false,
-    "m_CustomSlotLabel": "",
-    "m_DismissedVersion": 0,
-    "m_Precision": 0,
-    "overrideHLSLDeclaration": false,
-    "hlslDeclarationOverride": 0,
-    "m_Hidden": false,
-    "m_Priority": 10,
-    "m_Value": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 0.0
-    }
-}
-
-{
-    "m_SGVersion": 1,
     "m_Type": "UnityEditor.ShaderGraph.SwizzleNode",
     "m_ObjectId": "5bd70787c9134b0f81d7d5c2c6e52403",
     "m_Group": {
@@ -1222,18 +1187,6 @@
     "m_Value": 0.0,
     "m_DefaultValue": 0.0,
     "m_Labels": []
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
-    "m_ObjectId": "75677daa924f4c15ba6044e185e09667",
-    "m_Name": "Liquid",
-    "m_ChildObjectList": [
-        {
-            "m_Id": "58ee99df1be5483192482b4467e255ba"
-        }
-    ]
 }
 
 {

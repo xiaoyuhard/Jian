@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using RenderHeads.Media.AVProVideo;
 
 public class ZhishiManager : UIBase
 {
@@ -21,9 +22,11 @@ public class ZhishiManager : UIBase
         [HideInInspector] public bool isSelected;
     }
     public GameObject videoPlayerObj;
+    public VideoPlayer vp;
     public List<ToggleButton> toggleButtons;
     private ToggleGroup toggleGroup;
     public Color colorBack;
+    public MediaPlayer mediaPlayer;//食品播放
 
     void Awake()
     {
@@ -46,17 +49,30 @@ public class ZhishiManager : UIBase
                 UpdateButtonAppearance(tButton, isOn));
 
             // 初始化状态
-            UpdateButtonAppearance(tButton, tButton.toggle.isOn);
-        }
+            //UpdateButtonAppearance(tButton, false);
 
+        }
+        //UpdateButtonAppearance(toggleButtons[0], true);
+        //toggleButtons[0].toggle.isOn = true;
     }
 
     void UpdateButtonAppearance(ToggleButton tButton, bool isOn)
     {
-        //tButton.background.color = isOn ? tButton.selectedColor : tButton.normalColor;
-        //tButton.label.color = isOn ? tButton.normalColor : Color.black;
-        //tButton.uiPanel.gameObject.SetActive(isOn);
-        videoPlayerObj.GetComponent<VideoPlayer>().clip = Resources.Load<VideoClip>("安全知识视频/" + tButton.label.text);
+        if (isOn)
+        {
+            //tButton.background.color = isOn ? tButton.selectedColor : tButton.normalColor;
+            //tButton.label.color = isOn ? tButton.normalColor : Color.black;
+            //tButton.uiPanel.gameObject.SetActive(isOn);
+            //videoPlayerObj.GetComponent<VideoPlayer>().clip = Resources.Load<VideoClip>("安全知识视频/" + tButton.label.text);
+            mediaPlayer.Loop = true;
+            //mediaPlayer.OpenMedia(MediaPathType.AbsolutePathOrURL, Application.streamingAssetsPath + "/安全知识视频/" + tButton.label.text + ".mp4");
+            var url = Application.streamingAssetsPath + "/安全知识视频/" + tButton.label.text + ".mp4";
+            //mediaPlayer.OpenMedia(MediaPathType.RelativeToStreamingAssetsFolder, url);
+            //mediaPlayer.Control.Play();
+            print("VideoPlayer url: " + url);
+            vp.url = url;
+            vp.Play();
+        }
     }
 
     void OnDestroy()

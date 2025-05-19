@@ -47,7 +47,7 @@ public class UIManager : MonoBehaviour
         if (!uiPanels.ContainsKey(uiName))
         {
             uiPanels.Add(uiName, panel);
-            panel.gameObject.SetActive(false); // 默认关闭
+            //panel.gameObject.SetActive(false); // 默认关闭
         }
         else
         {
@@ -247,7 +247,10 @@ public class UINameType
     /// 操作提示面板
     /// </summary>
     public const string UI_ProTipsMan = "UI_ProTipsMan";
+
+    public const string UI_ServerTip = "ServerTip";
     //展示图片
     public const string UI_ShowPicture = "UI_ShowPicture";
     public const string UI_ExpMethod = "UI_ExpMethod";
+    public const string UI_ExpEnd = "UI_ExpEnd";
 }

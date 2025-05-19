@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class AmendUI : MonoSingletonBase<AmendUI>
@@ -18,12 +19,44 @@ public class AmendUI : MonoSingletonBase<AmendUI>
 
     public void SetIconInf(FoodKindItemData foodKindItemData)
     {
-        icon.sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + foodKindItemData.foodCode);
+        //icon.sprite = Resources.Load<Sprite>(/*data[i].id */"Icons" + "/" + foodKindItemData.foodCode);
         itemName.text = foodKindItemData.foodName;
         code.text = foodKindItemData.foodCode;
         amount.text = foodKindItemData.count.ToString();
         foodKind = foodKindItemData;
+        StartCoroutine(LoadImage(foodKindItemData, icon));
+
     }
+    private IEnumerator LoadImage(FoodKindItemData food, Image back)
+    {
+        // 发送请求以从 URL 加载图片
+        UnityWebRequest request = UnityWebRequestTexture.GetTexture(food.imageUrl);
+
+        // 等待请求完成
+        yield return request.SendWebRequest();
+
+        // 检查是否请求成功
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            // 获取返回的纹理
+            Texture2D texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+
+            // 将纹理转换为 Sprite
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+            // 将 Sprite 赋值给 Image 组件
+            back.sprite = sprite;
+        }
+        else
+        {
+            Debug.LogError("Failed to load image: " + request.error);
+            back.sprite = Resources.Load<Sprite>("暂无图片");
+            Debug.LogError("Failed to load image: " + request.error + "  " + food.foodCode + " " + food.foodName);
+        }
+    }
+
+
+
     // Start is called before the first frame update
     void Start()
     {

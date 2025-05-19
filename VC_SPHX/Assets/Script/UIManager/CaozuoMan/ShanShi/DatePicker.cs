@@ -1,4 +1,6 @@
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using RTS;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,9 +30,11 @@ public class DatePicker : MonoSingletonBase<DatePicker>
             years.Add(year);
         }
         PopulateDropdown(yearDropdown, years);
+        oldYear = currentYear;
 
         // 初始化月份（1-12）
-        for (int month = 1; month <= 12; month++)
+        int currentMonth = DateTime.Now.Month;
+        for (int month = 1; month <= currentMonth; month++)
         {
             months.Add(month);
         }
@@ -41,6 +45,7 @@ public class DatePicker : MonoSingletonBase<DatePicker>
 
         yearDropdown.onValueChanged.AddListener(delegate { OnYearOrMonthChanged(); });
         monthDropdown.onValueChanged.AddListener(delegate { OnYearOrMonthChanged(); });
+        dayDropdown.onValueChanged.AddListener(delegate { OnDayChanged(); });
 
         //confirmBtn.onClick.AddListener(() =>
         //{
@@ -69,7 +74,15 @@ public class DatePicker : MonoSingletonBase<DatePicker>
     // 在 DatePicker 类中添加以下方法
     private void UpdateDays(int selectedYear, int selectedMonth)
     {
-        int daysInMonth = System.DateTime.DaysInMonth(selectedYear, selectedMonth);
+        int daysInMonth;
+        if (oldYear == DateTime.Now.Year && selectedMonth == DateTime.Now.Month)
+        {
+            daysInMonth = DateTime.Now.Day;
+        }
+        else
+        {
+            daysInMonth = System.DateTime.DaysInMonth(selectedYear, selectedMonth);
+        }
         days.Clear();
         for (int day = 1; day <= daysInMonth; day++)
         {
@@ -78,13 +91,87 @@ public class DatePicker : MonoSingletonBase<DatePicker>
         PopulateDropdown(dayDropdown, days);
     }
 
-
+    int oldYear = 0;
     private void OnYearOrMonthChanged()
     {
         int selectedYear = years[yearDropdown.value];
-        int selectedMonth = months[monthDropdown.value];
+        if (selectedYear == DateTime.Now.Year && oldYear != selectedYear)
+        {
+            oldYear = selectedYear;
+            months.Clear();
+            int currentMonth = DateTime.Now.Month;
+            for (int month = 1; month <= currentMonth; month++)
+            {
+                months.Add(month);
+            }
+            PopulateDropdown(monthDropdown, months);
+        }
+        else if (oldYear != selectedYear)
+        {
+            oldYear = selectedYear;
+            months.Clear();
+            for (int month = 1; month <= 12; month++)
+            {
+                months.Add(month);
+            }
+            PopulateDropdown(monthDropdown, months);
+        }
+
+        int selectedMonth;
+
+        if (months[monthDropdown.value] <= DateTime.Now.Month)
+        {
+            selectedMonth = months[monthDropdown.value];
+        }
+        else
+        {
+            //months[monthDropdown.value] = DateTime.Now.Month;
+            monthDropdown.value = DateTime.Now.Month - 1;
+            selectedMonth = DateTime.Now.Month;
+        }
+        //int selectedDay;
+        //if (days[dayDropdown.value] <= DateTime.Now.Day)
+        //{
+        //    selectedDay = days[dayDropdown.value];
+        //    //dayDropdown.value = selectedDay - 1; 
+        //}
+        //else
+        //{
+        //    //days[dayDropdown.value] = DateTime.Now.Day;
+        //    dayDropdown.value = DateTime.Now.Day - 1;
+        //    selectedDay = DateTime.Now.Day;
+        //}
         UpdateDays(selectedYear, selectedMonth);
     }
+    private void OnDayChanged()
+    {
+        if (days[dayDropdown.value] >= DateTime.Now.Day)
+        {
+            dayDropdown.value = DateTime.Now.Day - 1;
+
+        }
+
+    }
+
+    public bool BackYear()
+    {
+        DateTime now = DateTime.Now.Date;
+
+        DateTime dateTime = new DateTime(years[yearDropdown.value], months[monthDropdown.value], days[dayDropdown.value]);
+
+        DateTime fiveYear = dateTime.AddYears(5);
+
+        bool isYearAgo = true;
+
+        if (now < fiveYear)
+        {
+            return isYearAgo = false;
+        }
+
+        return isYearAgo;
+    }
+
+
 
     // 添加方法获取当前选择的日期
     public System.DateTime GetSelectedDate()

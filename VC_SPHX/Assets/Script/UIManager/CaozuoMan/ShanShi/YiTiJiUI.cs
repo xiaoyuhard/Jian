@@ -1,6 +1,8 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text.RegularExpressions;
 using TMPro;
 using Unity.VisualScripting;
@@ -14,16 +16,22 @@ using UnityEngine.UI;
 /// </summary>
 public class YiTiJiUI : UICaoZuoBase
 {
+    public static YiTiJiUI Instance { get; private set; }
+
     public Button randomBtn;
     public Button oneselfBtn;
     public GameObject selectUIObj;
 
-    public Toggle normalTgl;
-    public Toggle diseaseTgl;
-    public Dropdown normalDrop;
+    public Toggle normalTgl; //正常人按钮
+    public Toggle diseaseTgl;//病人按钮
+
+    public Toggle childNorTgl;//子集下正常人按钮
+    //public Toggle childPregnantTgl;//子集下孕妇按钮
+    public Toggle childNurseTgl;//子集下乳母按钮
+    public Dropdown pregnantDrop;
     public Dropdown diseaseDrop;
 
-    public InputField inFName;
+    //public TMP_InputField inFName;
     //public InputField inFBirthday;
     public Dropdown inFGender;
     public InputField inFHeight;
@@ -36,33 +44,146 @@ public class YiTiJiUI : UICaoZuoBase
 
     public GameObject tipObjUI;
 
+    public Button biLiQueRenBtn;
+    public Dropdown biLiDrop;
+    public Transform biLiContent;
+    public GameObject biLiPrefab;
 
+
+    void Awake()
+    {
+        InitializeManager();
+    }
+
+    // 显式初始化方法（供编辑器调用）
+    public void InitializeManager()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+    }
     private void OnEnable()
     {
         selectUIObj.SetActive(true);
         informUIObj.SetActive(false);
-        normalDrop.value = 0;
-        inFName.text = "";
+        pregnantDrop.value = 0;
+        //inFName.text = "";
         //inFBirthday.text = "";
         inFHeight.text = "";
         inFWeight.text = "";
         workDrop.value = 0;
         normalTgl.isOn = true;
         tipObjUI.SetActive(false);
+        userInfo.physique = "正常";
 
     }
     // Start is called before the first frame update
     void Start()
     {
+        userInfo.physique = "正常";
+
         randomBtn.onClick.AddListener(RandomInform);
         oneselfBtn.onClick.AddListener(OneselfInform);
         verifyBtn.onClick.AddListener(VerifylfInform);
+        biLiQueRenBtn.onClick.AddListener(BiLiClickTOServer);
 
         //inFBirthday.onValueChanged.AddListener(OnDateValueChanged);
         //inFBirthday.onEndEdit.AddListener(ValidateDate);
+        childNorTgl.onValueChanged.AddListener(ClickNorTgl);
+        childNurseTgl.onValueChanged.AddListener(ClickNurseTgl);
     }
 
+    public UserInfo BackUserInfo()
+    {
+        return userInfo;
+    }
 
+    bool biLiBtnOclick = false;
+    private void BiLiClickTOServer()
+    {
+        biLiBtnOclick = true;
+
+        if (CheckRequiredFields())
+        {
+            if (!DatePicker.Instance.BackYear())
+            {
+                biLiDrop.value = 3;
+                userInfo.isBaby = true;
+                workDrop.value = 1;
+            }
+            else
+            {
+                if (biLiDrop.value == 3)
+                {
+                    biLiDrop.value = 0;
+                }
+                userInfo.isBaby = false;
+
+            }
+            userInfo.level = workDrop.options[workDrop.value].text;
+
+            userInfo.proportion = biLiDrop.options[biLiDrop.value].text;
+            userInfo.birthday = DatePicker.Instance.GetSelectedDate().ToString("yyyy-MM-dd");
+
+            ServerCon.Instance.ConverToJsonPost(SerializeData(userInfo), "/analyse/nutrition/plan");
+        }
+        else
+        {
+            tipObjUI.SetActive(true);
+            StartCoroutine(WaitCloseTip());
+            biLiBtnOclick = false;
+        }
+    }
+    private string SerializeData(UserInfo data)
+    {
+        // 方法一：使用 Unity 内置 JsonUtility（需要包装类）
+        Wrapper<UserInfo> wrapper = new Wrapper<UserInfo> { items = data };
+        //return JsonUtility.ToJson(wrapper);
+
+        // 方法二：使用 Newtonsoft.Json（直接序列化列表）
+        return JsonConvert.SerializeObject(data);
+    }
+
+    public void ShowBiLiScroll(ThreeMeals plan)
+    {
+        isValid = true;
+
+        // 清空现有Toggle
+        for (int i = biLiContent.childCount - 1; i >= 0; i--)
+        {
+            Destroy(biLiContent.GetChild(i).gameObject);
+        }
+
+        InstantObj(plan.data.breakfastPlan);
+        InstantObj(plan.data.lunchPlan);
+        InstantObj(plan.data.dinnerPlan);
+
+    }
+    public void InstantObj(Plan plan)
+    {
+        GameObject obj = Instantiate(biLiPrefab, biLiContent);
+        obj.SetActive(true);
+        obj.transform.GetChild(0).GetComponent<Text>().text = plan.protein;
+        obj.transform.GetChild(1).GetComponent<Text>().text = plan.fat;
+        obj.transform.GetChild(2).GetComponent<Text>().text = plan.cho;
+        obj.transform.GetChild(3).GetComponent<Text>().text = plan.totalEnergyKcal;
+    }
+
+    bool isSex = false;
+    private void ClickNurseTgl(bool arg0)
+    {
+        userInfo.physique = "乳母";
+        inFGender.value = 1;
+        isSex = true;
+    }
+
+    private void ClickNorTgl(bool arg0)
+    {
+        userInfo.physique = "正常";
+        isSex = false;
+
+    }
 
     private void VerifylfInform()
     {
@@ -72,13 +193,13 @@ public class YiTiJiUI : UICaoZuoBase
             StartCoroutine(WaitCloseTip());
             return;
         }
-        userInfo.birthday =DatePicker.Instance.GetSelectedDate().ToString("yyyy-MM-dd");
+        userInfo.birthday = DatePicker.Instance.GetSelectedDate().ToString("yyyy-MM-dd");
         informUIObj.SetActive(false);
         GameManager.Instance.stepDetection = true;
         UIManager.Instance.CloseUICaoZuo("YiTiJiUI");
         ChooseFoodAllInformCon.Instance.userInfo = userInfo;
         GameObjMan.Instance.OpenFirst();
-
+        FoodManager.Instance.LoadFoodData();
     }
 
     IEnumerator WaitCloseTip()
@@ -87,12 +208,12 @@ public class YiTiJiUI : UICaoZuoBase
         tipObjUI.SetActive(false);
 
     }
+    public bool isValid = false;
 
     // 检查必填字段是否为空
     private bool CheckRequiredFields()
     {
-        bool isValid = true;
-
+        isValid = true;
         //if (string.IsNullOrEmpty(userInfo.birthday))
         //{
         //    isValid = false;
@@ -117,7 +238,11 @@ public class YiTiJiUI : UICaoZuoBase
         {
             isValid = false;
         }
+        if (!biLiBtnOclick)
+        {
+            isValid = false;
 
+        }
         return isValid;
     }
 
@@ -137,6 +262,7 @@ public class YiTiJiUI : UICaoZuoBase
         selectUIObj.SetActive(false);
         GameManager.Instance.stepDetection = true;
         UIManager.Instance.CloseUICaoZuo("YiTiJiUI");
+        FoodManager.Instance.LoadFoodData();
     }
 
 
@@ -144,17 +270,19 @@ public class YiTiJiUI : UICaoZuoBase
     // Update is called once per frame
     void Update()
     {
-        if (normalDrop.gameObject.activeSelf)
+        if (pregnantDrop.gameObject.activeSelf)
         {
-            userInfo.physique = normalDrop.options[normalDrop.value].text;
-            if (normalDrop.options[normalDrop.value].text == "孕妇")
-            {
-                inFGender.value = 1;
-            }
+            userInfo.physique = pregnantDrop.options[pregnantDrop.value].text;
+
+            inFGender.value = 1;
+            isSex = true;
+
         }
         if (diseaseDrop.gameObject.activeSelf)
         {
             userInfo.physique = diseaseDrop.options[diseaseDrop.value].text;
+            isSex = false;
+
         }
 
     }
@@ -246,8 +374,8 @@ public class YiTiJiUI : UICaoZuoBase
 
     //进行随机定义
     [Header("随机范围")]
-    public int minYear = 1900;
-    public int maxYear = 2025;
+    public int minYear/* = DateTime.Now.Year - 150*/;
+    public int maxYear/* = DateTime.Now.Year*/;
     public int minHeight = 100;
     public int maxHeight = 200;
     public int minWeight = 30;
@@ -256,20 +384,39 @@ public class YiTiJiUI : UICaoZuoBase
     // 预定义选项
     private string[] genders = { "男", "女" };
     private string[] levelTypes = { "轻", "中", "重" };
-    private string[] physiqueTypes = { "正常", "孕妇", "代谢性疾病患者", "消化道疾病患者", "心脑血管疾病患者", "肝胆胰疾病患者", "呼吸系统疾病患者", "肾脏疾病患者", "血液系统疾病患者" };
+    private string[] physiqueTypes = { "正常",/* "孕妇",*/ "乳母", "孕早期", "孕中期", "孕晚期", "代谢性疾病患者", "消化道疾病患者", "心脑血管疾病患者", "肝胆胰疾病患者", "呼吸系统疾病患者", "肾脏疾病患者", "血液系统疾病患者" };
+    private string[] bilis = { "3:4:3", "2:4:4", "4:4:2" };
 
-
+    string bili;
     // 生成随机数据并更新UI
     public void GenerateRandomData()
     {
         maxYear = DateTime.Now.Year; // 获取当前年份
         minYear = maxYear - 100; // 设置最小年份为当前年份的前100年
+        bili = bilis[UnityEngine.Random.Range(0, bilis.Length)];
+
         string date = GenerateRandomDate();
         int height = UnityEngine.Random.Range(minHeight, maxHeight + 1);
         int weight = UnityEngine.Random.Range(minWeight, maxWeight + 1);
         string sex = genders[UnityEngine.Random.Range(0, genders.Length)];
         string levelType = levelTypes[UnityEngine.Random.Range(0, levelTypes.Length)];
         string physique = physiqueTypes[UnityEngine.Random.Range(0, physiqueTypes.Length)];
+
+        if (!DatePicker.Instance.BackYear())
+        {
+            biLiDrop.value = 3;
+            userInfo.isBaby = true;
+            levelType = levelTypes[1];
+        }
+        else
+        {
+            if (biLiDrop.value == 3)
+            {
+                biLiDrop.value = 0;
+            }
+            userInfo.isBaby = false;
+
+        }
         if (physique == "孕妇")
         {
             sex = "女";
@@ -281,14 +428,53 @@ public class YiTiJiUI : UICaoZuoBase
         userInfo.sex = sex;
         userInfo.level = levelType;
         userInfo.physique = physique;
+        userInfo.proportion = bili;
     }
+
+    public void BackYear(int year, int month, int day)
+    {
+        DateTime now = DateTime.Now.Date;
+
+        DateTime dateTime = new DateTime(year, month, day);
+
+        DateTime fiveYear = dateTime.AddYears(5);
+
+
+        if (now < fiveYear)
+        {
+            bili = "3";
+        }
+
+    }
+
 
     // 生成合法日期（YYYY-MM-DD）
     private string GenerateRandomDate()
     {
         int year = UnityEngine.Random.Range(minYear, maxYear + 1);
-        int month = UnityEngine.Random.Range(1, 13);
-        int day = UnityEngine.Random.Range(1, DateTime.DaysInMonth(year, month) + 1);
+        int month;
+        int day;
+        if (year == DateTime.Now.Year)
+        {
+            month = UnityEngine.Random.Range(1, DateTime.Now.Month + 1);
+            if (month == DateTime.Now.Month)
+            {
+                day = UnityEngine.Random.Range(1, DateTime.Now.Day + 1);
+            }
+            else
+            {
+                day = UnityEngine.Random.Range(1, DateTime.DaysInMonth(year, month) + 1);
+
+            }
+
+        }
+        else
+        {
+            month = UnityEngine.Random.Range(1, DateTime.Now.Month + 1);
+            day = UnityEngine.Random.Range(1, DateTime.DaysInMonth(year, month) + 1);
+
+        }
+        BackYear(year, month, day);
         return $"{year}-{month:00}-{day:00}";
     }
 }

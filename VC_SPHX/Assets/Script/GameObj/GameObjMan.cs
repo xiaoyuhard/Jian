@@ -17,8 +17,8 @@ public class GameObjMan : MonoSingletonBase<GameObjMan>
 
     public void Start()
     {
-        objPlayer.transform.position = objects[0].transform.position;
-        UpObjPosCon();
+        //objPlayer.transform.position = objects[0].transform.position;
+        //UpObjPosCon();
     }
 
     public void SetPosition(int index)

@@ -14,7 +14,16 @@ public class DoorItem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (doorAniL.GetComponent<Outline>() != null)
+        {
+            doorAniL.GetComponent<Outline>().enabled = true;
 
+        }
+        if (doorAniR.GetComponent<Outline>() != null)
+        {
+            doorAniR.GetComponent<Outline>().enabled = true;
+
+        }
     }
 
     // Update is called once per frame
@@ -31,6 +40,16 @@ public class DoorItem : MonoBehaviour
         doorAniL.GetComponent<Animation>().Play();
         doorAniR.GetComponent<Animation>().Play();
         _hasPlayed = true;
+        if (doorAniL.GetComponent<Outline>() != null)
+        {
+            doorAniL.GetComponent<Outline>().enabled = false;
+
+        }
+        if (doorAniR.GetComponent<Outline>() != null)
+        {
+            doorAniR.GetComponent<Outline>().enabled = false;
+
+        }
 
         //开门后触发下一步
         if (triggerNext)
@@ -40,7 +59,18 @@ public class DoorItem : MonoBehaviour
         {
             case "Shanshi":
                 GameManager.Instance.SetStepDetection(true);
+                if (doorAniL.GetComponent<Outline>() != null)
+                {
+                    doorAniL.GetComponent<Outline>().enabled = false;
+
+                }
+                if (doorAniR.GetComponent<Outline>() != null)
+                {
+                    doorAniR.GetComponent<Outline>().enabled = false;
+
+                }
                 gameObject.SetActive(false);
+
                 break;
             case "营养室进口":
                 GameManager.Instance.SetStepDetection(true);
@@ -70,21 +100,75 @@ public class DoorItem : MonoBehaviour
         //doorAniR.GetComponent<Animation>()["双开门右"].time = 0;
         //doorCollider.SetActive(true);
 
+        if (doorAniL.GetComponent<Outline>() != null)
+        {
+            doorAniL.GetComponent<Outline>().enabled = false;
+
+        }
+        if (doorAniR.GetComponent<Outline>() != null)
+        {
+            doorAniR.GetComponent<Outline>().enabled = false;
+
+        }
+
     }
     private void OnEnable()
     {
-        ResDoor();
+        //StartCoroutine(OpenDoorHigh());
+
+        //ResDoor();
+        if (doorAniL.GetComponent<Outline>() != null)
+        {
+            doorAniL.GetComponent<Outline>().enabled = true;
+
+        }
+        if (doorAniR.GetComponent<Outline>() != null)
+        {
+            doorAniR.GetComponent<Outline>().enabled = true;
+
+        }
 
         _hasPlayed = false;
     }
+    IEnumerator OpenDoorHigh()
+    {
+        doorAniR.GetComponent<Animation>().Play();
+        doorAniL.GetComponent<Animation>().Play();
+        yield return new WaitForSeconds(0.05f);//点击后播放动画  1
+        doorAniR.GetComponent<Animation>().Stop();
+        doorAniL.GetComponent<Animation>().Stop();
+        _hasPlayed = false;
+        //if (doorAniL.GetComponent<Outline>() != null)
+        //{
+        //    doorAniL.GetComponent<Outline>().enabled = false;
 
+        //}
+        //if (doorAniR.GetComponent<Outline>() != null)
+        //{
+        //    doorAniR.GetComponent<Outline>().enabled = false;
+
+        //}
+        ////gameObject.SetActive(false);
+        //Debug.Log(222);
+
+    }
     public void ResDoor()
     {
         doorCollider.SetActive(true);
 
-        if (_hasPlayed )
+        CloseDoorHigh();
+
+    }
+
+    public void CloseDoorHigh()
+    {
+        if (_hasPlayed)
         {
-            StartCoroutine(ConUp());
+        }
+        if (gameObject.activeSelf)
+        {
+            //StartCoroutine(ConUp());
+
         }
 
     }
@@ -92,10 +176,22 @@ public class DoorItem : MonoBehaviour
     {
         doorAniR.GetComponent<Animation>().Play();
         doorAniL.GetComponent<Animation>().Play();
-        yield return new WaitForSeconds(0.1f);//点击后播放动画  1
+        yield return new WaitForSeconds(0.05f);//点击后播放动画  1
         doorAniR.GetComponent<Animation>().Stop();
         doorAniL.GetComponent<Animation>().Stop();
         _hasPlayed = false;
+        if (doorAniL.GetComponent<Outline>() != null)
+        {
+            doorAniL.GetComponent<Outline>().enabled = false;
+
+        }
+        if (doorAniR.GetComponent<Outline>() != null)
+        {
+            doorAniR.GetComponent<Outline>().enabled = false;
+
+        }
+        gameObject.SetActive(false);
+        //Debug.Log(222);
 
     }
 

@@ -13,6 +13,7 @@ public class ExperimentManager : MonoBehaviour
     //public GameObject[] triggerObjs;
     public ExpStepCtrl stepCtrl;
     public TextAsset csvFile;
+    public Experiment m_experiment = Experiment.Unknown;
 
     //实验进行到哪一个步骤
     int stepIndex = 0;
@@ -45,6 +46,9 @@ public class ExperimentManager : MonoBehaviour
         UIManager.Instance.DonotCloseUI(UINameType.UI_HomeManager);
         UIManager.Instance.CloseWholeUI();
         UIManager.Instance.OpenUI(UINameType.UI_HomeManager);
+
+        if (GameData.Instance.CurrentExperiment == Experiment.Unknown)
+            GameData.Instance.CurrentExperiment = m_experiment;
 
         if (GameData.Instance.IsTestMode)
             UIManager.Instance.CloseUICaoZuo(UINameType.UI_ProTipsMan);

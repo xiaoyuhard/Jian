@@ -26,6 +26,12 @@ public class InteractableObject : MonoBehaviour
                 //ClickOrderManager.Instance.ReportObjectClicked(this);
                 GameManager.Instance.SetStepDetection(true);
                 transform.GetComponent<Collider>().enabled = false;
+                if (transform.Find("ExpObj3DText(Clone)") != null)
+                {
+                    transform.Find("ExpObj3DText(Clone)").gameObject.SetActive(false);
+                    transform.GetComponent<Outline>().enabled = false;
+                    //obj.transform.Find("IconWhiteExclamation").gameObject.SetActive(true);
+                }
                 //transform.Find("IconWhiteExclamation").gameObject.SetActive(false);
                 //MessageCenter.Instance.Send(EventName.Exp_NextStep);
             }

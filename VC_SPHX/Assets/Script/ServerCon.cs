@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -19,40 +20,32 @@ public class ServerCon : MonoSingletonBase<ServerCon>
 
     private void Awake()
     {
-        StartCoroutine(LoadFoodPageQueryCoroutine("其他", 21));
+        //StartCoroutine(LoadFoodPageQueryCoroutine("其他", 21));
 
     }
 
-    public void ConverToJson(FoodSendConverDay foods)
+    public void ConverToJsonPost(string message, string full)
     {
 
-        string jsonArray = SerializeData(foods);
+        string jsonArray = message;
 
         // 发送 POST 请求
-        StartCoroutine(SendData(jsonArray));
-    }
-    private string SerializeData(FoodSendConverDay data)
-    {
-        // 方法一：使用 Unity 内置 JsonUtility（需要包装类）
-        Wrapper<FoodSendConverDay> wrapper = new Wrapper<FoodSendConverDay> { items = data };
-        //return JsonUtility.ToJson(wrapper);
-
-        // 方法二：使用 Newtonsoft.Json（直接序列化列表）
-        return JsonConvert.SerializeObject(data);
+        StartCoroutine(SendData(jsonArray, full));
     }
 
 
-    IEnumerator SendData(string jsonBody)
+    IEnumerator SendData(string jsonBody, string full)
     {
         // 获取基础地址
-        string baseUrl = ReadServerAddress();
-        if (string.IsNullOrEmpty(baseUrl))
-        {
-            Debug.LogError("服务器地址配置错误");
-            yield break;
-        }
-        string fullUrl = $"{CombineUrl(baseUrl, "/analyse/intake")}";
-
+        //string baseUrl = ReadServerAddress();
+        string baseUrl = "http://172.28.67.73:9090";
+        //if (string.IsNullOrEmpty(baseUrl))
+        //{
+        //    Debug.LogError("服务器地址配置错误");
+        //    yield break;
+        //}
+        string fullUrl = $"{CombineUrl(baseUrl, full)}";
+        Debug.Log("选择完成后发给服务器的地址" + fullUrl + "  所有的数据 " + jsonBody);
         UnityWebRequest request = new UnityWebRequest(fullUrl, "POST");
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonBody);
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
@@ -65,14 +58,16 @@ public class ServerCon : MonoSingletonBase<ServerCon>
         {
             Debug.Log("数据发送成功！");
             string responseJson = request.downloadHandler.text;
-            ProcessServerResponse(responseJson);
+            ProcessServerResponse(responseJson, full);
         }
         else
         {
             Debug.LogError($"发送失败：{request.error}");
+            UIManager.Instance.OpenUICaoZuo(UINameType.UI_ServerTip);
+
         }
     }
-    private void ProcessServerResponse(string responseJson)
+    private void ProcessServerResponse(string responseJson, string full)
     {
         // 示例：解析简单响应
         Debug.Log($"服务器响应：{responseJson}");
@@ -80,10 +75,45 @@ public class ServerCon : MonoSingletonBase<ServerCon>
         // 实际开发中反序列化响应数据（假设返回 JSON 结构）
         // ServerResponse response = JsonUtility.FromJson<ServerResponse>(responseJson);
 
-        FoodRecriveConverDay response = JsonConvert.DeserializeObject<FoodRecriveConverDay>(responseJson);
-        ChooseFoodAllInformCon.Instance.ReceiveServerInform(response);
-    }
+        switch (full)
+        {
+            case "/analyse/intake":
+                FoodRecriveConverDay response = JsonConvert.DeserializeObject<FoodRecriveConverDay>(responseJson);
+                if (response.code == 200)
+                {
+                    ChooseFoodAllInformCon.Instance.ReceiveServerInform(response);
+                }
+                else
+                {
+                    UIManager.Instance.OpenUICaoZuo(UINameType.UI_ServerTip);
+                }
+                break;
+            case "/analyse/nutrition/plan":
+                user = JsonConvert.DeserializeObject<ThreeMeals>(responseJson);
+                if (user.code == 200)
+                {
+                    YiTiJiUI.Instance.ShowBiLiScroll(user);
+                }
+                else
+                {
+                    YiTiJiUI.Instance.isValid = false;
 
+                    UIManager.Instance.OpenUICaoZuo(UINameType.UI_ServerTip);
+                }
+                break;
+
+            default:
+                Debug.LogError("地址错误 没有接收到对应地址的数据   地址:" + full);
+                break;
+        }
+
+    }
+    ThreeMeals user;
+
+    public ThreeMeals BackThreeMeals()
+    {
+        return user;
+    }
 
     private string CombineUrl(string baseUrl, string path)
     {
@@ -114,18 +144,16 @@ public class ServerCon : MonoSingletonBase<ServerCon>
 
 
 
-
-    private IEnumerator LoadFoodPageQueryCoroutine(string categoryName, int pageSize)
+    public void LoadRecipe(string full, string page)
     {
-        // 获取基础地址
-        string baseUrl = ReadServerAddress();
-        if (string.IsNullOrEmpty(baseUrl))
-        {
-            Debug.LogError("服务器地址配置错误");
-            yield break;
-        }
+
+        // 发送 POST 请求
+        StartCoroutine(GetFoodRecipe(full, page));
+    }
+    private IEnumerator GetFoodRecipe(string full, string page)
+    {
         // 拼接完整地址
-        string fullUrl = $"{CombineUrl(baseUrl, "/food/getEnergy")}";
+        string fullUrl = $"{CombineUrl("http://172.28.67.73:9090", full)}" + page;
         using (UnityWebRequest request = UnityWebRequest.Get(fullUrl))
         {
             // 设置请求头（如果需要）
@@ -135,25 +163,35 @@ public class ServerCon : MonoSingletonBase<ServerCon>
 
             if (request.result == UnityWebRequest.Result.Success)
             {
-                try
+                //try
                 {
                     // 解析JSON数据
                     string jsonResponse = request.downloadHandler.text;
-                    FoodResponse response = JsonConvert.DeserializeObject<FoodResponse>(jsonResponse);
-
-
+                    Debug.Log($"服务器响应：{jsonResponse}");
+                    switch (full)
+                    {
+                        case "/cookbook/getRecipeFood":
+                            RecipeAllFood recipeAll = JsonConvert.DeserializeObject<RecipeAllFood>(jsonResponse);
+                            FoodChooseUI.Instance.ReceiveRecipeItem(recipeAll.data);
+                            break;
+                        default:
+                            Debug.LogError("地址错误 没有接收到对应地址的数据   地址:" + full);
+                            break;
+                    }
 
                 }
-                catch (Exception e)
+                //catch (Exception e)
                 {
                     //onError?.Invoke($"JSON解析失败: {e.Message}");
-                    Debug.LogError($"JSON解析失败: {e.Message}");
+                    //Debug.LogError($"JSON解析失败: {e.Message}");
                 }
             }
             else
             {
                 //onError?.Invoke($"网络请求失败: {request.error}");
                 Debug.LogError($"网络请求失败: {request.error}");
+                UIManager.Instance.OpenUICaoZuo(UINameType.UI_ServerTip);
+
 
             }
         }
@@ -161,10 +199,11 @@ public class ServerCon : MonoSingletonBase<ServerCon>
 
 
 
-    // 包装类（用于处理数组/列表序列化）
-    [System.Serializable]
-    private class Wrapper<T>
-    {
-        public T items;
-    }
+}
+
+// 包装类（用于处理数组/列表序列化）
+[System.Serializable]
+class Wrapper<T>
+{
+    public T items;
 }

@@ -43,7 +43,7 @@ public class WearCon : MonoSingletonBase<WearCon>
     {
         MessageCenter.Instance.Register("SendCaozuoToWear", DoorCaozuoTag);
         MessageCenter.Instance.Register("SendMouseToCabinet", MouseCabinet);
-
+     
     }
 
 

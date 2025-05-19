@@ -62,7 +62,7 @@ public class BodyManager : MonoBehaviour
         //string fullPath = Path.Combine(Application.dataPath, excelFolderPath);
         string fullPath = Path.Combine(Application.dataPath);
 
-        if (Directory.Exists(fullPath))
+        //if (Directory.Exists(fullPath))
         {
             ////Debug.Log(Directory.GetFiles(fullPath, "/*.xlsx")+"   "+ Directory.GetFiles(fullPath, "*.xlsx"));
             //foreach (var filePath in Directory.GetFiles(fullPath, "*.xlsx"))
@@ -144,6 +144,7 @@ public class BodyManager : MonoBehaviour
             // 使用正则表达式拆分复杂CSV格式 ----------------------------------------
             // 正则说明：处理包含逗号、换行符的字段（例如："aaa,bbb"）
             Regex csvSplit = new Regex("(?:^|,)(\"(?:[^\"]+|\"\")*\"|[^,]*)");
+            //Debug.Log(csvFile.text);
 
             // 逐行解析 ----------------------------------------------------------
             using (StringReader reader = new StringReader(csvFile.text))
@@ -160,7 +161,6 @@ public class BodyManager : MonoBehaviour
                         //var line=reader.ReadLine();
                         // 跳过空行和注释行（以#开头）
                         if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#")) continue;
-
                         // 跳过标题行
                         if (isFirstLine && skipHeader)
                         {

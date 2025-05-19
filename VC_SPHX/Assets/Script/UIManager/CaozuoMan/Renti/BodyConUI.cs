@@ -62,7 +62,7 @@ public class BodyConUI : UICaoZuoBase
         manBtn.onClick.AddListener(EnterManPanel);
         womanBtn.onClick.AddListener(EnterWomanPanel);
         backBtn.onClick.AddListener(BackChoosePanel);
-     
+
     }
 
     private void BackChoosePanel()
@@ -73,6 +73,7 @@ public class BodyConUI : UICaoZuoBase
         RenTiCon.Instance.ResetTimeline();
         man.SetActive(false);
         woman.SetActive(false);
+        explanationObj.SetActive(false);
 
     }
 
@@ -82,6 +83,8 @@ public class BodyConUI : UICaoZuoBase
         if (isOn)
         {
             string bodyName = RenTiCon.Instance.ShowBodyWomanModel(toggle.transform.GetChild(1).GetComponent<Text>().text);
+            bodyName = GetMiddleChars(bodyName);
+
             if (GetBodyExplText("Man", bodyName) != "")
             {
                 bl = true;
@@ -149,7 +152,9 @@ public class BodyConUI : UICaoZuoBase
         bool bl = false;
         if (isOn)
         {
+
             string bodyName = RenTiCon.Instance.ShowBodyManModel(toggle.transform.GetChild(1).GetComponent<Text>().text);
+            bodyName = GetMiddleChars(bodyName);
             if (GetBodyExplText("Man", bodyName) != "")
             {
                 bl = true;
@@ -165,7 +170,7 @@ public class BodyConUI : UICaoZuoBase
         }
         else
         {
-             RenTiCon.Instance.ShowBodyManModel("");
+            RenTiCon.Instance.ShowBodyManModel("");
 
         }
         if (bl && isOn)
@@ -181,7 +186,15 @@ public class BodyConUI : UICaoZuoBase
         StartCoroutine(RefreshLayout(toggle));
 
     }
-
+    // 示例：提取第3到最后字符（索引从0开始）
+    string GetMiddleChars(string objName)
+    {
+        if (objName.Contains("男性_") || objName.Contains("女性_"))
+        {
+            return objName.Substring(3);
+        }
+        return objName;
+    }
     public string GetBodyExplText(string sex, string bodyName)
     {
         List<BodyItem> bodyItems = BodyManager.Instance.GetBodyExplItemById(sex);
@@ -235,7 +248,7 @@ public class BodyConUI : UICaoZuoBase
     // Update is called once per frame
     void Update()
     {
-       
+
 
     }
 

@@ -103,6 +103,7 @@ public class MoxingManager : UIBase
     }
     private void OnDisable()
     {
-        modelObj.SetActive(false);
+        if (modelObj)
+            modelObj.SetActive(false);
     }
 }

@@ -59,7 +59,7 @@ public class LabSystemManager : MonoBehaviour
         // 跟练模式允许进入更衣室并高亮
         canEnterDressingRoom = true;
         DoorClickCon.Instance.SetHighlight(0); // 高亮更衣室门
-        UIManager.Instance.OpenUICaoZuo(UINameType.UI_ProTipsMan);
+        //UIManager.Instance.OpenUICaoZuo(UINameType.UI_ProTipsMan);
         EnterCorridorGen();
         GameManager.Instance.tipStalkBl = true;
 
@@ -219,9 +219,9 @@ public class LabSystemManager : MonoBehaviour
             }
             return;
         }
-        if (currentHighlight != null && currentHighlight.transform.Find("Canvas(Clone)") != null)
+        if (currentHighlight != null && currentHighlight.transform.Find("ExpObj3DText(Clone)") != null)
         {
-            currentHighlight.transform.Find("Canvas(Clone)").gameObject.SetActive(false);
+            currentHighlight.transform.Find("ExpObj3DText(Clone)").gameObject.SetActive(false);
         }
         if (currentHighlight != null)
         {
@@ -233,9 +233,9 @@ public class LabSystemManager : MonoBehaviour
         }
         //obj.SetActive(true);    
         var outline = obj.GetComponent<Outline>();
-        if (obj.transform.Find("Canvas(Clone)") != null)
+        if (obj.transform.Find("ExpObj3DText(Clone)") != null&& !isAssessmentMode)
         {
-            obj.transform.Find("Canvas(Clone)").gameObject.SetActive(true);
+            obj.transform.Find("ExpObj3DText(Clone)").gameObject.SetActive(true);
             //obj.transform.Find("IconWhiteExclamation").gameObject.SetActive(true);
         }
 

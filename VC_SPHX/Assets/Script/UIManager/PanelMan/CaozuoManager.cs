@@ -61,11 +61,18 @@ public class CaozuoManager : UIBase
 
             //tButton.toggle.group = toggleGroup;
 
-            tButton.toggle.onValueChanged.AddListener((isOn) =>
-                UpdateButtonAppearance(cIndex, tButton, isOn));
+            tButton.toggle.onValueChanged.AddListener((isOn) => 
+            {
+                if (tButton.index == 0) { SystemManager.systemMode = SystemMode.Experiment1; }
+                else if (tButton.index == 8) { SystemManager.systemMode = SystemMode.Experiment9; }
+                else if (tButton.index == 9) { SystemManager.systemMode = SystemMode.Experiment10; }
+                UpdateButtonAppearance(cIndex, tButton, isOn);
+             });
+                
 
             // 初始化状态
             UpdateButtonAppearance(cIndex, tButton, tButton.toggle.isOn);
+            
         }
 
     }
@@ -76,35 +83,30 @@ public class CaozuoManager : UIBase
         if (isOn)
         {
             GameObjMan.Instance.CloseObjCon(1);
-
             LabSystemManager.Instance.OnLabButtonClicked(tButton.index + 1, tButton.name);
 
             ClickIndex = index;
-            print("UpdateButtonAppearance: " + index);
+            print("UpdateButtonAppearance: index" + index);
 
             //膳食分析与营养配餐实习项目 个人营养配餐 人体数字解剖
             if (tButton.label.name == "ShanshiFenxi" || tButton.label.name == "GerenYinyang" || tButton.label.name == "RentiShuzi")
             {
-                UIManager.Instance.CloseUI(UINameType.UI_ZhishiManager);
-                UIManager.Instance.CloseUI(UINameType.UI_MoxingManager);
-                UIManager.Instance.CloseUI(UINameType.UI_CaozuoManager);
-                UIManager.Instance.CloseUI(UINameType.UI_BaogaoManager);
-                UIManager.Instance.CloseUI(UINameType.UI_BackMan);
-                GameManager.Instance.SetGameObj(true);
-                GameObjMan.Instance.OpenFirst();
+                //UIManager.Instance.CloseUI(UINameType.UI_ZhishiManager);
+                //UIManager.Instance.CloseUI(UINameType.UI_MoxingManager);
+                //UIManager.Instance.CloseUI(UINameType.UI_CaozuoManager);
+                //UIManager.Instance.CloseUI(UINameType.UI_BaogaoManager);
+                //UIManager.Instance.CloseUI(UINameType.UI_BackMan);
+                //GameManager.Instance.SetGameObj(true);
+                //GameObjMan.Instance.OpenFirst();
 
-                LabSystemManager.Instance.SelectAssessmentMode();
+                //LabSystemManager.Instance.SelectAssessmentMode();
                 //tButton.toggle.isOn = false;
                 tButton.toggle.isOn = false;
 
+                SceneMgr.LoadScene(GameScene.Exp_HuaXue);
                 return;
             }
-            else if (tButton.index == 2)
-            {
-                //重金属检测
-                
-            }
-
+            
             //if (isOn)
             //{
             //    LabSystemManager.Instance.OnLabButtonClicked(tButton.index + 1, tButton.name);
@@ -122,4 +124,6 @@ public class CaozuoManager : UIBase
         //UIManager.Instance.CloseUI("CaozuoManager");
 
     }
+
+
 }

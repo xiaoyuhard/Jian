@@ -30,6 +30,7 @@ public class MealReportUI : UICaoZuoBase
         ChooseFoodAllInformCon.Instance.DeleteFoodKind("Wan");
         UIManager.Instance.CloseUICaoZuo("MealReportUI");
         GameObjMan.Instance.OpenFirst();
+        FoodManager.Instance.LoadFoodData();
 
     }
 
@@ -38,6 +39,7 @@ public class MealReportUI : UICaoZuoBase
         ChooseFoodAllInformCon.Instance.DeleteFoodKind("Zhong");
         UIManager.Instance.CloseUICaoZuo("MealReportUI");
         GameObjMan.Instance.OpenFirst();
+        FoodManager.Instance.LoadFoodData();
 
     }
 
@@ -46,6 +48,7 @@ public class MealReportUI : UICaoZuoBase
         ChooseFoodAllInformCon.Instance.DeleteFoodKind("Zao");
         UIManager.Instance.CloseUICaoZuo("MealReportUI");
         GameObjMan.Instance.OpenFirst();
+        FoodManager.Instance.LoadFoodData();
 
     }
 

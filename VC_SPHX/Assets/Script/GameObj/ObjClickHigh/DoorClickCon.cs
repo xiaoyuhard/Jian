@@ -1,3 +1,4 @@
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using RTS;
 using System;
 using System.Collections;
@@ -8,6 +9,8 @@ using UnityEngine;
 //控制门开关
 public class DoorClickCon : MonoSingletonBase<DoorClickCon>
 {
+
+    public List<GameObject> doorItemList;
     void Start()
     {
         //MessageCenter.Instance.Register("SendDoorClick", CloseDoorHigh);
@@ -57,7 +60,11 @@ public class DoorClickCon : MonoSingletonBase<DoorClickCon>
     {
         foreach (GameObject item in Doors)
         {
-            item.SetActive(false);
+            if (item.activeSelf)
+            {
+                item.GetComponent<DoorItem>().CloseDoorHigh();
+
+            }
 
             //item.GetComponent<Outline>().enabled = false;
         }
@@ -65,6 +72,7 @@ public class DoorClickCon : MonoSingletonBase<DoorClickCon>
     public void CloseDoorHigh(int index)
     {
         Doors[index].SetActive(false);
+        Doors[index].GetComponent<DoorItem>().CloseDoorHigh();
 
     }
 
@@ -152,9 +160,24 @@ public class DoorClickCon : MonoSingletonBase<DoorClickCon>
         {
             //item.GetComponent<Outline>().enabled = false;
             //item.SetActive(false);
-            item.SetActive(false);
+            //item.SetActive(false);
+            if (item.activeSelf)
+            {
+                //item.GetComponent<DoorItem>().ResDoor();
+            }
+        }
+        foreach (var item in doorItemList)
+        {
+            StartCoroutine(CloseDoorItem(item));
+
         }
 
+    }
+    IEnumerator CloseDoorItem(GameObject door)
+    {
+        door.GetComponent<Animation>().Play();
+        yield return new WaitForSeconds(0.05f);//点击后播放动画  1
+        door.GetComponent<Animation>().Stop();
     }
 
     public void UpdateDoorHighlights(bool state)
@@ -172,13 +195,14 @@ public class DoorClickCon : MonoSingletonBase<DoorClickCon>
     {
         foreach (GameObject item in Doors)
         {
+            //item.SetActive(true);
             if (item.activeSelf)
             {
                 item.GetComponent<DoorItem>().ResDoor();
             }
             //item.SetActive(false);
         }
-        StartCoroutine(ConUp());
+        //StartCoroutine(ConUp());
 
     }
 
@@ -187,7 +211,12 @@ public class DoorClickCon : MonoSingletonBase<DoorClickCon>
         yield return new WaitForSeconds(0.11f);//点击后播放动画  1
         foreach (GameObject item in Doors)
         {
-            item.SetActive(false);
+            if (item.activeSelf)
+            {
+                item.GetComponent<DoorItem>().ResDoor();
+                //item.SetActive(true);
+                //item.SetActive(false);
+            }
         }
     }
 }

@@ -7,9 +7,12 @@ using UnityEngine.UI;
 public class UI_ExpMethod : UIBase
 {
     public Button btnClose;
+
+    public GameObject windShaChongJi;
     public GameObject winZhiFang;
     public GameObject winDanBaiZhi;
 
+    public Button[] btn_ShaChongJi;
     public Button[] btn_ZhiFang;
     public Button[] btn_DanBaiZhi;
 
@@ -17,25 +20,36 @@ public class UI_ExpMethod : UIBase
     {
         winZhiFang.SetActive(false);
         winDanBaiZhi.SetActive(false);
+        windShaChongJi.SetActive(false);
 
         var curExp = GameData.Instance.CurrentExperiment;
+     
         if (curExp == Experiment.ZhiFang)
             winZhiFang.SetActive(true);
         else if (curExp == Experiment.DanBaiZhi)
             winDanBaiZhi.SetActive(true);
-
-        MessageCenter.Instance.Register(EventName.UI_ShowPicture, ShowStepPic);
+        else if (curExp == Experiment.ShaChongJi)
+            windShaChongJi.SetActive(true);
     }
 
     private void OnDisable()
     {
-        MessageCenter.Instance.Unregister(EventName.UI_ShowPicture, ShowStepPic);
     }
 
     // Start is called before the first frame update
     void Start()
     {
         btnClose.onClick.AddListener(CloseUI);
+
+        for (int i = 0; i < btn_ShaChongJi.Length; i++)
+        {
+            var idx = i;
+
+            btn_ShaChongJi[i].onClick.AddListener(() =>
+            {
+                OnClickBtnShaChongJi(idx);
+            });
+        }
 
         for (int i = 0; i < btn_ZhiFang.Length; i++)
         {
@@ -58,9 +72,29 @@ public class UI_ExpMethod : UIBase
         }
     }
 
-    void ShowStepPic(string msg)
+    //进入杀虫剂场景
+    void OnClickBtnShaChongJi(int index)
     {
+        print("OnClickBtnShaChongJi " + index);
 
+        GameData.Instance.CurExpSubIndex = index;
+
+        if (index == 0)
+        {
+            SceneMgr.LoadScene(GameScene.Exp4_ShaChongJi_GuoShu);
+        }
+        else if (index == 1)
+        {
+            SceneMgr.LoadScene(GameScene.Exp4_ShaChongJi_XiangLiao);
+        }
+        else if (index == 2)
+        {
+            SceneMgr.LoadScene(GameScene.Exp4_ShaChongJi_DongWu);
+        }
+        else if (index == 3)
+        {
+            SceneMgr.LoadScene(GameScene.Exp4_ShaChongJi_YeTai);
+        }
     }
 
     //进入脂肪场景
@@ -68,17 +102,18 @@ public class UI_ExpMethod : UIBase
     {
         print("OnClickBtnZhifang " + index);
 
+        GameData.Instance.CurExpSubIndex = index;
         if (index == 0)
         {
-            SceneMgr.LoadScene(GameScene.Exp6_ZhiFang1);
+            SceneMgr.LoadScene(GameScene.Exp6_ZhiFang_ChuanTong);
         }
         else if (index == 1)
         {
-            SceneMgr.LoadScene(GameScene.Exp6_ZhiFang2);
+            SceneMgr.LoadScene(GameScene.Exp6_ZhiFang_ShiYanShi);
         }
         else if (index == 2)
         {
-            SceneMgr.LoadScene(GameScene.Exp6_ZhiFang3);
+            SceneMgr.LoadScene(GameScene.Exp6_ZhiFang_GaiBo);
         }
     }
 
@@ -87,13 +122,14 @@ public class UI_ExpMethod : UIBase
     {
         print("OnClickBtnDanbaizhi " + index);
 
+        GameData.Instance.CurExpSubIndex = index;
         if (index == 0)
         {
             SceneMgr.LoadScene(GameScene.Exp7_DanBaiZhi_ShouDong);
         }
         else if (index == 1)
         {
-            SceneMgr.LoadScene(GameScene.Exp7_DanBaiZhi_ShouDong);
+            SceneMgr.LoadScene(GameScene.Exp7_DanBaiZhi_ZiDong);
         }
     }
 

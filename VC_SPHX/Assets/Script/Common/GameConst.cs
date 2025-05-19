@@ -14,12 +14,18 @@ public class GameConst
 /// </summary>
 public class GameScene
 {
+    public const string Main = "Main";
     public const string Exp_HuaXue = "食品化学";
+    public const string Exp2_XiangQi = "Exp2-香气成分测定";
     public const string Exp3_ZhongJinShu = "Exp3-重金属测定";
-    public const string Exp4_ShaChongJi = "Exp4_ShaChongJi";
-    public const string Exp6_ZhiFang1 = "Exp6_ZhiFang1";
-    public const string Exp6_ZhiFang2 = "Exp6_ZhiFang1";
-    public const string Exp6_ZhiFang3 = "Exp6_ZhiFang1";
+    public const string Exp4_ShaChongJi_GuoShu = "Exp4-杀虫剂残留检测-果蔬类";
+    public const string Exp4_ShaChongJi_XiangLiao = "Exp4-杀虫剂残留检测-香辛料";
+    public const string Exp4_ShaChongJi_DongWu = "Exp4-杀虫剂残留检测-动物性样品";
+    public const string Exp4_ShaChongJi_YeTai = "Exp4-杀虫剂残留检测-液态样品";
+    public const string Exp5_Tang = "Exp5-还原糖测定";
+    public const string Exp6_ZhiFang_ChuanTong = "Exp6-脂肪含量测定-传统方法";
+    public const string Exp6_ZhiFang_ShiYanShi = "Exp6-脂肪含量测定-实验室方法";
+    public const string Exp6_ZhiFang_GaiBo = "Exp6-脂肪含量测定-盖勃法测定";
     public const string Exp7_DanBaiZhi_ShouDong = "Exp7-蛋白质测定-凯氏定氮法之手动法";
     public const string Exp7_DanBaiZhi_ZiDong = "Exp7-蛋白质测定-自动凯氏定氮法";
 }

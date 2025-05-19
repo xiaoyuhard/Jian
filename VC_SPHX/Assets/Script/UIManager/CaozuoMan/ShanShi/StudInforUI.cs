@@ -11,6 +11,8 @@ public class StudInforUI : UICaoZuoBase
     public InputField semesterInF;
     public GameObject studInfUIObj;
 
+    public Button geRenBtn;
+    public Button qunTiBtn;
     private void OnEnable()
     {
         studIDInF.text = "";
@@ -19,7 +21,9 @@ public class StudInforUI : UICaoZuoBase
     // Start is called before the first frame update
     void Start()
     {
-        verifyBtn.onClick.AddListener(CloseStudInfUI);
+        //verifyBtn.onClick.AddListener(CloseStudInfUI);
+        geRenBtn.onClick.AddListener(CloseStudInfUI);
+        qunTiBtn.onClick.AddListener(CloseStudInfUI);
     }
 
     private void CloseStudInfUI()

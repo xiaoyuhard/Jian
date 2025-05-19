@@ -64,6 +64,9 @@ public class TogIntroduceItem : MonoSingletonBase<TogIntroduceItem>
             toggleButtons[i].sprName = date[i].iconName;
             toggleButtons[i].introduceTex = date[i].introduce;
         }
+        //IntroducePanel.Instance.SetInformation(toggleButtons[0].introduceTex, toggleButtons[0].sprName, toggleButtons[0].sprName);
+        UpdateButtonAppearance(toggleButtons[0], true);
+        toggleButtons[0].toggle.isOn = true;
     }
 
     //当toggle不够时进行扩容
@@ -88,7 +91,7 @@ public class TogIntroduceItem : MonoSingletonBase<TogIntroduceItem>
         IntroducePanel.Instance.SetInformation(tButton.introduceTex, tButton.sprName, tButton.sprName);
         //tButton.background.color = isOn ? tButton.selectedColor : tButton.normalColor;
         //tButton.label.color = isOn ? tButton.normalColor : Color.black;
-        MoXingObjCon.Instance.ShowObj(isOn ? tButton.sprName : "");
+        //MoXingObjCon.Instance.ShowObj(isOn ? tButton.sprName : "");
         //tButton.uiPanel.gameObject.SetActive(isOn);
         if (isOn) MoXingObjCon.Instance.ShowObj(tButton.label.text);
     }

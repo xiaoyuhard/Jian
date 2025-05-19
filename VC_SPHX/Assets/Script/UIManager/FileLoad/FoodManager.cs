@@ -11,8 +11,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 //using static UnityEditor.Progress;
-using static UnityEngine.Rendering.DebugUI;
 using Newtonsoft.Json;
+using UnityEngine.UI;
 //using UnityEditorInternal.Profiling.Memory.Experimental;
 
 /// <summary>
@@ -31,13 +31,26 @@ public class FoodManager : MonoBehaviour
     public string jsonName;
     private string jsonFilePath => Path.Combine(Application.streamingAssetsPath, jsonName + ".xlsx");
 
+    public ReceiveRecipe response = new ReceiveRecipe();
+
     // 服务器API地址（示例）
     //private const string API_URL = "https://your-api-domain.com/food/items";
 
+    public Button resServerBtn;
 
     void Awake()
     {
         InitializeManager();
+    }
+    private void Start()
+    {
+        resServerBtn.onClick.AddListener(ServerFood);
+    }
+
+    private void ServerFood()
+    {
+        LoadFoodData();
+
     }
 
     // 显式初始化方法（供编辑器调用）
@@ -47,7 +60,7 @@ public class FoodManager : MonoBehaviour
         {
             Instance = this;
             //LoadAllExcelData();
-            LoadFoodData();
+            //LoadFoodData();
             // 确保编辑器退出时清理实例
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
@@ -92,27 +105,39 @@ public class FoodManager : MonoBehaviour
     public void LoadFoodData()
     {
         itemDictionary.Clear();
-        StartCoroutine(LoadFoodPageQueryCoroutine("谷薯类", 138));
-        StartCoroutine(LoadFoodPageQueryCoroutine("蔬菜水果类", 561));
-        StartCoroutine(LoadFoodPageQueryCoroutine("畜禽鱼蛋类", 786));
-        StartCoroutine(LoadFoodPageQueryCoroutine("大豆坚果奶类", 145));
-        StartCoroutine(LoadFoodPageQueryCoroutine("油脂类", 26));
-        StartCoroutine(LoadFoodPageQueryCoroutine("水", 22));
+
+        if (YiTiJiUI.Instance.BackUserInfo().isBaby)
+        {
+            StartCoroutine(LoadFoodPageQueryCoroutine("大豆坚果奶类", 1000, $"?birthday={YiTiJiUI.Instance.BackUserInfo().birthday}&pageSize={300}"));
+
+        }
+        else
+        {
+            StartCoroutine(LoadFoodPageQueryCoroutine("谷薯类", 1000, "?CategoryName={谷薯类}&pageSize={1000}"));
+            StartCoroutine(LoadFoodPageQueryCoroutine("蔬菜水果类", 1000, "?CategoryName={蔬菜水果类}&pageSize={1000}"));
+            StartCoroutine(LoadFoodPageQueryCoroutine("畜禽鱼蛋类", 1000, "?CategoryName={畜禽鱼蛋类}&pageSize={1000}"));
+            StartCoroutine(LoadFoodPageQueryCoroutine("大豆坚果奶类", 1000, "?CategoryName={大豆坚果奶类}&pageSize={1000}"));
+            StartCoroutine(LoadFoodPageQueryCoroutine("油脂类", 1000, "?CategoryName={油脂类}&pageSize={1000}"));
+            StartCoroutine(LoadFoodPageQueryCoroutine("水", 1000, "?CategoryName={水}&pageSize={1000}"));
+
+            StartCoroutine(LoadFoodPageQueryCoroutine("/cookbook/list"));
+        }
+
     }
 
-    private IEnumerator LoadFoodPageQueryCoroutine(string categoryName, int pageSize)
+    private IEnumerator LoadFoodPageQueryCoroutine(string categoryName, int pageSize, string message)
     {
         // 获取基础地址
-        string baseUrl = ReadServerAddress();
-        if (string.IsNullOrEmpty(baseUrl))
-        {
-            Debug.LogError("服务器地址配置错误");
-            yield break;
-        }
-    
+        //string baseUrl = ReadServerAddress();
+        //if (string.IsNullOrEmpty(baseUrl))
+        //{
+        //    Debug.LogError("服务器地址配置错误");
+        //    yield break;
+        //}
+
         // 拼接完整地址
         //string fullUrl = $"{CombineUrl(baseUrl, "/food/pageQuery")}?CategoryName={categoryName}&pageSize={pageSize}";
-        string fullUrl = $"{CombineUrl("http://172.28.67.73:9090", "/food/pageQuery")}?CategoryName={categoryName}&pageSize={pageSize}";
+        string fullUrl = $"{CombineUrl("http://172.28.67.73:9090", "/food/pageQuery")}" + message;
         using (UnityWebRequest request = UnityWebRequest.Get(fullUrl))
         {
             // 设置请求头（如果需要）
@@ -124,6 +149,8 @@ public class FoodManager : MonoBehaviour
             {
                 try
                 {
+                    resServerBtn.gameObject.SetActive(false);
+
                     // 解析JSON数据
                     string jsonResponse = request.downloadHandler.text;
                     FoodResponse response = JsonConvert.DeserializeObject<FoodResponse>(jsonResponse);
@@ -163,6 +190,48 @@ public class FoodManager : MonoBehaviour
             {
                 //onError?.Invoke($"网络请求失败: {request.error}");
                 Debug.LogError($"网络请求失败: {request.error}");
+                UIManager.Instance.OpenUICaoZuo(UINameType.UI_ServerTip);
+                resServerBtn.gameObject.SetActive(true);
+            }
+        }
+    }
+
+
+
+    private IEnumerator LoadFoodPageQueryCoroutine(string full)
+    {
+        // 拼接完整地址
+        string fullUrl = $"{CombineUrl("http://172.28.67.73:9090", "/cookbook/list")}?pageNum={100}&pageSize={1000}";
+        using (UnityWebRequest request = UnityWebRequest.Get(fullUrl))
+        {
+            // 设置请求头（如果需要）
+            //request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = 3; // 设置超时时间
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                try
+                {
+                    // 解析JSON数据
+                    string jsonResponse = request.downloadHandler.text;
+                    //Debug.Log($"服务器响应：{jsonResponse}");
+
+                    response = JsonConvert.DeserializeObject<ReceiveRecipe>(jsonResponse);
+
+
+                }
+                catch (Exception e)
+                {
+                    //onError?.Invoke($"JSON解析失败: {e.Message}");
+                    Debug.LogError($"JSON解析失败: {e.Message}");
+                }
+            }
+            else
+            {
+                //onError?.Invoke($"网络请求失败: {request.error}");
+                Debug.LogError($"网络请求失败: {request.error}");
+                UIManager.Instance.OpenUICaoZuo(UINameType.UI_ServerTip);
 
             }
         }

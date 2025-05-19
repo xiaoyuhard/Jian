@@ -10,6 +10,7 @@ using UnityEngine;
 public class ShanShiCon : MonoSingletonBase<ShanShiCon>
 {
     public List<GameObject> posList;
+    public List<GameObject> tipUIList;
 
 
     public GameObject ChooseFoodCon;
@@ -31,7 +32,7 @@ public class ShanShiCon : MonoSingletonBase<ShanShiCon>
         StartCoroutine(ConUp());
         foreach (GameObject go in posList)
         {
-            go.SetActive(true);
+            //go.SetActive(true);
         }
         //ChooseFoodCon.SetActive(false);
 
@@ -41,7 +42,7 @@ public class ShanShiCon : MonoSingletonBase<ShanShiCon>
     // Update is called once per frame
     void Update()
     {
- 
+
     }
     public void SetIsConUpBl()
     {
@@ -58,11 +59,13 @@ public class ShanShiCon : MonoSingletonBase<ShanShiCon>
         yield return new WaitUntil(() => GameManager.Instance.stepDetection); // 当 conditionMet == true 时继续 进入门
         posList[0].SetActive(true);
         GameManager.Instance.SetStepDetection(false);
-
+        tipUIList[0].SetActive(true);
         yield return new WaitUntil(() => GameManager.Instance.stepDetection); // 当 conditionMet == true 时继续 到服务台
         posList[0].SetActive(false);
         posList[1].SetActive(true);
         GameManager.Instance.SetStepDetection(false);
+        tipUIList[0].SetActive(false);
+        tipUIList[1].SetActive(true);
 
         yield return new WaitUntil(() => GameManager.Instance.stepDetection); // 当 conditionMet == true 时继续 过门
         posList[1].SetActive(false);
@@ -72,6 +75,7 @@ public class ShanShiCon : MonoSingletonBase<ShanShiCon>
 
         yield return new WaitUntil(() => GameManager.Instance.stepDetection); // 当 conditionMet == true 时继续 一体机
         posList[2].SetActive(false);
+        tipUIList[1].SetActive(false);
 
         posList[3].SetActive(true);
         GameManager.Instance.SetStepDetection(false);
@@ -88,7 +92,7 @@ public class ShanShiCon : MonoSingletonBase<ShanShiCon>
         posList[5].SetActive(true);
         yield return new WaitUntil(() => GameManager.Instance.stepDetection); // 当 conditionMet == true 时继续 体检室
         GameManager.Instance.SetStepDetection(false);
-     
+
 
         //ChooseFoodAllInformCon.Instance.EnableInform();
     }

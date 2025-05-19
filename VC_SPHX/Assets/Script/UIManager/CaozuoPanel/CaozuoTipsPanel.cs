@@ -34,8 +34,8 @@ public class CaozuoTipsPanel : MonoSingletonBase<CaozuoTipsPanel>
 
     private void JoinKaoHe(string obj)
     {
-        UIManager.Instance.CloseAllUI();
-        GameManager.Instance.SetGameObj(true);
+        //UIManager.Instance.CloseAllUI();
+        //GameManager.Instance.SetGameObj(true);
         GameObjMan.Instance.OpenFirst();
     }
 
@@ -47,25 +47,8 @@ public class CaozuoTipsPanel : MonoSingletonBase<CaozuoTipsPanel>
         //GameManager.Instance.SetTrainingMode(false);
 
         ClosePanel();
-
-        var curExp = (Experiment)CaozuoManager.ClickIndex;
-        var curScene = SceneMgr.CurSceneName;
-
-        GameData.Instance.IsTestMode = false;
-        GameData.Instance.CurrentExperiment = curExp;
-
-        if (curExp == Experiment.AnJiSuan || curExp == Experiment.XiangQi)
-        {
-            if (curScene != GameScene.Exp_HuaXue)
-                SceneMgr.LoadScene(GameScene.Exp_HuaXue);
-        }
-        else if (curExp == Experiment.ZhongJinShu)
-        {
-            if (curScene != GameScene.Exp3_ZhongJinShu)
-                SceneMgr.LoadScene(GameScene.Exp3_ZhongJinShu);
-        }
-
-        LabSystemManager.Instance.SelectAssessmentMode();  //进入考核
+        EnterExperiment(true);
+        //LabSystemManager.Instance.SelectAssessmentMode();  //进入考核
     }
 
     //跟练
@@ -78,37 +61,8 @@ public class CaozuoTipsPanel : MonoSingletonBase<CaozuoTipsPanel>
         //MessageCenter.Instance.Send("SendGengToDoor", "WearPos");//应该不需要
         //GameObjMan.Instance.SetPosition(0);
         ClosePanel();
-
-        var curExp = (Experiment)CaozuoManager.ClickIndex;
-        var curScene = SceneMgr.CurSceneName;
-
-        GameData.Instance.IsTestMode = false;
-        GameData.Instance.CurrentExperiment = curExp;
-
-        if (curExp == Experiment.AnJiSuan || curExp == Experiment.XiangQi)
-        {
-            if (curScene != GameScene.Exp_HuaXue)
-                SceneMgr.LoadScene(GameScene.Exp_HuaXue);
-        }
-        else if (curExp == Experiment.ZhongJinShu)
-        {
-            if (curScene != GameScene.Exp3_ZhongJinShu)
-                SceneMgr.LoadScene(GameScene.Exp3_ZhongJinShu);
-        }
-        else if (curExp == Experiment.ZhiFang)
-        {
-            //if (curScene != GameScene.Exp3_ZhongJinShu)
-            //    SceneMgr.LoadScene(GameScene.Exp3_ZhongJinShu);
-            UIManager.Instance.OpenUI(UINameType.UI_ExpMethod);
-        }
-        else if (curExp == Experiment.DanBaiZhi)
-        {
-            //if (curScene != GameScene.Exp3_ZhongJinShu)
-            //    SceneMgr.LoadScene(GameScene.Exp3_ZhongJinShu);
-            UIManager.Instance.OpenUI(UINameType.UI_ExpMethod);
-        }
-
-        LabSystemManager.Instance.SelectPracticeMode();//进入跟练
+        EnterExperiment(false);
+        //LabSystemManager.Instance.SelectPracticeMode();//进入跟练
     }
 
     public void ClosePanel()
@@ -117,8 +71,41 @@ public class CaozuoTipsPanel : MonoSingletonBase<CaozuoTipsPanel>
     }
 
     //进入实验
-    void EnterExperiment()
+    void EnterExperiment(bool isTestMode)
     {
+        var curExp = (Experiment)CaozuoManager.ClickIndex;
+        var curScene = SceneMgr.CurSceneName;
 
+        GameData.Instance.IsTestMode = isTestMode;
+        GameData.Instance.CurrentExperiment = curExp;
+
+        if (curExp == Experiment.AnJiSuan)
+        {
+            SceneMgr.LoadScene(GameScene.Exp_HuaXue);
+        }
+        else if (curExp == Experiment.XiangQi)
+        {
+            SceneMgr.LoadScene(GameScene.Exp2_XiangQi);
+        }
+        else if (curExp == Experiment.ZhongJinShu)
+        {
+            SceneMgr.LoadScene(GameScene.Exp3_ZhongJinShu);
+        }
+        else if (curExp == Experiment.ShaChongJi)
+        {
+            UIManager.Instance.OpenUI(UINameType.UI_ExpMethod);
+        }
+        else if (curExp == Experiment.Tang)
+        {
+            SceneMgr.LoadScene(GameScene.Exp5_Tang);
+        }
+        else if (curExp == Experiment.ZhiFang)
+        {
+            UIManager.Instance.OpenUI(UINameType.UI_ExpMethod);
+        }
+        else if (curExp == Experiment.DanBaiZhi)
+        {
+            UIManager.Instance.OpenUI(UINameType.UI_ExpMethod);
+        }
     }
 }

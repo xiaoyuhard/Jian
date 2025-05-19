@@ -28,23 +28,32 @@ public class ExpStepCtrl : MonoSingletonBase<ExpStepCtrl>
     /// </summary>
     public ExpStep CurExpStep => mCachedExpStep;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         m_testMode = GameData.Instance.IsTestMode;
         CheckExpObj();
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+
     }
 
     // Update is called once per frame
     void Update()
     {
         //仅限测试用
-        if (Application.isEditor || Debug.isDebugBuild)
+        //if (Application.isEditor || Debug.isDebugBuild)
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 if (isPlayingAnim)
                     SkipAnim();
+            }
+            if(Input.GetKeyDown(KeyCode.F9))
+            {
+                Screen.fullScreen = !Screen.fullScreen;
             }
         }
     }
@@ -82,7 +91,7 @@ public class ExpStepCtrl : MonoSingletonBase<ExpStepCtrl>
                 lightObj = triggerObj;
                 step.lightObj = triggerObj;
                 //Debug.LogError($"该设置 lightObj 为空！！！检查是否正确。 Index:{i}");
-                Debug.Log($"该设置 lightObj 为空！自动设置为 triggerObj，检查是否正确。 Index:{i}");
+                //Debug.Log($"该设置 lightObj 为空！自动设置为 triggerObj，检查是否正确。 Index:{i}");
             }
 
             if (type == ExpActionType.ClickPlayAnim)
@@ -97,7 +106,7 @@ public class ExpStepCtrl : MonoSingletonBase<ExpStepCtrl>
             }
 
             if (lightObj)
-                InitLightObj(lightObj);
+                InitLightObj(lightObj, step);
         }
     }
 
@@ -117,8 +126,9 @@ public class ExpStepCtrl : MonoSingletonBase<ExpStepCtrl>
         if (mStepIndex >= stepFragments.Length)
         {
             print("=======实验结束，cur mStepIndex: " + mStepIndex);
-            UIManager.Instance.OpenUI(UINameType.UI_CaozuoManager);
+            //UIManager.Instance.OpenUI(UINameType.UI_CaozuoManager);
             UIManager.Instance.CloseUICaoZuo(UINameType.UI_ProTipsMan);
+            UIManager.Instance.OpenUI(UINameType.UI_ExpEnd);
             GameObjMan.Instance.CLoseFirst();
             return;
         }
@@ -158,29 +168,31 @@ public class ExpStepCtrl : MonoSingletonBase<ExpStepCtrl>
         triggerObj.layer = LayerMask.NameToLayer("ClickModel");
 
         lightObj.SetActive(true);
-        SetLightObj(lightObj, true);
 
         if (stepType == ExpActionType.TriggerObject)
         {
-
+            SetLightObj(lightObj, true, true);
         }
         else if (stepType == ExpActionType.ClickOpenCabinet)
         {
             ExpObjPicker.Instance.OnHitObj = OnClickGuizi;
+            SetLightObj(lightObj, true, true);
         }
         else if (stepType == ExpActionType.ClickPlayAnim)
         {
             //缓存这个步骤作为 点击动画 对象
             mCachedExpStep = curStep;
             ExpObjPicker.Instance.OnHitObj = OnClickAnimObj;
-            SpawnFloatText(triggerObj, curStep.name);
+            //SpawnFloatText(triggerObj, curStep.name);
+            SetLightObj(lightObj, false, true);
         }
         else if (stepType == ExpActionType.ClickShowImage)
         {
             //缓存这个步骤作为 点击动画 对象
             mCachedExpStep = curStep;
             ExpObjPicker.Instance.OnHitObj = OnClickPicObj;
-            SpawnFloatText(triggerObj, curStep.name);
+            //SpawnFloatText(triggerObj, curStep.name);
+            SetLightObj(lightObj, false, true);
         }
 
         mStepIndex++;
@@ -189,20 +201,24 @@ public class ExpStepCtrl : MonoSingletonBase<ExpStepCtrl>
     //生成物体名字漂字
     void SpawnFloatText(GameObject triggerObj, string name)
     {
-        var textObj = Instantiate(floatText);
-        var col = triggerObj.GetComponent<BoxCollider>();
-        Vector3 textPos = triggerObj.transform.position;
-        textPos.y += col.size.y;
-        textPos.y += 0.1f;
-        textObj.transform.position = textPos;
-        textObj.transform.parent = triggerObj.transform;
+        if (!GameData.Instance.IsTestMode)
+        {
+            var textObj = Instantiate(floatText);
+            var col = triggerObj.GetComponent<BoxCollider>();
+            var center = triggerObj.transform.TransformPoint(col.center);
+            Vector3 textPos = center;
+            textPos.y += col.size.y * triggerObj.transform.localScale.y * 0.5f;
+            textPos.y += 0.2f;
+            textObj.transform.position = textPos;
+            textObj.transform.parent = triggerObj.transform;
 
-        lastText = textObj.GetComponentInChildren<TextMeshPro>();
-        lastText.text = name.Trim();
+            lastText = textObj.GetComponentInChildren<TextMeshPro>();
+            lastText.text = name.Trim();
+        }
     }
 
     //初始高亮物体
-    void InitLightObj(GameObject obj)
+    void InitLightObj(GameObject obj, ExpStep step)
     {
         //添加描边效果
         var outline = obj.GetOrAddComponent<Outline>();
@@ -220,9 +236,16 @@ public class ExpStepCtrl : MonoSingletonBase<ExpStepCtrl>
         //确保可以点击
         var boxCol = obj.GetOrAddComponent<BoxCollider>();
         boxCol.enabled = false;
+
+        if (step.type == ExpActionType.ClickPlayAnim || step.type == ExpActionType.ClickShowImage)
+        {
+            var clickObj = obj.GetOrAddComponent<ExpClickObj>();
+            clickObj.objName = step.name;
+            clickObj.enabled = false;
+        }
     }
     //设置高亮物体状态
-    void SetLightObj(GameObject obj, bool showLight)
+    void SetLightObj(GameObject obj, bool showLight, bool showCollider)
     {
         //添加描边效果
         var outline = obj.GetOrAddComponent<Outline>();
@@ -234,7 +257,11 @@ public class ExpStepCtrl : MonoSingletonBase<ExpStepCtrl>
 
         //确保可以点击
         var boxCol = obj.GetOrAddComponent<BoxCollider>();
-        boxCol.enabled = showLight;
+        boxCol.enabled = showCollider;
+
+        var clickObj = obj.GetComponent<ExpClickObj>();
+        if (clickObj)
+            clickObj.enabled = showCollider;
     }
     void SetLightOff(GameObject obj)
     {
@@ -242,6 +269,14 @@ public class ExpStepCtrl : MonoSingletonBase<ExpStepCtrl>
 
         if (outline)
             outline.enabled = false;
+
+        var col = obj.GetComponent<BoxCollider>();
+        if (col)
+            col.enabled = false;
+
+        var clickObj = obj.GetComponent<ExpClickObj>();
+        if (clickObj)
+            clickObj.enabled = false;
     }
 
     //进行下一步的时候，上一步的要取消
@@ -254,7 +289,7 @@ public class ExpStepCtrl : MonoSingletonBase<ExpStepCtrl>
 
         if (lastLightObj != null)
         {
-            SetLightObj(lastLightObj, false);
+            SetLightObj(lastLightObj, false, false);
         }
     }
 
@@ -311,7 +346,7 @@ public class ExpStepCtrl : MonoSingletonBase<ExpStepCtrl>
     {
         var director = mCachedExpStep.director;
         director.Stop();
-        //director.time = 0;
+        director.time = director.duration;
         director.Evaluate();
         director.gameObject.SetActive(false);
 

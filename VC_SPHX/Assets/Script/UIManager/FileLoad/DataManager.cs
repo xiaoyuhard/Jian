@@ -55,11 +55,17 @@ public class DataManager : MonoSingletonBase<DataManager>
     public void LoadAllExcelData()
     {
         Debug.Log("=========LoadAllExcelData============");
-        
-        List<string> tipPathName = new List<string>() { "1氨基酸", "2香气", "3重金属测定", "6脂肪含量测定", "7蛋白质测定" };
+
+        List<string> tipPathName = new List<string>() { 
+            "1氨基酸", "2香气", "3重金属测定",
+            "4杀虫剂残留检测-果蔬类","4杀虫剂残留检测-香辛料","4杀虫剂残留检测-动物性样品","4杀虫剂残留检测-液态样品",
+            "5还原糖测定",
+            "6脂肪含量测定-传统方法", "6脂肪含量测定-实验室方法","6脂肪含量测定-盖勃法测定",
+            "7蛋白质测定-凯氏定氮法之手动法", "7蛋白质测定-自动凯氏定氮法" };
         List<string> moxingPathName = new List<string>() { "Anjisuan", "Xiangqi", "Zhongjinshu", "Shachongji", "Huanyuantang", "Zhifang", "Danbaizhi" };
+
         itemDictionary.Clear();
-        
+
         foreach (var item in tipPathName)
         {
             List<EquipmentItemData> allData = LoadCSVData<EquipmentItemData>("Data/Exp/" + item);
@@ -72,9 +78,9 @@ public class DataManager : MonoSingletonBase<DataManager>
         }
 
         //string streamingAssetsPath = Application.streamingAssetsPath;
-      
+
         //string streamingAssetsPath = Application.streamingAssetsPath;
-      
+
         //string streamingAssetsPath = Application.streamingAssetsPath;
         //foreach (var filePath in Directory.GetFiles(streamingAssetsPath + "/ExperimentalHint", "*.xlsx"))
         //{
@@ -138,6 +144,7 @@ public class DataManager : MonoSingletonBase<DataManager>
             // 逐行解析 ----------------------------------------------------------
             using (StringReader reader = new StringReader(csvFile.text))
             {
+                //Debug.Log(csvFile.text);
                 string line;
                 bool isFirstLine = true;
 

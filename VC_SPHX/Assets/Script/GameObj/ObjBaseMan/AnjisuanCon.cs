@@ -47,7 +47,7 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
 
         //MessageCenter.Instance.Register("SendWearToAn", WearToAnTag);
 
-
+    
     }
     //private void MouseToAnjisuanComputer(string obj)
     //{
@@ -317,6 +317,8 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 点击电脑上图标软件后
 
         UIManager.Instance.OpenUICaoZuo("ComputerUI");
+        GameObjMan.Instance.CLoseFirst();
+
         //ComputerUI.Instance.ShowComUI(0);
         GameManager.Instance.SetStepDetection(false);
         yield return new WaitForSeconds(3);//提示上面排气阀高亮
@@ -325,6 +327,7 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         ComputerUI.Instance.CloseUI();
         UIManager.Instance.CloseUICaoZuo("ComputerUI");
         ShowObj(17);//按顺序显示 第18个动画
+        GameObjMan.Instance.OpenFirst();
 
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 电脑屏幕显示UI 然后排气阀高亮
 
@@ -335,15 +338,18 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         UIManager.Instance.OpenUICaoZuo("ComputerUI");
         ComputerUI.Instance.ShowComUI(0);
         GameManager.Instance.SetStepDetection(false);
+        GameObjMan.Instance.CLoseFirst();
 
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 点了排气阀 进行放动画 出UI进行操作 
         //yield return new WaitForSeconds(3);//提示上面排气阀高亮
         LabSystemManager.Instance.HighlightObject(listObj[21]);
         ComputerUI.Instance.CloseUI();
         UIManager.Instance.CloseUICaoZuo("ComputerUI");
+        GameObjMan.Instance.OpenFirst();
 
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 电脑屏幕显示UI 然后排气阀高亮
         UIManager.Instance.OpenUICaoZuo("ComputerUI");
+        GameObjMan.Instance.CLoseFirst();
 
         ComputerUI.Instance.ShowComUI(1);
         GameManager.Instance.SetStepDetection(false);
@@ -389,6 +395,7 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         GameManager.Instance.SetStepDetection(false);
         yield return new WaitUntil(() => GameManager.Instance.BackStepDetection()); // 当 conditionMet == true 时继续 
                                                                                     //UIManager.Instance.OpenUICaoZuo("ChromatographUI");
+        UIManager.Instance.OpenUI(UINameType.UI_GenLianUIMan);
 
 
     }
@@ -432,7 +439,7 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
             if (Input.GetKeyDown(KeyCode.Y))
             {
                 Debug.Log("等待被主动跳过");
-                yield break; // 提前退出
+                //yield break; // 提前退出
             }
 
             yield return null; // 挂起至下一帧
@@ -461,7 +468,7 @@ public class AnjisuanCon : MonoSingletonBase<AnjisuanCon>
         //if (other.tag != "Player") return;
         //LabSystemManager.Instance.HighlightObject(anObj);
         //anObj.SetActive(true);
-        DoorClickCon.Instance.CloseHighlightAll();
+        DoorClickCon.Instance.CloseDoorHigh(1);
 
         LabSystemManager.Instance.HighlightObject(listObj[0]);
         IsAssessmentMode(2);

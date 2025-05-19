@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -16,36 +17,39 @@ public class StalkProcedureManager : UICaoZuoBase
         {
             if (_instance == null)
             {
-                // 如果实例不存在，尝试在场景中查找
-                _instance = FindObjectOfType<StalkProcedureManager>();
+                //// 如果实例不存在，尝试在场景中查找
+                //_instance = FindObjectOfType<StalkProcedureManager>();
 
-                // 如果仍然不存在，创建一个新的GameObject并挂载脚本
-                if (_instance == null)
-                {
-                    GameObject singletonObject = new GameObject("GameManager");
-                    _instance = singletonObject.AddComponent<StalkProcedureManager>();
-                    DontDestroyOnLoad(singletonObject); // 跨场景持久化
-                }
+                //// 如果仍然不存在，创建一个新的GameObject并挂载脚本
+                //if (_instance == null)
+                //{
+                //    GameObject singletonObject = new GameObject("GameManager");
+                //    _instance = singletonObject.AddComponent<StalkProcedureManager>();
+                //    //DontDestroyOnLoad(singletonObject); // 跨场景持久化
+                //}
             }
             return _instance;
         }
     }
 
 
-    public Text displayText; // UI显示组件
+    public TextMeshProUGUI displayText; // UI显示组件
+    public TextMeshProUGUI txtStepName;
+    public TextMeshProUGUI txtStepNum;
     private int index = 0;   //要使用步骤为第几条下标
 
     // 初始化时检查重复实例
     private void Awake()
     {
+        _instance = this;
+
         if (_instance != null && _instance != this)
         {
             Destroy(this.gameObject); // 销毁重复实例
             return;
         }
 
-        _instance = this;
-        DontDestroyOnLoad(this.gameObject); // 确保持久化
+        //DontDestroyOnLoad(this.gameObject); // 确保持久化
         MessageCenter.Instance.Register("SendTiShiUIName", TiShiUIName);
         //UIManager.Instance.CloseUICaoZuo(UINameType.UI_ProTipsMan);
     }
@@ -65,8 +69,13 @@ public class StalkProcedureManager : UICaoZuoBase
     {
         if (list != null)
         {
+            Debug.Log(index + " shul  " + list.Count);
             if (index < list.Count)
+            {
                 displayText.text = list[index].parent;
+                txtStepNum.text = $"{index + 1}/{list.Count}";
+                txtStepName.text = list[index].iconName;
+            }
             else
                 Debug.LogError($"index越界！index:{index} list.Count:{list.Count}");
         }
