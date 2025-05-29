@@ -564,7 +564,7 @@ PlayerSettings:
     m_Automatic: 0
   - m_BuildTarget: WebGLSupport
     m_APIs: 0b000000
-    m_Automatic: 1
+    m_Automatic: 0
   m_BuildTargetVRSettings: []
   m_DefaultShaderChunkSizeInMB: 16
   m_DefaultShaderChunkCount: 0
@@ -826,11 +826,11 @@ PlayerSettings:
   blurSplashScreenBackground: 1
   spritePackerPolicy: 
   webGLMemorySize: 32
-  webGLExceptionSupport: 3
+  webGLExceptionSupport: 2
   webGLNameFilesAsHashes: 0
   webGLShowDiagnostics: 1
   webGLDataCaching: 0
-  webGLDebugSymbols: 1
+  webGLDebugSymbols: 0
   webGLEmscriptenArgs: 
   webGLModulesDirectory: 
   webGLTemplate: APPLICATION:PWA
@@ -875,7 +875,7 @@ PlayerSettings:
   platformArchitecture: {}
   scriptingBackend: {}
   il2cppCompilerConfiguration:
-    WebGL: 0
+    WebGL: 1
   il2cppCodeGeneration:
     WebGL: 1
   managedStrippingLevel:
