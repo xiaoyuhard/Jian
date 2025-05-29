@@ -24,6 +24,11 @@ public class ServerCon : MonoSingletonBase<ServerCon>
 
     }
 
+    /// <summary>
+    /// 向服务器发送数据
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="full"></param>
     public void ConverToJsonPost(string message, string full)
     {
 
@@ -93,11 +98,24 @@ public class ServerCon : MonoSingletonBase<ServerCon>
                 if (user.code == 200)
                 {
                     YiTiJiUI.Instance.ShowBiLiScroll(user);
+                    ChooseFoodAllInformCon.Instance.SetThreeMeals(user);
                 }
                 else
                 {
                     YiTiJiUI.Instance.isValid = false;
 
+                    UIManager.Instance.OpenUICaoZuo(UINameType.UI_ServerTip);
+                }
+                break;
+            case "/group/analyse/heatIntake":
+                ReceiveHeatIntake receiveHeatIntake = JsonConvert.DeserializeObject<ReceiveHeatIntake>(responseJson);
+                if (receiveHeatIntake.code == 200)
+                {
+                    GroupRegisterUI.Instance.ReceiveRecIntake(receiveHeatIntake.data);
+
+                }
+                else
+                {
                     UIManager.Instance.OpenUICaoZuo(UINameType.UI_ServerTip);
                 }
                 break;
@@ -108,13 +126,14 @@ public class ServerCon : MonoSingletonBase<ServerCon>
         }
 
     }
-    ThreeMeals user;
+    ThreeMeals user = new ThreeMeals();
 
-    public ThreeMeals BackThreeMeals()
-    {
-        return user;
-    }
-
+    /// <summary>
+    /// 向服务器获取数据
+    /// </summary>
+    /// <param name="baseUrl"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
     private string CombineUrl(string baseUrl, string path)
     {
         return $"{baseUrl.TrimEnd('/')}/{path.TrimStart('/')}";
@@ -144,13 +163,13 @@ public class ServerCon : MonoSingletonBase<ServerCon>
 
 
 
-    public void LoadRecipe(string full, string page)
+    public void LoadRecipe(string full, string page, string sendPath)
     {
 
         // 发送 POST 请求
-        StartCoroutine(GetFoodRecipe(full, page));
+        StartCoroutine(GetFoodRecipe(full, page, sendPath));
     }
-    private IEnumerator GetFoodRecipe(string full, string page)
+    private IEnumerator GetFoodRecipe(string full, string page, string sendPath)
     {
         // 拼接完整地址
         string fullUrl = $"{CombineUrl("http://172.28.67.73:9090", full)}" + page;
@@ -174,6 +193,26 @@ public class ServerCon : MonoSingletonBase<ServerCon>
                             RecipeAllFood recipeAll = JsonConvert.DeserializeObject<RecipeAllFood>(jsonResponse);
                             FoodChooseUI.Instance.ReceiveRecipeItem(recipeAll.data);
                             break;
+                        case "/cookbook/getGroupRecipeFood":
+                            switch (sendPath)
+                            {
+                                case "Choose":
+                                    FoodRecipeGroupResponse recipeAllGroup = JsonConvert.DeserializeObject<FoodRecipeGroupResponse>(jsonResponse);
+                                    FoodGroupChooseUI.Instance.ReceiveRecipeItem(recipeAllGroup.data);
+                                    break;
+                                case "Swop":
+                                    FoodRecipeGroupResponse recipeAllGroupSwop = JsonConvert.DeserializeObject<FoodRecipeGroupResponse>(jsonResponse);
+                                    SwopRecipeGroupUI.Instance.ReceiveRecipeItem(recipeAllGroupSwop.data);
+                                    break;
+                               
+                            }
+                       
+                            break;
+                        case "/group/analyse/getAllPhysique":
+                            GetAllPhysique getAllPhysique = JsonConvert.DeserializeObject<GetAllPhysique>(jsonResponse);
+                            GroupRegisterUI.Instance.ServerGetAllPhysique(getAllPhysique.data);
+                            break;
+
                         default:
                             Debug.LogError("地址错误 没有接收到对应地址的数据   地址:" + full);
                             break;
@@ -196,8 +235,6 @@ public class ServerCon : MonoSingletonBase<ServerCon>
             }
         }
     }
-
-
 
 }
 

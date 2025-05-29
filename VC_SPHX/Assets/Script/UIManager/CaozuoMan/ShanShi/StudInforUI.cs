@@ -23,7 +23,7 @@ public class StudInforUI : UICaoZuoBase
     {
         //verifyBtn.onClick.AddListener(CloseStudInfUI);
         geRenBtn.onClick.AddListener(CloseStudInfUI);
-        qunTiBtn.onClick.AddListener(CloseStudInfUI);
+        qunTiBtn.onClick.AddListener(CloseQunTiInfUI);
     }
 
     private void CloseStudInfUI()
@@ -35,9 +35,17 @@ public class StudInforUI : UICaoZuoBase
 
     }
 
+    private void CloseQunTiInfUI()
+    {
+        FoodManager.Instance.LoadRecipeList();
+        UIManager.Instance.CloseUICaoZuo("StudInforUI");
+        UIManager.Instance.OpenUICaoZuo("GroupRegisterUI");
+
+    }
+
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

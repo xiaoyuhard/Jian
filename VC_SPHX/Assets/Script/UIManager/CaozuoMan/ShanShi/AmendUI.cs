@@ -14,6 +14,7 @@ public class AmendUI : MonoSingletonBase<AmendUI>
     public Text amount;
     public InputField inputField;
     public Button ackBtn;
+    public GameObject tipText;
 
     private FoodKindItemData foodKind;
 
@@ -69,16 +70,43 @@ public class AmendUI : MonoSingletonBase<AmendUI>
 
     private void AmendClick()
     {
+        if (inputField.text == "" && !IsInputText(inputField.text))
+        {
+            tipText.gameObject.SetActive(true);
+            StartCoroutine(WaitCloseTip());
+
+            return;
+        }
         string count = inputField.text;
         foodKind.count = int.Parse(count);
         ChooseFoodAllInformCon.Instance.EditBackFood(foodKind);
         gameObject.SetActive(false);
+        return;
     }
-
+    public bool IsInputText(string text)
+    {
+        if (text == "")
+        {
+            return false;
+        }
+        if (float.Parse(text) > 0)
+        {
+            return true;
+        }
+        return false;
+    }
     //public FoodKindItemData BackFooditem()
     //{
     //    return foodKind;
     //}
+
+    IEnumerator WaitCloseTip()
+    {
+        yield return new WaitForSeconds(2f);
+        tipText.gameObject.SetActive(false);
+
+    }
+
 
     // Update is called once per frame
     void Update()

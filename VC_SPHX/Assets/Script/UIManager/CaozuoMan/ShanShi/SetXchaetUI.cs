@@ -18,7 +18,7 @@ public class SetXchaetUI : MonoSingletonBase<SetXchaetUI>
     public GameObject bar2;              //膳食纤维与蛋白质摄入达标分析柱形图
     public GameObject bar3;              //全天三大营养素比例柱形图
     public GameObject summaryUI;        //总结UI
-
+    public List<Text> tipList;
 
     public List<Text> textList;
     public Button closeBtn;
@@ -48,13 +48,16 @@ public class SetXchaetUI : MonoSingletonBase<SetXchaetUI>
     /// <summary>
     /// 进行显示图像
     /// </summary>
-    public void SetPieChat(Dictionary<string, List<FoodKindItemData>> allFoodDic, PromptInfo promptInfo, EveryMealEnergy totalEnergy, EveryMealEnergy recEnergyIntake, CompareResult compareResult, List<EveryMealEnergy> everyMealEnergies, FiberAndFineProtein fiberAndFineProtein, ThreeMeals user, UserInfo userInfo)
+    public void SetPieChat(Dictionary<string, List<FoodKindItemData>> allFoodDic, string score, string foodNum, PromptInfo promptInfo, EveryMealEnergy totalEnergy, EveryMealEnergy recEnergyIntake, CompareResult compareResult, List<EveryMealEnergy> everyMealEnergies, FiberAndFineProtein fiberAndFineProtein, ThreeMeals user, UserInfo userInfo)
     {
         //float proteinAll = float.Parse(totalEnergy.protein) * 4;
         //float fatAll = float.Parse(totalEnergy.fat) * 9;
         //float choAll = float.Parse(totalEnergy.cho) * 4;
         //float allEnverMeal = proteinAll + fatAll + choAll;
-
+        foreach (var item in tipList)
+        {
+            item.text = "";
+        }
         if (userInfo.isBaby)
         {
             pieUI.SetActive(false);
@@ -70,9 +73,11 @@ public class SetXchaetUI : MonoSingletonBase<SetXchaetUI>
 
         PieChart pieChart = pieUI.GetComponent<PieChart>();//获取饼状图
 
-        foreach (var item in promptInfo.fineProteinMessage)
+
+        for (int i = 0; i < promptInfo.fineProteinMessage.Count; i++)
         {
-            pieUI.transform.Find("Tip").GetComponent<Text>().text += item;
+            tipList[0].text += promptInfo.fineProteinMessage[i] + "\n";
+
         }
 
         //pieChart.RefreshChart();//进行刷新
@@ -126,9 +131,11 @@ public class SetXchaetUI : MonoSingletonBase<SetXchaetUI>
 
         RadarChart radarChart = radarUI.GetComponent<RadarChart>();//获取雷达图
 
-        foreach (var item in promptInfo.caloricIntakeMessage)
+
+        for (int i = 0; i < promptInfo.caloricIntakeMessage.Count; i++)
         {
-            radarUI.transform.Find("Tip").GetComponent<Text>().text += item;
+            tipList[1].text += promptInfo.caloricIntakeMessage[i] + "\n";
+
         }
         //radarChart.RefreshChart();
         var radar1 = radarChart.series.GetSerie(0);
@@ -156,9 +163,11 @@ public class SetXchaetUI : MonoSingletonBase<SetXchaetUI>
 
 
         BarChart barChart1 = bar1.GetComponent<BarChart>();
-        foreach (var item in promptInfo.mealRatioMessage)
+
+        for (int i = 0; i < promptInfo.mealRatioMessage.Count; i++)
         {
-            bar1.transform.Find("Tip").GetComponent<Text>().text += item;
+            tipList[2].text += promptInfo.mealRatioMessage[i] + "\n";
+
         }
 
         barChart1.UpdateData(0, 0, Mathf.Round(float.Parse(everyMealEnergies[0].totalEnergyKcal) * 100) / 100);
@@ -191,6 +200,8 @@ public class SetXchaetUI : MonoSingletonBase<SetXchaetUI>
         barChart2.UpdateData(1, 0, Mathf.Round(float.Parse(fiberAndFineProtein.actual.fiberIntake) * 100) / 100);
         barChart2.UpdateData(1, 1, Mathf.Round(float.Parse(fiberAndFineProtein.actual.fineProteinIntake) * 100) / 100);
         barChart2.UpdateData(1, 2, Mathf.Round(float.Parse(fiberAndFineProtein.actual.totalProteinIntake) * 100) / 100);
+        barChart2.UpdateData(2, 0, (Mathf.Round(float.Parse(fiberAndFineProtein.plan.totalProteinIntake) * 100) / 100) / 3);
+        barChart2.UpdateData(3, 0, (Mathf.Round(float.Parse(fiberAndFineProtein.actual.totalProteinIntake) * 100) / 100) / 3);
 
         //var bar2Ser1 = barChart2.series.GetSerie(0);
         //bar2Ser1.data[0].UpdateData(0, Mathf.Round(float.Parse(fiberAndFineProtein.plan.fiberIntake) * 100) / 100);
@@ -205,9 +216,11 @@ public class SetXchaetUI : MonoSingletonBase<SetXchaetUI>
 
 
         BarChart barChart3 = bar3.GetComponent<BarChart>();
-        foreach (var item in promptInfo.energySupplyMessage)
+
+        for (int i = 0; i < promptInfo.energySupplyMessage.Count; i++)
         {
-            bar3.transform.Find("Tip").GetComponent<Text>().text += item;
+            tipList[3].text += promptInfo.energySupplyMessage[i] + "\n";
+
         }
         //全天当前
         float proteinTodayAllPresent = float.Parse(totalEnergy.protein) * 4;
@@ -309,11 +322,18 @@ public class SetXchaetUI : MonoSingletonBase<SetXchaetUI>
         //bar3Ser1.data[7].UpdateData(0, BackEnergyIntake(allDinnerEnverMealPresent, choDinnerPresent));   //当前晚餐
         barChart3.RefreshChart();
 
+        summaryUI.transform.Find("Score").GetComponent<Text>().text = score;
+        summaryUI.transform.Find("FoodNum").GetComponent<Text>().text = foodNum;
+
 
     }
 
     public float BackEnergyIntake(float allEnverMeal, float every)
     {
+        if (allEnverMeal == 0 && every == 0)
+        {
+            return 0;
+        }
         return Mathf.Round(((every / allEnverMeal) * 100) * 100) / 100;
     }
 

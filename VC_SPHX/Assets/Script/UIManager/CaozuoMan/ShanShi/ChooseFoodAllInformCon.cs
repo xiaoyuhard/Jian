@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 using XUGL;
 
@@ -69,6 +70,9 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
     public GameObject reportChartUI;
 
     public Button exportBtn;
+
+    List<FoodKindItemData> sceneChooseFood = new List<FoodKindItemData>();      //场景选择的食物
+    public GameObject alterSceneObjUI;          //选择场景物体数量UI
 
     private void OnEnable()
     {
@@ -469,7 +473,9 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
             }
         }
     }
-
+    /// <summary>
+    /// 选择完的所有数据发到服务器
+    /// </summary>
     public void SendServerCon()
     {
         MergeAllFoods(foodBreakfastList);
@@ -525,14 +531,15 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
             //foodChooseBlDic.Clear();
             foodChooseCount = 0;
             FoodManager.Instance.LoadFoodData();
+            sceneChooseFood.Clear();
 
             return;
         }
 
-        Debug.Log(foodBreakfastList.foods.Count + "  zao" + foodLunchList.foods.Count + "  zhong" + foodDinnerList.foods.Count + "  wan");
-        dropdown.value = lastValue;
-        textTip.SetActive(true);
-        StartCoroutine(WaitCloseText(textTip));
+        //Debug.Log(foodBreakfastList.foods.Count + "  zao" + foodLunchList.foods.Count + "  zhong" + foodDinnerList.foods.Count + "  wan");
+        //dropdown.value = lastValue;
+        //textTip.SetActive(true);
+        //StartCoroutine(WaitCloseText(textTip));
     }
 
     public int BackDropValue()
@@ -561,17 +568,20 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
             case 0:
                 //foodBreakfastList.Remove(kindName);
                 //foodBreakfastList.Add(kindName, foodLsit);
+                AddSceneFoodToFoods(foods, sceneChooseFood);
+
                 foodBreakfastList.foods = foods;
                 foodBreakfastList.recipes = recipes;
                 foodBreakfastList.allFoods = allFoods;
                 //Debug.Log(foodBreakfastList.Count());
                 //totalFoodAllLists.RemoveAll(item => item.foodName == "Zao");
 
-
                 break;
             case 1:
                 //foodLunchList.Remove(kindName);
                 //foodLunchList.Add(kindName, foodLsit);
+                AddSceneFoodToFoods(foods, sceneChooseFood);
+
                 foodLunchList.foods = foods;
                 foodLunchList.recipes = recipes;
                 foodLunchList.allFoods = allFoods;
@@ -583,6 +593,8 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
             case 2:
                 //foodDinnerList.Remove(kindName);
                 //foodDinnerList.Add(kindName, foodLsit);
+                AddSceneFoodToFoods(foods, sceneChooseFood);
+
                 foodDinnerList.foods = foods;
                 foodDinnerList.recipes = recipes;
                 foodDinnerList.allFoods = allFoods;
@@ -592,6 +604,16 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
                 break;
         }
 
+    }
+    /// <summary>
+    /// 把场景里选的食物在切换餐后加到对应的餐表
+    /// </summary>
+    private void AddSceneFoodToFoods(List<FoodKindItemData> newFoodList, List<FoodKindItemData> sceneFoodList)
+    {
+        foreach (var item in sceneFoodList)
+        {
+            newFoodList.Add(item);
+        }
     }
 
     public void DeleteFoodKind(string foodKindNmae)
@@ -661,9 +683,9 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
         }
 
 
-        Debug.Log(foodChooseCount);
-        if (foodChooseCount < 6) return false;
-        return true;
+        //Debug.Log(foodChooseCount);
+        //if (foodChooseCount < 6) return false;
+        //return true;
 
     }
 
@@ -850,6 +872,8 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
     {
         SetChooseMealActive(false);
         editFoodItem = null;
+        score = response.data.score;
+        foodNum = response.data.foodNum;
         promptInfo = response.data.promptInfo;
         everyMealEnergies.Clear();
         everyMealEnergies.Add(response.data.breakfastEnergy);
@@ -864,6 +888,8 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
         RefreshMealUI();
 
     }
+    string score;
+    string foodNum;
     PromptInfo promptInfo = new PromptInfo();
     EveryMealEnergy totalEnergy = new EveryMealEnergy();
     EveryMealEnergy recEnergyIntake = new EveryMealEnergy();
@@ -871,11 +897,34 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
     FiberAndFineProtein fiberAndFineProtein = new FiberAndFineProtein();
     private List<EveryMealEnergy> everyMealEnergies = new List<EveryMealEnergy>();
     private List<ElementResult> elementResult = new List<ElementResult>();
+    ThreeMeals user = new ThreeMeals();
 
+    public void SetThreeMeals(ThreeMeals sourceUser)
+    {
+        this.user.data = new TreePlan
+        {
+            breakfastPlan = DeepClonePlan(sourceUser.data.breakfastPlan),
+            lunchPlan = DeepClonePlan(sourceUser.data.lunchPlan),
+            dinnerPlan = DeepClonePlan(sourceUser.data.dinnerPlan)
+        };
+    }
+    // 辅助方法：深拷贝 Plan 对象
+    private Plan DeepClonePlan(Plan source)
+    {
+        if (source == null) return null;
+
+        return new Plan
+        {
+            totalEnergyKcal = source.totalEnergyKcal,
+            protein = source.protein,
+            fat = source.fat,
+            cho = source.cho
+        };
+    }
     private void ClickReportChartBtn()
     {
         reportChartUI.SetActive(true);
-        SetXchaetUI.Instance.SetPieChat(allFoodDic, promptInfo, totalEnergy, recEnergyIntake, compareResult, everyMealEnergies, fiberAndFineProtein, ServerCon.Instance.BackThreeMeals(), userInfo);
+        SetXchaetUI.Instance.SetPieChat(allFoodDic, score, foodNum, promptInfo, totalEnergy, recEnergyIntake, compareResult, everyMealEnergies, fiberAndFineProtein, user, userInfo);
     }
 
 
@@ -1052,27 +1101,50 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
     /// 点击3d物体然后显示选择页面
     /// </summary>
     /// <param name="foodCode"></param>
-    public void ClickObjShowAlter(FoodKindItemData foodObj)
+    public void ClickObjShowAlter(string code)
     {
-        foreach (var item in FoodManager.Instance.itemDictionary)
+        alterSceneObjUI.SetActive(true);
+        bool isOpen = false;
+        foreach (var kvp in FoodManager.Instance.itemDictionary)
         {
-            if (foodObj.categoryName == item.Key)
+            foreach (FoodKindItemData item in kvp.Value)
             {
-                foreach (var foodItem in item.Value)
+                if (item.foodCode == code)
                 {
-                    if (foodObj.foodCode == foodItem.foodCode)
-                    {
-                        //currentSelectedFood = item;
-                        //ShowEditPanel(true, item);
-                        //AlterUI.Instance.UpFoodItem(item, foodSort);
-                        break;
-                    }
+                    AlterSceneObjUI.Instance.UpFoodItem(item);
+                    isOpen = true;
+                    break;
+                }
+            }
+            if (isOpen)
+            {
+                break;
+            }
+        }
+    }
+    /// <summary>
+    /// 输入完数量后加入集合 然后一并返回
+    /// </summary>
+    /// <param name="code"></param>
+    public void AddSceneChooseFoodList(FoodKindItemData code)
+    {
+        foreach (var kvp in FoodManager.Instance.itemDictionary)
+        {
+            foreach (FoodKindItemData item in kvp.Value)
+            {
+                if (item.foodCode == code.foodCode)
+                {
+                    item.isOnClick = true;
+                    sceneChooseFood.Add(item);
                 }
             }
         }
-
     }
 
+    public List<FoodKindItemData> BackSceneChooseFood()
+    {
+        return sceneChooseFood;
+    }
 
     // Update is called once per frame
     void Update()

@@ -89,7 +89,7 @@ public class AlterUI : MonoSingletonBase<AlterUI>
 
     private void ConfirmFoodItem()
     {
-        if (inputField.text == "")
+        if (inputField.text == "" && !IsInputText(inputField.text))
         {
             tipText.gameObject.SetActive(true);
             StartCoroutine(WaitCloseTip());
@@ -99,6 +99,18 @@ public class AlterUI : MonoSingletonBase<AlterUI>
         gameObject.SetActive(false);
         MessageCenter.Instance.Send("SendAlterConfirmFood", inputField.text);
 
+    }
+    public bool IsInputText(string text)
+    {
+        if (text == "")
+        {
+            return false;
+        }
+        if (float.Parse(text) > 0)
+        {
+            return true;
+        }
+        return false;
     }
 
     IEnumerator WaitCloseTip()

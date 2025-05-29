@@ -80,6 +80,7 @@ public class FoodChooseUI : UICaoZuoBase
 
     List<RecipeItem> recipeItems = new List<RecipeItem>();
 
+    List<FoodKindItemData> sceneChooseFood = new List<FoodKindItemData>();      //场景选择的食物
 
     void Awake()
     {
@@ -167,7 +168,22 @@ public class FoodChooseUI : UICaoZuoBase
         {
             recipeTgl.gameObject.SetActive(true);
         }
+
+        foreach (var item in sceneChooseFoodTglList)
+        {
+            Destroy(item);
+        }
+        foreach (var item in ChooseFoodAllInformCon.Instance.BackSceneChooseFood())
+        {
+            RefreshAddFoodListToScene(item);
+
+        }
     }
+    /// <summary>
+    /// 选择场景食物实例化的tgl
+    /// </summary>
+    /// <returns></returns>
+    List<GameObject> sceneChooseFoodTglList = new List<GameObject>();
 
     public void OnDropdownValueChanged(int value)
     {
@@ -549,7 +565,7 @@ public class FoodChooseUI : UICaoZuoBase
     /// </summary>
     public void OnRecipeConfirm()
     {
-        ServerCon.Instance.LoadRecipe("/cookbook/getRecipeFood", $"?recipeId={currentSelectedFoodRecipe.id}");
+        ServerCon.Instance.LoadRecipe("/cookbook/getRecipeFood", $"?recipeId={currentSelectedFoodRecipe.id}", "");
 
     }
     /// <summary>
@@ -589,8 +605,8 @@ public class FoodChooseUI : UICaoZuoBase
                 addFoodList.allFoods.Add(item);
             }
         }
-        RefreshAddFoodRecipeList(food);
-
+        RefreshAddFoodRecipeList(food, currentSelectedFoodRecipe.recipeName);
+        currentSelectedFoodRecipe = null;
     }
     private string SerializeData(UserInfo data)
     {
@@ -600,6 +616,34 @@ public class FoodChooseUI : UICaoZuoBase
 
         // 方法二：使用 Newtonsoft.Json（直接序列化列表）
         return JsonConvert.SerializeObject(data);
+    }
+    /// <summary>
+    /// 实例化在场景中选择的食物
+    /// </summary>
+    /// <param name="food"></param>
+    void RefreshAddFoodListToScene(FoodKindItemData food)
+    {
+
+        // 创建新的Toggle
+        //foreach (var food in addFoodList.foods)
+        {
+            GameObject toggleObj = Instantiate(addFoodPrefab, addFoodToggleParent);
+            sceneChooseFoodTglList.Add(toggleObj);
+            toggleObj.SetActive(true);
+            Toggle toggle = toggleObj.transform.GetChild(0).GetComponent<Toggle>();
+            //toggle.group = toggleGroup;
+            //toggle.interactable = !food.isOnClick;
+            //toggle.isOn = food.isOnClick;
+            toggleObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = food.foodName;
+            toggleObj.transform.Find("Count").GetComponent<Text>().text = food.count.ToString();
+            //toggleObj.transform.Find("Unit").GetComponent<Text>().text = food.water;
+            toggleObj.transform.Find("Heat").GetComponent<Text>().text = BackMultiplyuantity(food.count, float.Parse(food.heat));
+            toggleObj.transform.Find("Protein").GetComponent<Text>().text = BackMultiplyuantity(food.count, float.Parse(food.protein));
+            toggleObj.transform.Find("Fat").GetComponent<Text>().text = BackMultiplyuantity(food.count, float.Parse(food.fat));
+            toggleObj.transform.Find("carbohydrate").GetComponent<Text>().text = BackMultiplyuantity(food.count, float.Parse(food.cho));
+
+        }
+
     }
     #region //刷新食物列表
 
@@ -672,9 +716,10 @@ public class FoodChooseUI : UICaoZuoBase
         }
 
     }
-    void RefreshAddFoodRecipeList(List<FoodKindItemData> foods)
+    void RefreshAddFoodRecipeList(List<FoodKindItemData> foods, string recipeName)
     {
         GameObject obj = Instantiate(addFoodRecipeToggleParent, addFoodToggleParent);
+        obj.transform.Find("RecipeName").GetComponent<Text>().text = recipeName;
         obj.SetActive(true);
         // 创建新的Toggle
         foreach (var food in foods)

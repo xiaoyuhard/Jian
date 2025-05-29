@@ -131,12 +131,13 @@ public class RenTiCon : MonoSingletonBase<RenTiCon>
             }
         }
         string bodyItemName = "";
+        obj = null;
         foreach (Transform body in bodyWomanModelList)
         {
             //var outline = body.GetComponent<Outline>();
             //outline.enabled = false;
             bodyItemName = GetMiddleChars(body.name);
-            if (bodyItemName == bodyName)
+            if (Regex.Replace(bodyItemName, @"\s", "") == Regex.Replace(bodyName, @"\s", ""))
             {
                 obj = body;
                 //body.gameObject.layer = LayerMask.NameToLayer("Perspective");
@@ -154,6 +155,11 @@ public class RenTiCon : MonoSingletonBase<RenTiCon>
                 //outline.OutlineColor = Color.yellow;
             }
         }
+        if (obj == null)
+        {
+            Debug.Log(bodyName);
+            return "";
+        }
         if (obj.GetComponentsInChildren<Transform>() != null)
         {
             if (obj.GetComponent<MeshRenderer>() != null)
@@ -166,6 +172,7 @@ public class RenTiCon : MonoSingletonBase<RenTiCon>
 
             }
         }
+
         return obj.name;
 
     }
@@ -229,6 +236,7 @@ public class RenTiCon : MonoSingletonBase<RenTiCon>
             }
         }
         string bodyItemName = "";
+        obj = null;
 
         foreach (Transform body in bodyManModelList)
         {
@@ -236,7 +244,7 @@ public class RenTiCon : MonoSingletonBase<RenTiCon>
             //outline.enabled = false;
             bodyItemName = GetMiddleChars(body.name);
 
-            if (bodyItemName == bodyName)
+            if (Regex.Replace(bodyItemName, @"\s", "") == Regex.Replace(bodyName, @"\s", ""))
             {
                 obj = body;
                 //body.gameObject.layer = LayerMask.NameToLayer("Perspective");
@@ -253,6 +261,11 @@ public class RenTiCon : MonoSingletonBase<RenTiCon>
                 //outline.enabled = true;
                 //outline.OutlineColor = Color.yellow;
             }
+        }
+        if (obj == null)
+        {
+            Debug.Log(bodyName);
+            return "";
         }
         if (obj.GetComponentsInChildren<Transform>() != null)
         {
@@ -272,6 +285,7 @@ public class RenTiCon : MonoSingletonBase<RenTiCon>
 
             }
         }
+
         return obj.name;
     }
     // Update is called once per frame

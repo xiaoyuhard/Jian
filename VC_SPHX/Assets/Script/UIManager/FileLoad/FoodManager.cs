@@ -44,7 +44,7 @@ public class FoodManager : MonoBehaviour
     }
     private void Start()
     {
-        resServerBtn.onClick.AddListener(ServerFood);
+        //resServerBtn.onClick.AddListener(ServerFood);
     }
 
     private void ServerFood()
@@ -105,7 +105,7 @@ public class FoodManager : MonoBehaviour
     public void LoadFoodData()
     {
         itemDictionary.Clear();
-
+        string birthday = YiTiJiUI.Instance.BackUserInfo().birthday;
         if (YiTiJiUI.Instance.BackUserInfo().isBaby)
         {
             StartCoroutine(LoadFoodPageQueryCoroutine("大豆坚果奶类", 1000, $"?birthday={YiTiJiUI.Instance.BackUserInfo().birthday}&pageSize={300}"));
@@ -113,15 +113,22 @@ public class FoodManager : MonoBehaviour
         }
         else
         {
-            StartCoroutine(LoadFoodPageQueryCoroutine("谷薯类", 1000, "?CategoryName={谷薯类}&pageSize={1000}"));
-            StartCoroutine(LoadFoodPageQueryCoroutine("蔬菜水果类", 1000, "?CategoryName={蔬菜水果类}&pageSize={1000}"));
-            StartCoroutine(LoadFoodPageQueryCoroutine("畜禽鱼蛋类", 1000, "?CategoryName={畜禽鱼蛋类}&pageSize={1000}"));
-            StartCoroutine(LoadFoodPageQueryCoroutine("大豆坚果奶类", 1000, "?CategoryName={大豆坚果奶类}&pageSize={1000}"));
-            StartCoroutine(LoadFoodPageQueryCoroutine("油脂类", 1000, "?CategoryName={油脂类}&pageSize={1000}"));
-            StartCoroutine(LoadFoodPageQueryCoroutine("水", 1000, "?CategoryName={水}&pageSize={1000}"));
+            StartCoroutine(LoadFoodPageQueryCoroutine("谷薯类", 1000, $"?CategoryName={"谷薯类"}&pageSize={1000}&birthday={YiTiJiUI.Instance.BackUserInfo().birthday}"));
+            StartCoroutine(LoadFoodPageQueryCoroutine("蔬菜水果类", 1000, $"?CategoryName={"蔬菜水果类"}&pageSize={1000}&birthday={YiTiJiUI.Instance.BackUserInfo().birthday}"));
+            StartCoroutine(LoadFoodPageQueryCoroutine("畜禽鱼蛋类", 1000, $"?CategoryName={"畜禽鱼蛋类"}&pageSize={1000}&birthday={YiTiJiUI.Instance.BackUserInfo().birthday}"));
+            StartCoroutine(LoadFoodPageQueryCoroutine("大豆坚果奶类", 1000, $"?CategoryName={"大豆坚果奶类"}&pageSize={1000}&birthday={YiTiJiUI.Instance.BackUserInfo().birthday}"));
+            StartCoroutine(LoadFoodPageQueryCoroutine("油脂类", 1000, $"?CategoryName={"油脂类"}&pageSize={1000}&birthday={YiTiJiUI.Instance.BackUserInfo().birthday}"));
+            StartCoroutine(LoadFoodPageQueryCoroutine("水", 1000, $"?CategoryName={"水"}&pageSize={1000}&birthday={YiTiJiUI.Instance.BackUserInfo().birthday}"));
 
-            StartCoroutine(LoadFoodPageQueryCoroutine("/cookbook/list"));
+
+            LoadRecipeList();
         }
+
+    }
+
+    public void LoadRecipeList()
+    {
+        StartCoroutine(LoadFoodPageQueryCoroutine("/cookbook/list"));
 
     }
 
@@ -149,7 +156,7 @@ public class FoodManager : MonoBehaviour
             {
                 try
                 {
-                    resServerBtn.gameObject.SetActive(false);
+                    //resServerBtn.gameObject.SetActive(false);
 
                     // 解析JSON数据
                     string jsonResponse = request.downloadHandler.text;
@@ -191,7 +198,7 @@ public class FoodManager : MonoBehaviour
                 //onError?.Invoke($"网络请求失败: {request.error}");
                 Debug.LogError($"网络请求失败: {request.error}");
                 UIManager.Instance.OpenUICaoZuo(UINameType.UI_ServerTip);
-                resServerBtn.gameObject.SetActive(true);
+                //resServerBtn.gameObject.SetActive(true);
             }
         }
     }
@@ -432,6 +439,7 @@ public class FoodManager : MonoBehaviour
         Debug.Log($"未找到 ID 为 {id} 的数据");
         return null;
     }
+
 
     [System.Serializable]
     private class SerializableItemData

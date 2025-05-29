@@ -19,7 +19,7 @@ public class InteractableObject : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
-            Debug.Log(hit.transform, hit.transform);
+            //Debug.Log(hit.transform, hit.transform);
 
             if (hit.transform.name == transform.name)
             {

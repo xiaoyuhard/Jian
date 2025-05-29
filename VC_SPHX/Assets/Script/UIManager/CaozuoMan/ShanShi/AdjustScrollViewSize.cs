@@ -9,7 +9,7 @@ public class AdjustScrollViewSize : MonoBehaviour
     public RectTransform content; // Content 的 RectTransform
     public float maxHeight = 700f; // ScrollView 的最大高度
     public float minHeight = 60f; // ScrollView 的最小高度
-
+    public GameObject image;
     void Start()
     {
         // 初始时更新一次尺寸
@@ -28,7 +28,14 @@ public class AdjustScrollViewSize : MonoBehaviour
         float contentHeight = content.rect.height;
 
         // 根据 Content 高度调整 ScrollView 的高度
+
         float targetHeight = Mathf.Clamp(contentHeight, minHeight, maxHeight);
+        if (image != null)
+        {
+            image.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+        targetHeight
+    );
+        }
 
         // 设置 ScrollView 的高度
         scrollRect.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(

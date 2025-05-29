@@ -19,8 +19,11 @@ public class ObjMouseClick : MonoSingletonBase<ObjMouseClick>
 
             if (Physics.Raycast(ray, out hit, 100/*, doorLayer*/))
             {
-                Debug.Log(hit.transform, hit.transform);
-
+                //Debug.Log(hit.transform, hit.transform);
+                if (hit.transform.gameObject.layer == 14)
+                {
+                    ChooseFoodAllInformCon.Instance.ClickObjShowAlter(hit.transform.name);
+                }
                 switch (hit.transform.name)
                 {
                     case "Cabinet":

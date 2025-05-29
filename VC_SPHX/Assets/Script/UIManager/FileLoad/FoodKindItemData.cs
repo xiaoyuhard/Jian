@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 食物数据类 发送及接收数据
@@ -32,6 +34,34 @@ public class FoodKindItemData : ScriptableObject
     public string imageUrl; //图片url
     public bool isDel = false;
     public GameObject foodItemObj;
+    public FoodKindItemData Clone()
+    {
+        var clone = CreateInstance<FoodKindItemData>();
+        clone.id = this.id;
+        clone.subCategoryName = this.subCategoryName;
+        clone.foodCode = this.foodCode;
+        clone.foodName = this.foodName;
+        clone.isOnClick = this.isOnClick; // 独立状态
+        clone.edible = this.edible;//食部
+        clone.water = this.water;// 计量单位
+        clone.energyKcal = this.energyKcal;//热量
+        clone.energyKj = this.energyKj;
+        clone.protein = this.protein;//蛋白质
+        clone.fat = this.fat;//脂肪
+        clone.cho = this.cho;//碳水化合物
+        clone.categoryName = this.categoryName; //大类
+        clone.categoryId = this.categoryId;
+        clone.count = this.count;
+        clone.recipeCount = this.recipeCount;//食谱中食物的数量
+        clone.foodCount = this.foodCount;//单选食物的数量
+        clone.mealPeriod = this.mealPeriod; //用餐时间段
+        clone.heat = this.heat;//热量
+        clone.imageUrl = this.imageUrl; //图片url
+        clone.isDel = this.isDel;
+        clone.foodItemObj = this.foodItemObj;
+        // 复制其他字段...
+        return clone;
+    }
 }
 /// <summary>
 /// 食物和食谱选择后的
@@ -106,6 +136,8 @@ public class FoodRecriveConverDay
 [System.Serializable]
 public class FoodEveryMealEnergy
 {
+    public string score;                    //得分
+    public string foodNum;                  //食材种类数
     public PromptInfo promptInfo;           //提示信息
     public EveryMealEnergy breakfastEnergy; //早餐所有量
     public EveryMealEnergy lunchEnergy;     //午餐所有量
@@ -242,9 +274,25 @@ public class RecipeItem
     public string recipeName;   //食谱名称
     public string includingFood;//包含食材
     public bool isOnClick = false;
-    public List<FoodKindItemData> foodKindItems;
+    public List<FoodKindItemData> foodKindItems = new List<FoodKindItemData>(); //单人选择时食谱中的食物
+    public List<FoodRecipeGroupItem> foodRecipeGroupItems = new List<FoodRecipeGroupItem>();//群体选择时食谱中的食物
     public string mealPeriod; //用餐时间段
-
+    public GameObject itemObj;
+    public Toggle itenTgl;
+    public RecipeItem Clone()
+    {
+        return new RecipeItem
+        {
+            id = this.id,
+            recipeName = this.recipeName,
+            includingFood = this.includingFood,
+            isOnClick = this.isOnClick, // 独立状态
+            foodKindItems = this.foodKindItems?.Select(f => f.Clone()).ToList(),
+            foodRecipeGroupItems = this.foodRecipeGroupItems?.Select(f => f.Clone()).ToList(),
+            mealPeriod = this.mealPeriod,
+            itemObj = this.itemObj // 注意：UI 对象通常不需要深拷贝
+        };
+    }
 }
 /// <summary>
 /// 食谱中所有食物
@@ -257,3 +305,109 @@ public class RecipeAllFood
     public string msg;
 }
 
+/// <summary>
+/// 群体选择食谱 单个食谱的数据
+/// </summary>
+[System.Serializable]
+public class FoodRecipeGroupItem
+{
+    public int id;              //食物id
+    public string imageUrl;     //图片地址
+    public string foodCode;     //食物编码
+    public string foodName;     //食物名称
+    public string heat;      //热量
+    public string protein;      //蛋白质
+    public string fat;          //脂肪
+    public string cho;          //碳水化合物
+    public string weight;       //重量
+    public string part;         //一份
+    public float count = 0;
+
+    public bool isInput = false;//是否输入
+    public FoodRecipeGroupItem Clone()
+    {
+        return new FoodRecipeGroupItem
+        {
+            id = this.id,
+            imageUrl = this.imageUrl,
+            foodCode = this.foodCode,
+            foodName = this.foodName,
+            heat = this.heat,
+            protein = this.protein,
+            fat = this.fat,
+            cho = this.cho,
+            weight = this.weight,
+            part = this.part,
+            isInput = this.isInput
+        };
+    }
+}
+
+/// <summary>
+/// 接收群体所选的食谱中食物数据
+/// </summary>
+[System.Serializable]
+public class FoodRecipeGroupResponse
+{
+    public int code;
+    public string msg;
+    public List<FoodRecipeGroupItem> data;
+}
+
+/// <summary>
+/// 群体选择食谱的数据 保存本餐的食谱 和已经选择好的食谱
+/// </summary>
+[System.Serializable]
+public class RecipeGroup
+{
+    public string mealName;                     //选择的哪一餐
+    public List<RecipeItem> recipeShowList;     //选择食谱列表
+    public List<RecipeItem> recipeSelectedList; //选择完食谱的保存列表
+}
+/// <summary>
+/// 获取群体配餐人员列表
+/// </summary>
+[System.Serializable]
+public class GetAllPhysique
+{
+    public string mag;
+    public int code;
+    public List<ReceiveAllPhysique> data;
+}
+/// <summary>
+/// 接收群体配餐人员列表
+/// </summary>
+[System.Serializable]
+public class ReceiveAllPhysique
+{
+    public string physique;     //人群
+}
+/// <summary>
+/// 每人每日摄入热量(群体配餐)发送
+/// </summary>
+[System.Serializable]
+public class SendHeatIntake
+{
+    public string physique;
+    public string sex;
+    public string level;
+}
+/// <summary>
+/// 每人每日摄入热量(群体配餐)接收
+/// </summary>
+[System.Serializable]
+public class ReceiveHeatIntake
+{
+    public string mag;
+    public int code;
+    public HeatIntakeItem data;
+}
+/// <summary>
+/// 推荐摄入量接收的内容
+/// </summary>
+[System.Serializable]
+public class HeatIntakeItem
+{
+    public string recIntake;        //推荐摄入量
+
+}

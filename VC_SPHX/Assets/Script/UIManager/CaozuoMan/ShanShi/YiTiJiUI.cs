@@ -30,6 +30,7 @@ public class YiTiJiUI : UICaoZuoBase
     public Toggle childNurseTgl;//子集下乳母按钮
     public Dropdown pregnantDrop;
     public Dropdown diseaseDrop;
+    public Dropdown crowdDrop;
 
     //public TMP_InputField inFName;
     //public InputField inFBirthday;
@@ -68,6 +69,7 @@ public class YiTiJiUI : UICaoZuoBase
         selectUIObj.SetActive(true);
         informUIObj.SetActive(false);
         pregnantDrop.value = 0;
+        crowdDrop.value = 0;
         //inFName.text = "";
         //inFBirthday.text = "";
         inFHeight.text = "";
@@ -92,6 +94,21 @@ public class YiTiJiUI : UICaoZuoBase
         //inFBirthday.onEndEdit.AddListener(ValidateDate);
         childNorTgl.onValueChanged.AddListener(ClickNorTgl);
         childNurseTgl.onValueChanged.AddListener(ClickNurseTgl);
+
+        crowdDrop.onValueChanged.AddListener(OnCrowdChanged);
+
+    }
+    bool isNormal = true;
+    private void OnCrowdChanged(int index)
+    {
+        if (index == 0)
+        {
+            isNormal = true;
+        }
+        else
+        {
+            isNormal = false;
+        }
     }
 
     public UserInfo BackUserInfo()
@@ -270,12 +287,17 @@ public class YiTiJiUI : UICaoZuoBase
     // Update is called once per frame
     void Update()
     {
-        if (pregnantDrop.gameObject.activeSelf)
+        if (crowdDrop.gameObject.activeSelf)
         {
-            userInfo.physique = pregnantDrop.options[pregnantDrop.value].text;
+            if (!isNormal)
+            {
+                userInfo.physique = crowdDrop.options[crowdDrop.value].text;
 
-            inFGender.value = 1;
-            isSex = true;
+                inFGender.value = 1;
+                isSex = true;
+
+            }
+
 
         }
         if (diseaseDrop.gameObject.activeSelf)
@@ -294,16 +316,29 @@ public class YiTiJiUI : UICaoZuoBase
         //}
         //userInfo.birthday = inFBirthday.text;
 
-        if (inFHeight.text != "")
+        if (inFHeight.text != "" && IsInputText(inFHeight.text))
         {
             userInfo.height = inFHeight.text;
         }
-        if (inFWeight.text != "")
+        if (inFWeight.text != "" && IsInputText(inFWeight.text))
         {
             userInfo.weight = inFWeight.text;
         }
         userInfo.sex = inFGender.options[inFGender.value].text;
         userInfo.level = workDrop.options[workDrop.value].text;
+    }
+
+    public bool IsInputText(string text)
+    {
+        if (text == "")
+        {
+            return false;
+        }
+        if (float.Parse(text) > 0)
+        {
+            return true;
+        }
+        return false;
     }
 
     //public Text errorText;      // 错误提示文本
@@ -401,8 +436,13 @@ public class YiTiJiUI : UICaoZuoBase
         string sex = genders[UnityEngine.Random.Range(0, genders.Length)];
         string levelType = levelTypes[UnityEngine.Random.Range(0, levelTypes.Length)];
         string physique = physiqueTypes[UnityEngine.Random.Range(0, physiqueTypes.Length)];
+        if (physique == "乳母" || physique == "孕早期" || physique == "孕中期" || physique == "孕晚期")
+        {
+            sex = "女";
 
-        if (!DatePicker.Instance.BackYear())
+        }
+
+        if (bili == "3")
         {
             biLiDrop.value = 3;
             userInfo.isBaby = true;
@@ -417,10 +457,10 @@ public class YiTiJiUI : UICaoZuoBase
             userInfo.isBaby = false;
 
         }
-        if (physique == "孕妇")
-        {
-            sex = "女";
-        }
+        //if (physique == "孕妇")
+        //{
+        //    sex = "女";
+        //}
 
         userInfo.birthday = date;
         userInfo.height = height.ToString();
@@ -429,6 +469,8 @@ public class YiTiJiUI : UICaoZuoBase
         userInfo.level = levelType;
         userInfo.physique = physique;
         userInfo.proportion = bili;
+        ServerCon.Instance.ConverToJsonPost(SerializeData(userInfo), "/analyse/nutrition/plan");
+
     }
 
     public void BackYear(int year, int month, int day)
