@@ -15,7 +15,8 @@ public class ExcelExporter : MonoSingletonBase<ExcelExporter>
 {
     public string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
     public string fileName = "ExcelData.xlsx";
-    public FoodRecriveConverDay response = new FoodRecriveConverDay();
+    public FoodEveryMealEnergy response = new FoodEveryMealEnergy();
+    public FoodEveryMealEnergyGroupWeek responseGroupWeek = new FoodEveryMealEnergyGroupWeek();
     // Start is called before the first frame update
     public void SaveToExcel()
     {
@@ -27,45 +28,45 @@ public class ExcelExporter : MonoSingletonBase<ExcelExporter>
         header.Add("蛋白质");
         header.Add("脂肪");
         header.Add("碳水化合物");
-        for (int i = 0; i < response.data.elementResult.Count; i++)
+        for (int i = 0; i < response.elementResult.Count; i++)
         {
-            header.Add(response.data.elementResult[i].zhName);
+            header.Add(response.elementResult[i].zhName);
         }
         data.Add(header);
 
         List<string> rowBr = new List<string>();
         rowBr.Add("早餐");
-        rowBr.Add(response.data.breakfastEnergy.totalEnergyKcal.ToString());
-        rowBr.Add(response.data.breakfastEnergy.protein.ToString());
-        rowBr.Add(response.data.breakfastEnergy.fat.ToString());
-        rowBr.Add(response.data.breakfastEnergy.cho.ToString());
+        rowBr.Add(response.breakfastEnergy.totalEnergyKcal.ToString());
+        rowBr.Add(response.breakfastEnergy.protein.ToString());
+        rowBr.Add(response.breakfastEnergy.fat.ToString());
+        rowBr.Add(response.breakfastEnergy.cho.ToString());
         data.Add(rowBr);
 
         List<string> rowLu = new List<string>();
-        rowLu.Add("午餐");
-        rowLu.Add(response.data.lunchEnergy.totalEnergyKcal.ToString());
-        rowLu.Add(response.data.lunchEnergy.protein.ToString());
-        rowLu.Add(response.data.lunchEnergy.fat.ToString());
-        rowLu.Add(response.data.lunchEnergy.cho.ToString());
+        rowLu.Add("午餐");    
+        rowLu.Add(response.lunchEnergy.totalEnergyKcal.ToString());
+        rowLu.Add(response.lunchEnergy.protein.ToString());
+        rowLu.Add(response.lunchEnergy.fat.ToString());
+        rowLu.Add(response.lunchEnergy.cho.ToString());
         data.Add(rowLu);
 
         List<string> rowDi = new List<string>();
         rowDi.Add("晚餐");
-        rowDi.Add(response.data.dinnerEnergy.totalEnergyKcal.ToString());
-        rowDi.Add(response.data.dinnerEnergy.protein.ToString());
-        rowDi.Add(response.data.dinnerEnergy.fat.ToString());
-        rowDi.Add(response.data.dinnerEnergy.cho.ToString());
+        rowDi.Add(response.dinnerEnergy.totalEnergyKcal.ToString());
+        rowDi.Add(response.dinnerEnergy.protein.ToString());
+        rowDi.Add(response.dinnerEnergy.fat.ToString());
+        rowDi.Add(response.dinnerEnergy.cho.ToString());
         data.Add(rowDi);
 
         List<string> rowAll = new List<string>();
         rowAll.Add("今日总");
-        rowAll.Add(response.data.totalEnergy.totalEnergyKcal.ToString());
-        rowAll.Add(response.data.totalEnergy.protein.ToString());
-        rowAll.Add(response.data.totalEnergy.fat.ToString());
-        rowAll.Add(response.data.totalEnergy.cho.ToString());
-        for (int i = 0; i < response.data.elementResult.Count; i++)
+        rowAll.Add(response.totalEnergy.totalEnergyKcal.ToString());
+        rowAll.Add(response.totalEnergy.protein.ToString());
+        rowAll.Add(response.totalEnergy.fat.ToString());
+        rowAll.Add(response.totalEnergy.cho.ToString());
+        for (int i = 0; i < response.elementResult.Count; i++)
         {
-            rowAll.Add(response.data.elementResult[i].totalContent);
+            rowAll.Add(response.elementResult[i].totalContent);
         }
         data.Add(rowAll);
 
@@ -127,6 +128,78 @@ public class ExcelExporter : MonoSingletonBase<ExcelExporter>
         //{
         //    rowElement.CreateCell(i + 5).SetCellValue(response.data.elementResult[i].totalContent);
         //}
+    }
+
+    public void SaveToExcelGroupWeek()
+    {
+        List<List<string>> data = new List<List<string>>();
+        List<string> header = new List<string>();
+        //header.Add("一日报告");
+        header.Add("三餐");
+        header.Add("总能量");
+        header.Add("蛋白质");
+        header.Add("脂肪");
+        header.Add("碳水化合物");
+        for (int i = 0; i < response.elementResult.Count; i++)
+        {
+            header.Add(response.elementResult[i].zhName);
+        }
+        data.Add(header);
+
+        List<string> rowBr = new List<string>();
+        rowBr.Add("早餐");
+        rowBr.Add(response.breakfastEnergy.totalEnergyKcal.ToString());
+        rowBr.Add(response.breakfastEnergy.protein.ToString());
+        rowBr.Add(response.breakfastEnergy.fat.ToString());
+        rowBr.Add(response.breakfastEnergy.cho.ToString());
+        data.Add(rowBr);
+
+        List<string> rowLu = new List<string>();
+        rowLu.Add("午餐");
+        rowLu.Add(response.lunchEnergy.totalEnergyKcal.ToString());
+        rowLu.Add(response.lunchEnergy.protein.ToString());
+        rowLu.Add(response.lunchEnergy.fat.ToString());
+        rowLu.Add(response.lunchEnergy.cho.ToString());
+        data.Add(rowLu);
+
+        List<string> rowDi = new List<string>();
+        rowDi.Add("晚餐");
+        rowDi.Add(response.dinnerEnergy.totalEnergyKcal.ToString());
+        rowDi.Add(response.dinnerEnergy.protein.ToString());
+        rowDi.Add(response.dinnerEnergy.fat.ToString());
+        rowDi.Add(response.dinnerEnergy.cho.ToString());
+        data.Add(rowDi);
+
+        List<string> rowAll = new List<string>();
+        rowAll.Add("今日总");
+        rowAll.Add(response.totalEnergy.totalEnergyKcal.ToString());
+        rowAll.Add(response.totalEnergy.protein.ToString());
+        rowAll.Add(response.totalEnergy.fat.ToString());
+        rowAll.Add(response.totalEnergy.cho.ToString());
+        for (int i = 0; i < response.elementResult.Count; i++)
+        {
+            rowAll.Add(response.elementResult[i].totalContent);
+        }
+        data.Add(rowAll);
+
+        // 生成 CSV 内容
+        string csvContent = "";
+        foreach (var row in data)
+        {
+            foreach (var item in row)
+            {
+                csvContent += string.Join(",", item);
+            }
+            csvContent += "\n";
+
+        }
+        // 保存到文件
+        string filePath = Path.Combine(this.filePath, fileName);
+        File.WriteAllText(filePath, csvContent);
+
+        Debug.Log("CSV 文件已保存至：" + filePath);
+
+    
     }
     // Update is called once per frame
     void Update()

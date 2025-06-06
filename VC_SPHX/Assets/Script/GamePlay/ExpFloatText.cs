@@ -15,6 +15,7 @@ public class ExpFloatText : MonoBehaviour
 
     private Camera mainCamera;
     Vector3 offsetRatio = new Vector3(0, 1, 0);
+    Tween tween;
 
     // Start is called before the first frame update
     void Start()
@@ -40,7 +41,12 @@ public class ExpFloatText : MonoBehaviour
         //);
 
         //transform.localPosition = newPos;
-        arrow.transform.DOLocalMoveY(0.074f, 0.5f).SetLoops(-1, LoopType.Yoyo);
+        tween = arrow.transform.DOLocalMoveY(0.074f, 0.5f).SetLoops(-1, LoopType.Yoyo);
+    }
+
+    private void OnDestroy()
+    {
+        tween?.Kill();
     }
 
     // Update is called once per frame

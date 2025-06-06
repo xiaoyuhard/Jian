@@ -49,27 +49,27 @@ Material:
     - _Blend: 0
     - _Boolean: 0
     - _CastShadows: 0
-    - _Cull: 1
+    - _Cull: 0
     - _DstBlend: 10
     - _Hardness: 0.89
     - _HeatMask_Max: 1
     - _HeatMask_Min: 0
-    - _Max: -0.33
-    - _Min: -1.2
+    - _Max: 0.84
+    - _Min: -0.76
     - _Opque: 0.3
-    - _Opque_Power: 1.4
+    - _Opque_Power: 5.25
     - _QueueControl: 0
     - _QueueOffset: 50
     - _Simple_Noise_Scale: 300
-    - _Speed: -0.5
-    - _Speed_1: 1
+    - _Speed: -0.2
+    - _Speed_1: 0.1
     - _SrcBlend: 5
     - _Surface: 1
     - _ZTest: 8
     - _ZWrite: 0
     - _ZWriteControl: 0
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1.6937469, g: 1.3590852, b: 1.7099856, a: 1}
     - _HeatColor_1: {r: 0, g: 0.937255, b: 1, a: 1}
     - _HeatColor_2: {r: 1, g: 0.40784317, b: 0, a: 1}
     - _Simple_Noise_Scale_XY: {r: -0.13, g: 0, b: 0, a: 0}

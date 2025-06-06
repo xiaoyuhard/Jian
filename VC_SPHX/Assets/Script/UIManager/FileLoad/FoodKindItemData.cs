@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using static UserInfo;
 
 /// <summary>
 /// 食物数据类 发送及接收数据
@@ -119,6 +120,7 @@ public class UserInfo
     public string physique;     //身体状况
     public string proportion; //三餐营养比例
     public bool isBaby;       //判断是否为婴儿
+    public string recIntake;       //群体里推荐摄入量
 }
 /// <summary>
 /// 选择完食物接收到服务器返回的总数据   
@@ -322,6 +324,7 @@ public class FoodRecipeGroupItem
     public string weight;       //重量
     public string part;         //一份
     public float count = 0;
+    public string categoryName; //大类
 
     public bool isInput = false;//是否输入
     public FoodRecipeGroupItem Clone()
@@ -410,4 +413,76 @@ public class HeatIntakeItem
 {
     public string recIntake;        //推荐摄入量
 
+}
+/// <summary>
+/// 选完后发送给服务器数据  /group/analyse/aWeek
+/// </summary>
+[System.Serializable]
+public class FoodSendConverWeek
+{
+    public WeekGroupFood monday;
+    public WeekGroupFood tuesday;
+    public WeekGroupFood wednesday;
+    public WeekGroupFood thursday;
+    public WeekGroupFood friday;
+    public WeekGroupFood saturday;
+    public WeekGroupFood sunday;
+    public UserInfo userInfo;
+}
+/// <summary>
+/// 群体按星期发送数据
+/// </summary>
+[System.Serializable]
+public class WeekGroupFood
+{
+    public List<FoodEveryMealItem> breakfast;
+    public List<FoodEveryMealItem> lunch;
+    public List<FoodEveryMealItem> dinner;
+}
+/// <summary>
+/// 选择完食物接收到服务器返回的总数据    群体周选择的总
+/// </summary>
+[System.Serializable]
+public class FoodRecriveConverGroupWeek
+{
+    public string msg;
+    public int code;
+    public FoodEveryMealEnergyGroupWeek data;
+}
+/// <summary>
+/// 每个对应的分类  群体周摄入分析
+/// </summary>
+[System.Serializable]
+public class FoodEveryMealEnergyGroupWeek
+{
+    public string score;                    //得分
+    public string foodNum;                  //本周食物种类数
+    public PromptInfo promptInfo;           //提示信息
+    public FiberAndFineProtein fiberAndFineProtein;//膳食纤维及优质蛋白摄入
+    public GroupWeekResult compareResult;
+    public GroupWeekInDayEnergy monday;
+    public GroupWeekInDayEnergy tuesday;
+    public GroupWeekInDayEnergy wednesday;
+    public GroupWeekInDayEnergy thursday;
+    public GroupWeekInDayEnergy friday;
+    public GroupWeekInDayEnergy saturday;
+    public GroupWeekInDayEnergy sunday;
+    public GroupWeekInDayEnergy total;
+
+}
+/// <summary>
+/// 群体周摄入量对比
+/// </summary>
+[System.Serializable]
+public class GroupWeekResult
+{
+    public float fatDiff;
+    public float choDiff;
+    public float energyDiff;
+    public float proteinDiff;
+}
+public class GroupWeekInDayEnergy
+{
+    public EveryMealEnergy totalEnergy=new EveryMealEnergy();     //一天所有量
+    public EveryMealEnergy recEnergyIntake=new EveryMealEnergy(); //一天正常值区间
 }

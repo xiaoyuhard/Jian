@@ -884,7 +884,7 @@ public class ChooseFoodAllInformCon : MonoSingletonBase<ChooseFoodAllInformCon>
         totalEnergy = response.data.totalEnergy;
         recEnergyIntake = response.data.recEnergyIntake;
         fiberAndFineProtein = response.data.fiberAndFineProtein;
-        ExcelExporter.Instance.response = response;
+        ExcelExporter.Instance.response = response.data;
         RefreshMealUI();
 
     }

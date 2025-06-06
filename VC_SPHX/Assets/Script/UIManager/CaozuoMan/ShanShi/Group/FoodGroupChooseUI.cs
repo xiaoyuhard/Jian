@@ -41,6 +41,16 @@ public class FoodGroupChooseUI : UICaoZuoBase
         public string day;            // 星期几（如"周一"）
         public List<WeekDayMealInf> meals = new List<WeekDayMealInf>(); // 对应三餐
     }
+    /// <summary>
+    /// 周选的按钮和对应的早餐 每餐的按钮
+    /// </summary>
+    [System.Serializable]
+    public class WeekDayTglContent
+    {
+        public Toggle dayTgl;
+        public Toggle mealTgl;
+        public Transform dayCont;
+    }
 
     //public GameObject dayObj;           //切换成天选择
     //public GameObject weekObj;          //切换成周选择
@@ -62,7 +72,7 @@ public class FoodGroupChooseUI : UICaoZuoBase
     public Toggle satTgl;
     public Toggle sunTgl;
 
-    public List<Toggle> weekDayTglList;             //每天的tgl
+    public List<WeekDayTglContent> weekDayTglList;             //每天的tgl
     public List<Toggle> weekMealTglList;            //每餐的tgl 点击切换并选择
     public List<Transform> weekMealContentList;     //每餐的content
     public List<GameObject> weekMealHeatObj;        //周里每餐显示总的数据
@@ -101,6 +111,9 @@ public class FoodGroupChooseUI : UICaoZuoBase
     RecipeItem recipeItemCache;//选择中的食品的缓存
     GameObject meatHeatObj;     //每餐总的能力显示缓存
     string mealName = "";
+    public UserInfo userInfo = new UserInfo();
+
+
     void Awake()
     {
         InitializeManager();
@@ -157,12 +170,12 @@ public class FoodGroupChooseUI : UICaoZuoBase
     {
         recipeItems = FoodManager.Instance.response.rows;
         ResRecipeDic();
+        brackTgl.isOn = true;
 
         //RefreshFoodRecipeList(recipeItems);
         OnTglResFood("早餐", true, mealContent, totalObj);
 
         //mealName = "早餐";
-        brackTgl.isOn = true;
         recipeInput.text = "";
         //contentMeal = mealContent;
         // 初始化：根据默认选项显示
@@ -189,6 +202,9 @@ public class FoodGroupChooseUI : UICaoZuoBase
             contentMeal = mealContent;
             dayObj.SetActive(true);
             weekObj.SetActive(false);
+            OnTglResFood("早餐", true, mealContent, totalObj);
+            brackTgl.isOn = true;
+
         }
         else
         {
@@ -196,6 +212,7 @@ public class FoodGroupChooseUI : UICaoZuoBase
             weekObj.SetActive(true);
             dayOrWeek = true;
             monTgl.isOn = true;
+            //contentMeal = weekMealContentList[0];
             contentMeal = null;
             // 设置默认显示周一
             //UpdateDayDisplay("周一");
@@ -230,7 +247,11 @@ public class FoodGroupChooseUI : UICaoZuoBase
                OnTglResFood("午餐", isOn, mealContent, totalObj));
         dinnerTgl.onValueChanged.AddListener((isOn) =>
                OnTglResFood("晚餐", isOn, mealContent, totalObj));
-
+        foreach (var item in weekDayTglList)
+        {
+            item.dayTgl.onValueChanged.AddListener((isOn) =>
+                OnChangedWeekDay(item.dayCont, item.mealTgl));
+        }
         foreach (var item in weekMealInfs)
         {
             item.mealTgl.onValueChanged.AddListener((isOn) =>
@@ -239,6 +260,18 @@ public class FoodGroupChooseUI : UICaoZuoBase
 
 
     }
+
+    private void OnChangedWeekDay(Transform cont, Toggle tgl)
+    {
+        //contentMeal = cont;
+        //tgl.isOn = true;
+        contentMeal = null;
+        foreach (var item in weekMealInfs)
+        {
+            item.mealTgl.isOn = false;
+        }
+    }
+
     // 更新显示逻辑
     private void UpdateDayDisplay(string targetDay)
     {
@@ -287,6 +320,16 @@ public class FoodGroupChooseUI : UICaoZuoBase
 
             }
         }
+        else
+        {
+            //if (IsMealWeekListNull())
+            {
+                UIManager.Instance.OpenUICaoZuo("MealGroupReportUI");
+                SendServerConWeek();
+
+            }
+
+        }
     }
 
     /// <summary>
@@ -302,8 +345,8 @@ public class FoodGroupChooseUI : UICaoZuoBase
         foodSendConverDay.breakfast = AddFoodSendConverList(breakMealList);
         foodSendConverDay.lunch = AddFoodSendConverList(lunchMealList);
         foodSendConverDay.dinner = AddFoodSendConverList(dinnerMealList);
-        //foodSendConverDay.userInfo = userInfo;
-        //ServerCon.Instance.ConverToJsonPost(SerializeData(foodSendConverDay), "/analyse/intake");
+        foodSendConverDay.userInfo = userInfo;
+        ServerCon.Instance.ConverToJsonPost(SerializeData(foodSendConverDay), "/group/analyse/oneDay");
     }
     private string SerializeData(FoodSendConverDay data)
     {
@@ -313,6 +356,45 @@ public class FoodGroupChooseUI : UICaoZuoBase
 
         // 方法二：使用 Newtonsoft.Json（直接序列化列表）
         return JsonConvert.SerializeObject(data);
+    }
+
+    /// <summary>
+    /// 选择完的所有数据发到服务器发送周选的
+    /// </summary>
+    public void SendServerConWeek()
+    {
+        FoodSendConverWeek foodSendConverWeek = new FoodSendConverWeek();
+        foodSendConverWeek.monday = SetAddFoodSendConverList("周一早餐", "周一午餐", "周一晚餐");
+        foodSendConverWeek.tuesday = SetAddFoodSendConverList("周二早餐", "周二午餐", "周二晚餐");
+        foodSendConverWeek.wednesday = SetAddFoodSendConverList("周三早餐", "周三午餐", "周三晚餐");
+        foodSendConverWeek.thursday = SetAddFoodSendConverList("周四早餐", "周四午餐", "周四晚餐");
+        foodSendConverWeek.friday = SetAddFoodSendConverList("周五早餐", "周五午餐", "周五晚餐");
+        foodSendConverWeek.saturday = SetAddFoodSendConverList("周六早餐", "周六午餐", "周六晚餐");
+        foodSendConverWeek.sunday = SetAddFoodSendConverList("周日早餐", "周日午餐", "周日晚餐");
+        foodSendConverWeek.userInfo = userInfo;
+        ServerCon.Instance.ConverToJsonPost(SerializeDataWeek(foodSendConverWeek), "/group/analyse/aWeek");
+    }
+    private string SerializeDataWeek(FoodSendConverWeek data)
+    {
+        // 方法一：使用 Unity 内置 JsonUtility（需要包装类）
+        Wrapper<FoodSendConverWeek> wrapper = new Wrapper<FoodSendConverWeek> { items = data };
+        //return JsonUtility.ToJson(wrapper);
+
+        // 方法二：使用 Newtonsoft.Json（直接序列化列表）
+        return JsonConvert.SerializeObject(data);
+    }
+
+    private WeekGroupFood SetAddFoodSendConverList(string mealName1, string mealName2, string mealName3)
+    {
+        List<FoodRecipeGroupItem> breakMealList = MergeAllFoods(recipeListDic[mealName1].recipeSelectedList);
+        List<FoodRecipeGroupItem> lunchMealList = MergeAllFoods(recipeListDic[mealName2].recipeSelectedList);
+        List<FoodRecipeGroupItem> dinnerMealList = MergeAllFoods(recipeListDic[mealName3].recipeSelectedList);
+        WeekGroupFood week = new WeekGroupFood();
+        week.breakfast = AddFoodSendConverList(breakMealList);
+        week.lunch = AddFoodSendConverList(lunchMealList);
+        week.dinner = AddFoodSendConverList(dinnerMealList);
+
+        return week;
     }
 
     public List<FoodEveryMealItem> AddFoodSendConverList(List<FoodRecipeGroupItem> foodKinds)
@@ -365,6 +447,7 @@ public class FoodGroupChooseUI : UICaoZuoBase
             }
             else
             {
+                sourceFood.count = (float.Parse(sourceFood.weight) * float.Parse(sourceFood.part));
 
                 targetDict.Add(sourceFood.foodCode, sourceFood);
             }
@@ -386,7 +469,26 @@ public class FoodGroupChooseUI : UICaoZuoBase
         return isMealNull;
     }
     bool dayOrWeek = false;
+    /// <summary>
+    /// 进行判断一周里的三餐是否每餐都有
+    /// </summary>
+    private bool IsMealWeekListNull()
+    {
+        bool isMealNull = true;
+        foreach (var item in weekMealList)
+        {
+            if (recipeListDic[item].recipeSelectedList.Count < 1)
+            {
+                isMealNull = false;
+            }
+        }
+        //if (recipeListDic["早餐"].recipeSelectedList.Count > 0 && recipeListDic["午餐"].recipeSelectedList.Count > 0 && recipeListDic["晚餐"].recipeSelectedList.Count > 0)
+        //{
+        //    isMealNull = true;
+        //}
 
+        return isMealNull;
+    }
 
     private void Update()
     {
@@ -563,6 +665,7 @@ public class FoodGroupChooseUI : UICaoZuoBase
 
         recipeListDic[mealName].recipeSelectedList.Add(recipeItem);
         RefreshAddFoodRecipeList(food, recipeItem);
+        CalculateHeat(recipeListDic[recipeItem.mealPeriod].recipeSelectedList, meatHeatObj);
 
     }
 
@@ -600,7 +703,7 @@ public class FoodGroupChooseUI : UICaoZuoBase
                 totalTodayProtein += float.Parse(item.protein) * float.Parse(item.part);
                 totalTodayFat += float.Parse(item.fat) * float.Parse(item.part);
                 totalTodayCho += float.Parse(item.cho) * float.Parse(item.part);
-                totalTodayHeat += float.Parse(item.heat) * float.Parse(item.heat);
+                totalTodayHeat += float.Parse(item.heat) * float.Parse(item.part);
             }
         }
 
@@ -635,15 +738,15 @@ public class FoodGroupChooseUI : UICaoZuoBase
             GameObject toggleObj = Instantiate(foodRecipeItemPrefab, obj.transform.GetChild(0).GetChild(0));
             toggleObj.SetActive(true);
             allCount += float.Parse(food.part);
-            allHeat += float.Parse(BackMultiplyuantity(float.Parse(food.part), float.Parse(food.weight)));
-            allWeight += float.Parse(BackMultiplyuantity(float.Parse(food.part), float.Parse(food.heat)));
+            allHeat += float.Parse(BackMultiplyuantity(float.Parse(food.part), float.Parse(food.heat)));
+            allWeight += float.Parse(BackMultiplyuantity(float.Parse(food.part), float.Parse(food.weight)));
             allProtein += float.Parse(BackMultiplyuantity(float.Parse(food.part), float.Parse(food.protein)));
             allFat += float.Parse(BackMultiplyuantity(float.Parse(food.part), float.Parse(food.fat)));
             allCho += float.Parse(BackMultiplyuantity(float.Parse(food.part), float.Parse(food.cho)));
             toggleObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = food.foodName;
             toggleObj.transform.Find("Count").GetComponent<Text>().text = food.part.ToString();
-            toggleObj.transform.Find("Heat").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(food.part), float.Parse(food.weight));
-            toggleObj.transform.Find("Weight").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(food.part), float.Parse(food.heat));
+            toggleObj.transform.Find("Heat").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(food.part), float.Parse(food.heat));
+            toggleObj.transform.Find("Weight").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(food.part), float.Parse(food.weight));
             toggleObj.transform.Find("Protein").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(food.part), float.Parse(food.protein));
             toggleObj.transform.Find("Fat").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(food.part), float.Parse(food.fat));
             toggleObj.transform.Find("carbohydrate").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(food.part), float.Parse(food.cho));

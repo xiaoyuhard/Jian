@@ -87,7 +87,8 @@ public class ExpClickObj : MonoBehaviour
         textPos.y += col.size.y * triggerObj.transform.localScale.y * 0.5f;
         textPos.y += 0.2f;
         textObj.transform.position = textPos;
-        textObj.transform.parent = triggerObj.transform;
+        //textObj.transform.parent = triggerObj.transform;
+        textObj.transform.SetParent(triggerObj.transform);
         textObj.SetActive(true);
 
         var lastText = textObj.GetComponentInChildren<TextMeshPro>();

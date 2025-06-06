@@ -63,7 +63,7 @@ public class ModifyRecipeGroupReportUI : MonoSingletonBase<ModifyRecipeGroupRepo
             item.part = "1";
             foodItem.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = item.foodName;
             //foodItem.transform.Find("Count").GetComponent<Text>().text = item.part.ToString();
-            foodItem.transform.Find("Heat").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(item.part), float.Parse(item.weight));
+            foodItem.transform.Find("Heat").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(item.part), float.Parse(item.heat));
 
             foodItem.transform.Find("Weight").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(item.part), float.Parse(item.weight));
             foodItem.transform.Find("Protein").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(item.part), float.Parse(item.protein));
@@ -106,7 +106,7 @@ public class ModifyRecipeGroupReportUI : MonoSingletonBase<ModifyRecipeGroupRepo
 
             obj.transform.Find("Count").GetComponent<Text>().text = newText;
             obj.transform.Find("Weight").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(newText), float.Parse(item.weight));
-            obj.transform.Find("Heat").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(item.part), float.Parse(item.weight));
+            obj.transform.Find("Heat").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(item.part), float.Parse(item.heat));
 
             obj.transform.Find("Protein").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(newText), float.Parse(item.protein));
             obj.transform.Find("Fat").GetComponent<Text>().text = BackMultiplyuantity(float.Parse(newText), float.Parse(item.fat));

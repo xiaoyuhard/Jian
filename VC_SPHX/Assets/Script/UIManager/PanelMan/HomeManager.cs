@@ -32,6 +32,8 @@ public class HomeManager : UIBase
     public GameObject expOperPanel;
     public GameObject expGuidePanel;
     public GameObject expInfoPanel;
+
+    [Header("°´Å¥")]
     public Button btnOperGuide;
     public Button btnExpInfo;
     public Button btnExpInfo2;

@@ -119,11 +119,35 @@ public class ServerCon : MonoSingletonBase<ServerCon>
                     UIManager.Instance.OpenUICaoZuo(UINameType.UI_ServerTip);
                 }
                 break;
+            case "/group/analyse/oneDay":
+                FoodRecriveConverDay recriveGroupDay = JsonConvert.DeserializeObject<FoodRecriveConverDay>(responseJson);
+                if (recriveGroupDay.code == 200)
+                {
+                    MealGroupReportUI.Instance.ReceiveServerInform(recriveGroupDay.data);
 
+                }
+                else
+                {
+                    UIManager.Instance.OpenUICaoZuo(UINameType.UI_ServerTip);
+                }
+                break;
+            case "/group/analyse/aWeek":
+                FoodRecriveConverGroupWeek recriveGroupWeek = JsonConvert.DeserializeObject<FoodRecriveConverGroupWeek>(responseJson);
+                if (recriveGroupWeek.code == 200)
+                {
+                    MealGroupReportUI.Instance.ReceiveServerInformWeek(recriveGroupWeek.data);
+
+                }
+                else
+                {
+                    UIManager.Instance.OpenUICaoZuo(UINameType.UI_ServerTip);
+                }
+                break;
             default:
                 Debug.LogError("地址错误 没有接收到对应地址的数据   地址:" + full);
                 break;
         }
+        
 
     }
     ThreeMeals user = new ThreeMeals();
@@ -204,9 +228,12 @@ public class ServerCon : MonoSingletonBase<ServerCon>
                                     FoodRecipeGroupResponse recipeAllGroupSwop = JsonConvert.DeserializeObject<FoodRecipeGroupResponse>(jsonResponse);
                                     SwopRecipeGroupUI.Instance.ReceiveRecipeItem(recipeAllGroupSwop.data);
                                     break;
-                               
+                                case "SwopRecipeDay":
+                                    FoodRecipeGroupResponse recipeAllGroupSwopRecipeDay = JsonConvert.DeserializeObject<FoodRecipeGroupResponse>(jsonResponse);
+                                    SwopRecipeGroupReportUI.Instance.ReceiveRecipeItem(recipeAllGroupSwopRecipeDay.data);
+                                    break;
                             }
-                       
+
                             break;
                         case "/group/analyse/getAllPhysique":
                             GetAllPhysique getAllPhysique = JsonConvert.DeserializeObject<GetAllPhysique>(jsonResponse);

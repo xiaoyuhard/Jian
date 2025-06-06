@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UserInfo;
 
 
 public class GroupRegisterUI : UICaoZuoBase
@@ -20,6 +21,9 @@ public class GroupRegisterUI : UICaoZuoBase
     public Button verifyBtn;        //登记btn
     public Text kcalText;           //推荐摄入量显示text
 
+    public Dropdown biliDrop;       //配餐比例
+
+    public UserInfo userInfo = new UserInfo();
 
 
     void Awake()
@@ -54,7 +58,7 @@ public class GroupRegisterUI : UICaoZuoBase
             optionStrings.Add(option.physique);
         }
         groupDrop.AddOptions(optionStrings);
-        SendHeatIntake(0);
+        SendHeatIntakeValue(0);
 
     }
 
@@ -77,10 +81,10 @@ public class GroupRegisterUI : UICaoZuoBase
             sexDrop.value = 1;
 
         }
-        SendHeatIntake(value);
+        SendHeatIntakeValue(value);
     }
 
-    private void SendHeatIntake(int value)
+    private void SendHeatIntakeValue(int value)
     {
         SendHeatIntake heatIntake = new SendHeatIntake();
         heatIntake.physique = groupDrop.options[value].text;
@@ -117,11 +121,38 @@ public class GroupRegisterUI : UICaoZuoBase
 
     private void ClickVerifyClose()
     {
-        if (kcalInput.text != "")
+        if (kcalInput.text != "" && !IsInputText(kcalInput.text))
         {
-            UIManager.Instance.CloseUICaoZuo("GroupRegisterUI");
-            UIManager.Instance.OpenUICaoZuo("ChooseGroupShanShiUI");
+            return;
         }
+        if (peopleInput.text != "" && !IsInputText(peopleInput.text))
+        {
+            return;
+        }
+        userInfo.sex = sexDrop.options[sexDrop.value].text;
+        userInfo.level = levelDrop.options[levelDrop.value].text;
+        userInfo.physique = groupDrop.options[groupDrop.value].text;
+        userInfo.proportion = biliDrop.options[biliDrop.value].text;
+        userInfo.recIntake = kcalText.text;
+        UIManager.Instance.OpenUICaoZuo("ChooseGroupShanShiUI");
+        FoodGroupChooseUI.Instance.userInfo = userInfo;
+
+        UIManager.Instance.CloseUICaoZuo("GroupRegisterUI");
+
+
+    }
+
+    public bool IsInputText(string text)
+    {
+        if (text == "")
+        {
+            return false;
+        }
+        if (float.Parse(text) > 0)
+        {
+            return true;
+        }
+        return false;
     }
 
     // Update is called once per frame
